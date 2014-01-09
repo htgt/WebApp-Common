@@ -1,0 +1,32 @@
+<div class="row">
+  <div class="span4">
+    <div class="well">
+      <dl>
+        <dt>Ensembl Gene ID</dt>
+        <dd><a href="[% gene.gene_link %]" target="_blank">[% gene.ensembl_id %]</a></dd>
+        <dt>Marker Symbol</dt>
+        <dd>[% gene.marker_symbol %]</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="span4">
+    <div class="well">
+      <dl>
+        <dt>Gene ID</dt>
+        <dd>[% gene.gene_id %]</dd>
+        <dt>Canonical Transcript</dt>
+        <dd><a href="[% gene.transcript_link %]" target="_blank">[% gene.canonical_transcript %]</a></dd>
+      </dl>
+    </div>
+  </div>
+  <div class="span4">
+    <div class="well">
+      <dl>
+        <dt>Chromosome</dt>
+        <dd>[% gene.chr %]</dd>
+        <dt>Strand</dt>
+        <dd>[% gene.strand %]</dd>
+      </dl>
+    </div>
+  </div>
+</div>
