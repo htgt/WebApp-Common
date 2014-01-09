@@ -6,14 +6,20 @@ use warnings FATAL => 'all';
 use Moose::Role;
 use LIMS2::Exception;
 use List::MoreUtils qw( uniq );
+use Data::UUID;
+use JSON;
+use Hash::MoreUtils qw( slice_def );
+use LIMS2::Util::FarmJobRunner;
 
 requires qw(
-schema
 species
 ensembl_util
 check_params
 create_design_attempt
-create_design_target
+user
+assembly_id
+build_id
+base_design_dir
 );
 
 =head2 get_ensembl_gene
@@ -45,7 +51,6 @@ sub get_ensembl_gene {
 
     return $gene;
 }
-
 ## use critic
 
 =head2 _fetch_by_external_name
@@ -197,6 +202,182 @@ sub exon_ranks {
         if ( exists $exons->{ $current_id } ) {
             $exons->{ $current_id }{rank} = $rank;
         }
+        $rank++;
+    }
+
+    return;
+}
+
+sub pspec_parse_and_validate_gibson_params {
+    return {
+        gene_id         => { validate => 'non_empty_string' },
+        exon_id         => { validate => 'ensembl_exon_id' },
+        ensembl_gene_id => { validate => 'ensembl_gene_id' },
+        # fields from the diagram
+        '5F_length'    => { validate => 'integer' },
+        '5F_offset'    => { validate => 'integer' },
+        '5R_EF_length' => { validate => 'integer' },
+        '5R_EF_offset' => { validate => 'integer' },
+        'ER_3F_length' => { validate => 'integer' },
+        'ER_3F_offset' => { validate => 'integer' },
+        '3R_length'    => { validate => 'integer' },
+        '3R_offset'    => { validate => 'integer' },
+        # other options
+        exon_check_flank_length => { validate => 'integer', optional => 1 },
+        repeat_mask_classes     => { validate => 'repeat_mask_class', optional => 1 },
+        alt_designs             => { validate => 'boolean', optional => 1 },
+        #submit
+        create_design => { optional => 0 }
+    };
+}
+
+=head2 parse_and_validate_gibson_params
+
+Check the parameters needed to create the gibson design are all present
+and valid.
+
+=cut
+sub parse_and_validate_gibson_params {
+    my ( $self ) = @_;
+
+    my $validated_params = $self->check_params(
+        $self->catalyst->request->params, $self->pspec_parse_and_validate_gibson_params );
+
+    my $uuid = Data::UUID->new->create_str;
+    $validated_params->{uuid}        = $uuid;
+    $validated_params->{output_dir}  = $self->base_design_dir->subdir( $uuid );
+    $validated_params->{species}     = $self->species;
+    $validated_params->{build_id}    = $self->build_id;
+    $validated_params->{assembly_id} = $self->assembly_id;
+    $validated_params->{user}        = $self->user;
+
+    #create dir
+    $validated_params->{output_dir}->mkpath();
+
+    $self->catalyst->stash( {
+        gene_id => $validated_params->{gene_id},
+        exon_id => $validated_params->{exon_id}
+    } );
+
+    return $validated_params;
+}
+
+=head2 initiate_design_attempt
+
+create design attempt record with status pending
+
+=cut
+sub initiate_design_attempt {
+    my ( $self, $params ) = @_;
+
+    # create design attempt record
+    my $design_parameters = encode_json(
+        {   dir => $params->{output_dir}->stringify,
+            slice_def $params,
+            qw( uuid gene_id exon_id ensembl_gene_id assembly_id build_id ),
+        }
+    );
+
+    my $design_attempt = $self->create_design_attempt(
+        {
+            gene_id           => $params->{gene_id},
+            status            => 'pending',
+            created_by        => $self->user,
+            species           => $self->species,
+            design_parameters => $design_parameters,
+        }
+    );
+    $params->{da_id} = $design_attempt->id;
+
+    return $design_attempt;
+}
+
+=head2 generate_gibson_design_cmd
+
+generate the gibson design create command with all its parameters
+
+=cut
+sub generate_gibson_design_cmd {
+    my ( $self, $params ) = @_;
+
+    my @gibson_cmd_parameters = (
+        'design-create',
+        'gibson-design',
+        '--debug',
+        #required parameters
+        '--created-by',  $params->{user},
+        '--target-gene', $params->{gene_id},
+        '--target-exon', $params->{exon_id},
+        '--species',     $params->{species},
+        '--dir',         $params->{output_dir}->subdir('workdir')->stringify,
+        '--da-id',       $params->{da_id},
+        #user specified params
+        '--region-length-5f',    $params->{'5F_length'},
+        '--region-offset-5f',    $params->{'5F_offset'},
+        '--region-length-5r-ef', $params->{'5R_EF_length'},
+        '--region-offset-5r-ef', $params->{'5R_EF_offset'},
+        '--region-length-er-3f', $params->{'ER_3F_length'},
+        '--region-offset-er-3f', $params->{'ER_3F_offset'},
+        '--region-length-3r',    $params->{'3R_length'},
+        '--region-offset-3r',    $params->{'3R_offset'},
+        '--persist',
+    );
+
+    if ( $params->{repeat_mask_classes} ) {
+        for my $class ( @{ $params->{repeat_mask_classes} } ){
+            push @gibson_cmd_parameters, '--repeat-mask-class ' . $class;
+        }
+    }
+
+    if ( $params->{alt_designs} ) {
+        push @gibson_cmd_parameters, '--alt-designs';
+    }
+
+    if ( $params->{exon_check_flank_length} ) {
+        push @gibson_cmd_parameters,
+            '--exon-check-flank-length ' . $params->{exon_check_flank_length};
+    }
+
+    $self->log->debug('Design create command: ' . join(' ', @gibson_cmd_parameters ) );
+
+    return \@gibson_cmd_parameters;
+}
+
+=head2 run_design_create_cmd
+
+Bsub the design create command in farm3
+
+=cut
+sub run_design_create_cmd {
+    my ( $self, $cmd, $params ) = @_;
+
+    my $runner = LIMS2::Util::FarmJobRunner->new(
+        default_memory     => 2500,
+        default_processors => 2,
+    );
+
+    my $job_id = $runner->submit(
+        out_file => $params->{ output_dir }->file( "design_creation.out" ),
+        err_file => $params->{ output_dir }->file( "design_creation.err" ),
+        cmd      => $cmd,
+    );
+
+    $self->log->info( "Successfully submitted gibson design create job $job_id with run id $params->{uuid}" );
+
+    return $job_id;
+}
+
+=head2 get_exon_rank
+
+Get rank of exon on canonical transcript
+
+=cut
+sub get_exon_rank {
+    my ( $exon, $canonical_transcript ) = @_;
+
+    my $rank = 1;
+    for my $current_exon ( @{ $canonical_transcript->get_all_Exons } ) {
+        return $rank if $current_exon->stable_id eq $exon->stable_id;
         $rank++;
     }
 
