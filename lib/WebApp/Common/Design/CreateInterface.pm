@@ -7,6 +7,15 @@ use Moose::Role;
 use LIMS2::Exception;
 use List::MoreUtils qw( uniq );
 
+requires qw(
+schema
+species
+ensembl_util
+check_params
+create_design_attempt
+create_design_target
+);
+
 =head2 get_ensembl_gene
 
 Grab a ensembl gene object.
@@ -36,6 +45,7 @@ sub get_ensembl_gene {
 
     return $gene;
 }
+
 ## use critic
 
 =head2 _fetch_by_external_name
