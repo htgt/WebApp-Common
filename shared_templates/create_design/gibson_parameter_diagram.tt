@@ -1,0 +1,42 @@
+
+<script type="text/javascript">
+
+function createGibsonDiagram(builder) {
+  var fiveF = builder.addBox("5F");
+
+  var fiveR = builder.addBox("5R");
+  var EF = builder.addBoxWithoutSpacing("EF");
+
+  var critExon = builder.addCriticalExon();
+
+  var ER = builder.addBox("ER");
+  var threeF = builder.addBoxWithoutSpacing("3F");
+
+  var threeR = builder.addBox("3R");
+
+  //add all the offset size fields to the fields we want them on
+  builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "5F_offset", 1000);
+  builder.addLabel(threeF, threeR, "3R offset", "end to start", "3R_offset", 1000);
+  builder.addLabel(EF, critExon, "5R-EF offset", "end to start", "5R_EF_offset", 200);
+  builder.addLabel(critExon, ER, "ER-3F offset", "end to start", "ER_3F_offset", 100);
+
+  //add all the block size fields to the fields we want them on
+  builder.addField(fiveF, "5F_length", 500, "5F block size");
+  builder.addField(fiveR, "5R_EF_length", 200, "5R-EF block size", "top block");
+  builder.addField(ER, "ER_3F_length", 200, "ER-3F block size", "top block");
+  builder.addField(threeR, "3R_length", 500, "3R block size");
+
+}
+
+var builder;
+
+$(document).ready(function() {
+  //width gets dynamically resized anyway
+  builder = new DiagramBuilder("holder", 1000, 150);
+  builder._attributes.spacing = 150;
+
+  createGibsonDiagram(builder);
+
+  //builder.clearDiagram();
+});
+</script>
