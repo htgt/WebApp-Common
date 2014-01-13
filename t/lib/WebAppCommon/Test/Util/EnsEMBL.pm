@@ -10,7 +10,7 @@ BEGIN {
     __PACKAGE__->mk_classdata( 'class' => 'WebAppCommon::Util::EnsEMBL' );
 }
 
-sub startup : Test(startup => 5) {
+sub startup : Tests(startup => 5) {
     my $test = shift;
 
     my $class = $test->class;
@@ -51,7 +51,7 @@ sub adaptors : Test(13) {
 
 }
 
-sub get_best_transcript : Test(4) {
+sub get_best_transcript : Tests(4) {
     my $test = shift;
     ok my $o = $test->{o}, 'can grab test object';
 
@@ -60,7 +60,7 @@ sub get_best_transcript : Test(4) {
     is $o->get_best_transcript( $gene )->stable_id, 'ENSMUST00000025519', 'transcript is correct';
 }
 
-sub get_exon_rank : Test(5) {
+sub get_exon_rank : Tests(5) {
     my $test = shift;
     ok my $o = $test->{o}, 'can grab test object';
 
@@ -71,12 +71,61 @@ sub get_exon_rank : Test(5) {
     is $o->get_exon_rank( $transcript, 'ENSMUSE00000572374' ), 5, 'fifth exon rank correct';
 }
 
-sub get_gene_from_exon_id : Test(2) {
+sub get_gene_from_exon_id : Tests(2) {
     my $test = shift;
     ok my $o = $test->{o}, 'can grab test object';
 
     is $o->get_gene_from_exon_id('ENSMUSE00000572374')->stable_id, 'ENSMUSG00000024617',
         'gene is correct';
+}
+
+sub get_ensembl_gene : Tests(16) {
+    my $test = shift;
+    ok my $o = $test->{o}, 'can grab test object';
+
+    ok my $marker_symbol_gene = $o->get_ensembl_gene( 'Cbx1' ), 'can find gene by marker symbol';
+    isa_ok $marker_symbol_gene, 'Bio::EnsEMBL::Gene';
+    is $marker_symbol_gene->stable_id, 'ENSMUSG00000018666', '.. gene object has correct ensembl stable id';
+
+    ok my $mgi_gene = $o->get_ensembl_gene( 'MGI:97490' ), 'can find gene by MGI gene id';
+    isa_ok $mgi_gene, 'Bio::EnsEMBL::Gene';
+    is $mgi_gene->stable_id, 'ENSMUSG00000027168', '.. gene object has correct ensembl stable id';
+
+    ok my $human_o = $test->class->new( species => 'human' ), 'grab object with species set as human';
+    ok my $hgnc_gene = $human_o->get_ensembl_gene( 'HGNC:1551' ), 'can find gene by HGNC gene id';
+    isa_ok $hgnc_gene, 'Bio::EnsEMBL::Gene';
+    is $hgnc_gene->stable_id, 'ENSG00000108468', '.. gene object has correct ensembl stable id';
+
+    ok my $ensembl_gene = $human_o->get_ensembl_gene( 'ENSG00000139618'), 'can find gene by ensembl gene id';
+    isa_ok $ensembl_gene, 'Bio::EnsEMBL::Gene';
+    is $ensembl_gene->stable_id, 'ENSG00000139618', '.. gene object has correct ensembl stable id';
+
+    throws_ok{
+        $o->get_ensembl_gene( 'xxxxxxxxx' )
+    } qr/Unable to find gene x+ in EnsEMBL/
+        , 'throws error for unknown gene';
+
+    throws_ok{
+        $o->get_ensembl_gene( 'cb' )
+    } qr/Found multiple EnsEMBL genes with marker symbol id cb/
+        , 'throws error for multiple matching genes';
+}
+
+sub external_gene_id : Tests(8) {
+    my $test = shift;
+    ok my $o = $test->{o}, 'can grab test object';
+
+    ok my $mouse_gene = $o->gene_adaptor->fetch_by_stable_id('ENSMUSG00000018666'), 'can fetch gene';
+    ok my $mouse_gene_id = $o->external_gene_id( $mouse_gene, 'MGI' ),
+        'can grab MGI id from ensembl gene object';
+    is $mouse_gene_id, 'MGI:105369';
+
+    ok my $human_o = $test->class->new( species => 'human' ), 'grab object with species set as human';
+    ok my $human_gene = $human_o->gene_adaptor->fetch_by_stable_id( 'ENSG00000108468' ), 'can fetch gene';
+    ok my $human_gene_id = $human_o->external_gene_id( $human_gene, 'HGNC' ),
+        'can grab HGNC id from ensembl gene object';
+    is $human_gene_id, 'HGNC:1551';
+
 }
 
 1;
