@@ -1,4 +1,4 @@
-package WebApp::Common::Util::EnsEMBL;
+package WebAppCommon::Util::EnsEMBL;
 
 use strict;
 use warnings FATAL => 'all';

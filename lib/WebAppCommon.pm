@@ -1,4 +1,4 @@
-package WebApp::Common;
+package WebAppCommon;
 
 use strict;
 use warnings FATAL => 'all';

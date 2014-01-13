@@ -1,4 +1,4 @@
-package WebApp::Common::Design::CreateInterface;
+package WebAppCommon::Design::CreateInterface;
 
 use strict;
 use warnings FATAL => 'all';
