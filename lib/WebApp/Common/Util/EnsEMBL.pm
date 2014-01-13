@@ -6,6 +6,7 @@ use warnings FATAL => 'all';
 use Moose;
 use MooseX::ClassAttribute;
 use Bio::EnsEMBL::Registry;
+use List::MoreUtils qw( uniq );
 use namespace::autoclean;
 
 # registry is a class variable to ensure that load_registry_from_db() is
@@ -107,6 +108,92 @@ sub get_best_transcript {
         unless $best_transcript;
 
     return $best_transcript;
+}
+
+=head2 get_ensembl_gene
+
+Grab a ensembl gene object.
+First need to work out format of gene name user has supplied
+
+=cut
+## no critic(BuiltinFunctions::ProhibitComplexMappings)
+sub get_ensembl_gene {
+    my ( $self, $gene_name ) = @_;
+
+    my $gene;
+    if ( $gene_name =~ /ENS(MUS)?G\d+/ ) {
+        $gene = $self->gene_adaptor->fetch_by_stable_id( $gene_name );
+    }
+    elsif ( $gene_name =~ /HGNC:(\d+)/ ) {
+        $gene = $self->_fetch_by_external_name( $1, 'HGNC' );
+    }
+    elsif ( $gene_name =~ /MGI:\d+/  ) {
+        $gene = $self->_fetch_by_external_name( $gene_name, 'MGI' );
+    }
+    else {
+        #assume its a marker symbol
+        $gene = $self->_fetch_by_external_name( $gene_name );
+    }
+
+    return $gene;
+}
+## use critic
+
+=head2 _fetch_by_external_name
+
+Wrapper around fetching ensembl gene given external gene name.
+
+=cut
+sub _fetch_by_external_name {
+    my ( $self, $gene_name, $type ) = @_;
+
+    my @genes = @{ $self->gene_adaptor->fetch_all_by_external_name($gene_name, $type) };
+    unless( @genes ) {
+        die("Unable to find gene $gene_name in EnsEMBL" );
+    }
+
+    if ( scalar(@genes) > 1 ) {
+        my @stable_ids = map{ $_->stable_id } @genes;
+        $type ||= 'marker symbol';
+
+        die( "Found multiple EnsEMBL genes with $type id $gene_name,"
+                . " try using one of the following EnsEMBL gene ids: "
+                . join( ', ', @stable_ids ) );
+    }
+    else {
+        return shift @genes;
+    }
+
+    return;
+}
+
+=head2 external_gene_id
+
+Work out external gene id:
+Human = HGNC
+Mouse = MGI
+
+If I have multiple ids pick the first one.
+If I can not find a id go back to marker symbol.
+
+=cut
+sub external_gene_id {
+    my ( $self, $gene, $type ) = @_;
+
+    my @dbentries = @{ $gene->get_all_DBEntries( $type ) };
+    my @ids = uniq map{ $_->primary_id } @dbentries;
+
+    if ( @ids ) {
+        my $id = shift @ids;
+        $id = 'HGNC:' . $id if $type eq 'HGNC';
+        return $id;
+    }
+    else {
+        # return marker symbol
+        return $gene->external_name;
+    }
+
+    return;
 }
 
 sub get_exon_rank {

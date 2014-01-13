@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 
 use Moose::Role;
-use List::MoreUtils qw( uniq );
 use Data::UUID;
 use JSON;
 use Hash::MoreUtils qw( slice_def );
@@ -20,66 +19,6 @@ assembly_id
 build_id
 base_design_dir
 );
-
-=head2 c_get_ensembl_gene
-
-Grab a ensembl gene object.
-First need to work out format of gene name user has supplied
-
-=cut
-## no critic(BuiltinFunctions::ProhibitComplexMappings)
-sub c_get_ensembl_gene {
-    my ( $self, $gene_name ) = @_;
-
-    my $ga = $self->ensembl_util->gene_adaptor( $self->species );
-
-    my $gene;
-    if ( $gene_name =~ /ENS(MUS)?G\d+/ ) {
-        $gene = $ga->fetch_by_stable_id( $gene_name );
-    }
-    elsif ( $gene_name =~ /HGNC:(\d+)/ ) {
-        $gene = $self->_fetch_by_external_name( $ga, $1, 'HGNC' );
-    }
-    elsif ( $gene_name =~ /MGI:\d+/  ) {
-        $gene = $self->_fetch_by_external_name( $ga, $gene_name, 'MGI' );
-    }
-    else {
-        #assume its a marker symbol
-        $gene = $self->_fetch_by_external_name( $ga, $gene_name );
-    }
-
-    return $gene;
-}
-## use critic
-
-=head2 _fetch_by_external_name
-
-Wrapper around fetching ensembl gene given external gene name.
-
-=cut
-sub _fetch_by_external_name {
-    my ( $self, $ga, $gene_name, $type ) = @_;
-
-    my @genes = @{ $ga->fetch_all_by_external_name($gene_name, $type) };
-    unless( @genes ) {
-        die("Unable to find gene $gene_name in EnsEMBL" );
-    }
-
-    if ( scalar(@genes) > 1 ) {
-        $self->log->debug("Found multiple EnsEMBL genes for $gene_name");
-        my @stable_ids = map{ $_->stable_id } @genes;
-        $type ||= 'marker symbol';
-
-        die( "Found multiple EnsEMBL genes with $type id $gene_name,"
-                . " try using one of the following EnsEMBL gene ids: "
-                . join( ', ', @stable_ids ) );
-    }
-    else {
-        return shift @genes;
-    }
-
-    return;
-}
 
 =head2 c_build_gene_data
 
@@ -98,7 +37,7 @@ sub c_build_gene_data {
         $data{transcript_link} = 'http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t='
             . $canonical_transcript->stable_id;
 
-        $data{gene_id} = $self->external_gene_id( $gene, 'HGNC' );
+        $data{gene_id} = $self->ensembl_util->external_gene_id( $gene, 'HGNC' );
     }
     elsif ( $self->species eq 'Mouse' ) {
         $data{gene_link} = 'http://www.ensembl.org/Mus_musculus/Gene/Summary?g='
@@ -106,7 +45,7 @@ sub c_build_gene_data {
         $data{transcript_link} = 'http://www.ensembl.org/Mus_musculus/Transcript/Summary?t='
             . $canonical_transcript->stable_id;
 
-        $data{gene_id} = $self->external_gene_id( $gene, 'MGI' );
+        $data{gene_id} = $self->ensembl_util->external_gene_id( $gene, 'MGI' );
     }
     $data{marker_symbol} = $gene->external_name;
     $data{canonical_transcript} = $canonical_transcript->stable_id;
@@ -115,35 +54,6 @@ sub c_build_gene_data {
     $data{chr} = $gene->seq_region_name;
 
     return \%data;
-}
-
-=head2 external_gene_id
-
-Work out external gene id:
-Human = HGNC
-Mouse = MGI
-
-If I have multiple ids pick the first one.
-If I can not find a id go back to marker symbol.
-
-=cut
-sub external_gene_id {
-    my ( $self, $gene, $type ) = @_;
-
-    my @dbentries = @{ $gene->get_all_DBEntries( $type ) };
-    my @ids = uniq map{ $_->primary_id } @dbentries;
-
-    if ( @ids ) {
-        my $id = shift @ids;
-        $id = 'HGNC:' . $id if $type eq 'HGNC';
-        return $id;
-    }
-    else {
-        # return marker symbol
-        return $gene->external_name;
-    }
-
-    return;
 }
 
 =head2 c_build_gene_exon_data
