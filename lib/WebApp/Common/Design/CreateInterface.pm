@@ -4,7 +4,6 @@ use strict;
 use warnings FATAL => 'all';
 
 use Moose::Role;
-use LIMS2::Exception;
 use List::MoreUtils qw( uniq );
 use Data::UUID;
 use JSON;
@@ -22,14 +21,14 @@ build_id
 base_design_dir
 );
 
-=head2 get_ensembl_gene
+=head2 c_get_ensembl_gene
 
 Grab a ensembl gene object.
 First need to work out format of gene name user has supplied
 
 =cut
 ## no critic(BuiltinFunctions::ProhibitComplexMappings)
-sub get_ensembl_gene {
+sub c_get_ensembl_gene {
     my ( $self, $gene_name ) = @_;
 
     my $ga = $self->ensembl_util->gene_adaptor( $self->species );
@@ -63,7 +62,7 @@ sub _fetch_by_external_name {
 
     my @genes = @{ $ga->fetch_all_by_external_name($gene_name, $type) };
     unless( @genes ) {
-        LIMS2::Exception->throw("Unable to find gene $gene_name in EnsEMBL" );
+        die("Unable to find gene $gene_name in EnsEMBL" );
     }
 
     if ( scalar(@genes) > 1 ) {
@@ -71,7 +70,7 @@ sub _fetch_by_external_name {
         my @stable_ids = map{ $_->stable_id } @genes;
         $type ||= 'marker symbol';
 
-        LIMS2::Exception->throw( "Found multiple EnsEMBL genes with $type id $gene_name,"
+        die( "Found multiple EnsEMBL genes with $type id $gene_name,"
                 . " try using one of the following EnsEMBL gene ids: "
                 . join( ', ', @stable_ids ) );
     }
@@ -82,12 +81,12 @@ sub _fetch_by_external_name {
     return;
 }
 
-=head2 build_gene_data
+=head2 c_build_gene_data
 
 Build up data about targeted gene to display to user.
 
 =cut
-sub build_gene_data {
+sub c_build_gene_data {
     my ( $self, $gene ) = @_;
     my %data;
 
@@ -147,13 +146,13 @@ sub external_gene_id {
     return;
 }
 
-=head2 build_gene_exon_data
+=head2 c_build_gene_exon_data
 
 Grab genes from given exon and build up a hash of
 data to display
 
 =cut
-sub build_gene_exon_data {
+sub c_build_gene_exon_data {
     my ( $self, $gene, $gene_id, $exon_types ) = @_;
 
     my $canonical_transcript = $gene->canonical_transcript;
@@ -231,13 +230,13 @@ sub pspec_parse_and_validate_gibson_params {
     };
 }
 
-=head2 parse_and_validate_gibson_params
+=head2 c_parse_and_validate_gibson_params
 
 Check the parameters needed to create the gibson design are all present
 and valid.
 
 =cut
-sub parse_and_validate_gibson_params {
+sub c_parse_and_validate_gibson_params {
     my ( $self ) = @_;
 
     my $validated_params = $self->check_params(
@@ -262,12 +261,12 @@ sub parse_and_validate_gibson_params {
     return $validated_params;
 }
 
-=head2 initiate_design_attempt
+=head2 c_initiate_design_attempt
 
 create design attempt record with status pending
 
 =cut
-sub initiate_design_attempt {
+sub c_initiate_design_attempt {
     my ( $self, $params ) = @_;
 
     # create design attempt record
@@ -292,12 +291,12 @@ sub initiate_design_attempt {
     return $design_attempt;
 }
 
-=head2 generate_gibson_design_cmd
+=head2 c_generate_gibson_design_cmd
 
 generate the gibson design create command with all its parameters
 
 =cut
-sub generate_gibson_design_cmd {
+sub c_generate_gibson_design_cmd {
     my ( $self, $params ) = @_;
 
     my @gibson_cmd_parameters = (
@@ -343,12 +342,12 @@ sub generate_gibson_design_cmd {
     return \@gibson_cmd_parameters;
 }
 
-=head2 run_design_create_cmd
+=head2 c_run_design_create_cmd
 
 Bsub the design create command in farm3
 
 =cut
-sub run_design_create_cmd {
+sub c_run_design_create_cmd {
     my ( $self, $cmd, $params ) = @_;
 
     my $runner = LIMS2::Util::FarmJobRunner->new(
@@ -365,23 +364,6 @@ sub run_design_create_cmd {
     $self->log->info( "Successfully submitted gibson design create job $job_id with run id $params->{uuid}" );
 
     return $job_id;
-}
-
-=head2 get_exon_rank
-
-Get rank of exon on canonical transcript
-
-=cut
-sub get_exon_rank {
-    my ( $exon, $canonical_transcript ) = @_;
-
-    my $rank = 1;
-    for my $current_exon ( @{ $canonical_transcript->get_all_Exons } ) {
-        return $rank if $current_exon->stable_id eq $exon->stable_id;
-        $rank++;
-    }
-
-    return;
 }
 
 1;
