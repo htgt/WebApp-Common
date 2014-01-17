@@ -24,7 +24,6 @@ use namespace::autoclean;
 
 has model => (
     is       => 'ro',
-    isa      => 'LIMS2::Model',
     required => 1,
 );
 
