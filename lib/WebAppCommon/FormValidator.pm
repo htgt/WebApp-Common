@@ -46,7 +46,7 @@ has constraints => (
 
 sub _build_constraints {
     my $self = shift;
-    return WebAppCommon::FormValidator::Constraint->new( model => $self->model ); 
+    return WebAppCommon::FormValidator::Constraint->new( model => $self->model );
 }
 
 sub init_constraint_method {
@@ -182,7 +182,7 @@ sub clear_cached_constraint_method {
 sub throw {
     my ( $self, $params, $results ) = @_;
 
-    my $str = 'Parameter validation failed'; 
+    my $str = 'Parameter validation failed';
 
     if ( defined $results ) {
         my @errors;
