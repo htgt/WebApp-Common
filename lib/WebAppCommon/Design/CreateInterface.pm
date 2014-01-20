@@ -7,7 +7,7 @@ use Moose::Role;
 use Data::UUID;
 use JSON;
 use Hash::MoreUtils qw( slice_def );
-use LIMS2::Util::FarmJobRunner;
+use WebAppCommon::Util::FarmJobRunner;
 
 requires qw(
 species
@@ -260,7 +260,7 @@ Bsub the design create command in farm3
 sub c_run_design_create_cmd {
     my ( $self, $cmd, $params ) = @_;
 
-    my $runner = LIMS2::Util::FarmJobRunner->new(
+    my $runner = WebAppCommon::Util::FarmJobRunner->new(
         default_memory     => 2500,
         default_processors => 2,
     );
