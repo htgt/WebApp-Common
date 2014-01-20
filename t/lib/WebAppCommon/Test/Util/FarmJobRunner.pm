@@ -95,17 +95,17 @@ sub submit : Tests(10) {
     my $test = shift;
     my $o = $test->{o};
 
-    ok my $cmd = $o->submit( 
-        out_file => "test.out", 
-        cmd      => [ "echo", "test" ]  
+    ok my $cmd = $o->submit(
+        out_file => "test.out",
+        cmd      => [ "echo", "test" ]
     ), "Submit runs with only required parameters";
 
-    ok $cmd->[-1] =~ /-o test.out/, "Out file specified"; 
+    ok $cmd->[-1] =~ /-o test.out/, "Out file specified";
     ok $cmd->[-1] =~ /echo test/, "Command specified";
 
     ok my $new_cmd = $o->submit(
-        out_file        => "test.out", 
-        cmd             => [ "echo", "test" ], 
+        out_file        => "test.out",
+        cmd             => [ "echo", "test" ],
         err_file        => "test.err",
         queue           => "short",
         memory_required => 4000,
@@ -114,7 +114,7 @@ sub submit : Tests(10) {
 
     #check all the stuff we specified is in the cmd string
     my $final_cmd = $new_cmd->[-1];
-    ok $final_cmd =~ /-o test\.out/, "Out file specified"; 
+    ok $final_cmd =~ /-o test\.out/, "Out file specified";
     ok $final_cmd =~ /echo test/, "Command specified";
     ok $final_cmd =~ /-e test\.err/, "Error file specified";
     ok $final_cmd =~ /-q short/, "Queue specified";
