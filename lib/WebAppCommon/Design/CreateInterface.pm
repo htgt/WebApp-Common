@@ -260,10 +260,12 @@ Bsub the design create command in farm3
 sub c_run_design_create_cmd {
     my ( $self, $cmd, $params ) = @_;
 
-    my $runner = WebAppCommon::Util::FarmJobRunner->new(
+    my %farm_job_params = (
         default_memory     => 2500,
         default_processors => 2,
     );
+    $farm_job_params{bsub_wrapper} = $ENV{FARM3_BSUB_WRAPPER} if exists $ENV{FARM3_BSUB_WRAPPER};
+    my $runner = WebAppCommon::Util::FarmJobRunner->new( %farm_job_params );
 
     my $job_id = $runner->submit(
         out_file => $params->{ output_dir }->file( "design_creation.out" ),
