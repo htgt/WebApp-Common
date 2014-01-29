@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::VERSION = '0.002';
+    $WebAppCommon::FormValidator::VERSION = '0.003';
 }
 ## use critic
 
@@ -20,7 +20,7 @@ use warnings FATAL => 'all';
 
 use Moose;
 use Data::FormValidator;
-use LIMS2::Model::FormValidator::Constraint;
+use WebAppCommon::FormValidator::Constraint;
 use Hash::MoreUtils qw( slice_def );
 use Log::Log4perl qw( :easy );
 use Data::Dump qw( pp );
