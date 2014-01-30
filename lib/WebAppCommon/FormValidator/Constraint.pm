@@ -258,6 +258,13 @@ sub repeat_mask_class {
     return shift->in_set( 'trf', 'dust' );
 }
 
+sub validated_by_annotation {
+    return shift->in_set( 'yes', 'no', 'maybe', 'not done' );
+}
+
+sub dna_seq {
+    return shift->regexp_matches(qr/^[ATGCN]+$/);
+}
 __PACKAGE__->meta->make_immutable;
 
 1;
