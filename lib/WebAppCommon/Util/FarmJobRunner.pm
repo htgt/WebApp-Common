@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FarmJobRunner;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.004';
+    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.005';
 }
 ## use critic
 
@@ -162,7 +162,7 @@ sub _run_cmd {
 
     my $output;
 
-    $self->log->debug( "CMD: " . join(' ', @cmd) );
+    $self->log->info( "CMD: " . join(' ', @cmd) );
     try {
         IPC::Run::run( \@cmd, '<', \undef, '>&', \$output )
                 or die "$output";
@@ -170,6 +170,7 @@ sub _run_cmd {
     catch {
         confess "Command failed: $_";
     };
+    $self->log->info( "CMD Output: $output" );
 
     return $output;
 }
