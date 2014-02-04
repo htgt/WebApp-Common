@@ -174,6 +174,7 @@ sub c_parse_and_validate_gibson_params {
         gene_id => $validated_params->{gene_id},
         exon_id => $validated_params->{exon_id}
     } );
+    $self->log->info( 'Validated gibson design parameters' );
 
     return $validated_params;
 }
@@ -204,6 +205,7 @@ sub c_initiate_design_attempt {
         }
     );
     $params->{da_id} = $design_attempt->id;
+    $self->log->info( 'Create design attempt: ' . $design_attempt->id );
 
     return $design_attempt;
 }
