@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.003';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.004';
 }
 ## use critic
 
@@ -128,15 +128,22 @@ sub pspec_parse_and_validate_gibson_params {
         gene_id         => { validate => 'non_empty_string' },
         exon_id         => { validate => 'ensembl_exon_id' },
         ensembl_gene_id => { validate => 'ensembl_gene_id' },
+        gibson_type     => { validate => 'non_empty_string' },
         # fields from the diagram
         '5F_length'    => { validate => 'integer' },
         '5F_offset'    => { validate => 'integer' },
-        '5R_EF_length' => { validate => 'integer' },
-        '5R_EF_offset' => { validate => 'integer' },
-        'ER_3F_length' => { validate => 'integer' },
-        'ER_3F_offset' => { validate => 'integer' },
         '3R_length'    => { validate => 'integer' },
         '3R_offset'    => { validate => 'integer' },
+        # conditional
+        '5R_EF_length' => { validate => 'integer', optional => 1 },
+        '5R_EF_offset' => { validate => 'integer', optional => 1 },
+        'ER_3F_length' => { validate => 'integer', optional => 1 },
+        'ER_3F_offset' => { validate => 'integer', optional => 1 },
+        # deletion
+        '5R_length'    => { validate => 'integer', optional => 1 },
+        '5R_offset'    => { validate => 'integer', optional => 1 },
+        '3F_length'    => { validate => 'integer', optional => 1 },
+        '3F_offset'    => { validate => 'integer', optional => 1 },
         # other options
         exon_check_flank_length => { validate => 'integer', optional => 1 },
         repeat_mask_classes     => { validate => 'repeat_mask_class', optional => 1 },
@@ -215,9 +222,20 @@ generate the gibson design create command with all its parameters
 sub c_generate_gibson_design_cmd {
     my ( $self, $params ) = @_;
 
+    my $gibson_cmd;
+    if ( $params->{gibson_type} eq 'conditional' ) {
+        $gibson_cmd = 'gibson-design';
+    }
+    elsif ( $params->{gibson_type} eq 'deletion' ) {
+        $gibson_cmd = 'gibson-deletion-design';
+    }
+    else {
+        die( 'Unknown gibson design type: ' . $params->{gibson_type} );
+    }
+
     my @gibson_cmd_parameters = (
         'design-create',
-        'gibson-design',
+        $gibson_cmd,
         '--debug',
         #required parameters
         '--created-by',  $params->{user},
@@ -229,14 +247,27 @@ sub c_generate_gibson_design_cmd {
         #user specified params
         '--region-length-5f',    $params->{'5F_length'},
         '--region-offset-5f',    $params->{'5F_offset'},
-        '--region-length-5r-ef', $params->{'5R_EF_length'},
-        '--region-offset-5r-ef', $params->{'5R_EF_offset'},
-        '--region-length-er-3f', $params->{'ER_3F_length'},
-        '--region-offset-er-3f', $params->{'ER_3F_offset'},
         '--region-length-3r',    $params->{'3R_length'},
         '--region-offset-3r',    $params->{'3R_offset'},
         '--persist',
     );
+
+    if ( $params->{gibson_type} eq 'conditional' ) {
+        push @gibson_cmd_parameters, (
+            '--region-length-5r-ef', $params->{'5R_EF_length'},
+            '--region-offset-5r-ef', $params->{'5R_EF_offset'},
+            '--region-length-er-3f', $params->{'ER_3F_length'},
+            '--region-offset-er-3f', $params->{'ER_3F_offset'},
+        );
+    }
+    elsif ( $params->{gibson_type} eq 'deletion' ) {
+        push @gibson_cmd_parameters, (
+            '--region-length-5r', $params->{'5R_length'},
+            '--region-offset-5r', $params->{'5R_offset'},
+            '--region-length-3f', $params->{'3F_length'},
+            '--region-offset-3f', $params->{'3F_offset'},
+        );
+    }
 
     if ( $params->{repeat_mask_classes} ) {
         for my $class ( @{ $params->{repeat_mask_classes} } ){

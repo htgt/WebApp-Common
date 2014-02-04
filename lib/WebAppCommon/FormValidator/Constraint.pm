@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.003';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.004';
 }
 ## use critic
 
@@ -264,6 +264,13 @@ sub repeat_mask_class {
     return shift->in_set( 'trf', 'dust' );
 }
 
+sub validated_by_annotation {
+    return shift->in_set( 'yes', 'no', 'maybe', 'not done' );
+}
+
+sub dna_seq {
+    return shift->regexp_matches(qr/^[ATGCN]+$/);
+}
 __PACKAGE__->meta->make_immutable;
 
 1;

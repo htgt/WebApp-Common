@@ -1,3 +1,7 @@
+0.004     2014-02-04 07:07:20 Europe/London
+
+    Added option to specify gibson-deletion designs in create gibson design interface.
+
 0.003     2014-01-29 14:28:16 Europe/London
 
     Allow custom farm3 bsub wrapper scripts.

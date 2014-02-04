@@ -9,6 +9,7 @@ lib/WebAppCommon.pm
 lib/WebAppCommon/Design/CreateInterface.pm
 lib/WebAppCommon/FormValidator.pm
 lib/WebAppCommon/FormValidator/Constraint.pm
+lib/WebAppCommon/Plugin/Design.pm
 lib/WebAppCommon/Util/EnsEMBL.pm
 lib/WebAppCommon/Util/FarmJobRunner.pm
 shared_templates/create_design/common_gibson_form_parameters.tt

@@ -30,7 +30,9 @@ requires:
   Hash::MoreUtils: 0
   IPC::Run: 0
   JSON: 0
+  LIMS2::Model::Util: 0
   List::MoreUtils: 0
+  List::Util: 0
   Log::Log4perl: 0
   Moose: 0
   Moose::Role: 0
@@ -47,4 +49,4 @@ requires:
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.003
+version: 0.004

@@ -28,6 +28,31 @@ function createGibsonDiagram(builder) {
 
 }
 
+function createGibsonDeletionDiagram(builder) {
+  var fiveF = builder.addBox("5F");
+
+  var fiveR = builder.addBox("5R");
+
+  var critExon = builder.addCriticalExon();
+
+  var threeF = builder.addBox("3F");
+
+  var threeR = builder.addBox("3R");
+
+  //add all the offset size fields to the fields we want them on
+  builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "5F_offset", 1000);
+  builder.addLabel(threeF, threeR, "3R offset", "end to start", "3R_offset", 1000);
+  builder.addLabel(fiveR, critExon, "5R offset", "end to start", "5R_offset", 200);
+  builder.addLabel(critExon, threeF, "3F offset", "end to start", "3F_offset", 100);
+
+  //add all the block size fields to the fields we want them on
+  builder.addField(fiveF, "5F_length", 500, "5F block size");
+  builder.addField(fiveR, "5R_length", 100, "5R block size");
+  builder.addField(threeF, "3F_length", 100, "3F block size");
+  builder.addField(threeR, "3R_length", 500, "3R block size");
+
+}
+
 var builder;
 
 $(document).ready(function() {
@@ -37,6 +62,20 @@ $(document).ready(function() {
 
   createGibsonDiagram(builder);
 
-  //builder.clearDiagram();
+  $("input[name='gibson_type']:radio").change(function(){
+      var gibson_type = $(this).val();
+      console.log('Gibson Type: ' + gibson_type);
+      if (gibson_type=='deletion') {
+        builder.clearDiagram();
+        builder._attributes.spacing = 150;
+        createGibsonDeletionDiagram(builder);
+      }
+      else {
+        builder.clearDiagram();
+        builder._attributes.spacing = 150;
+        createGibsonDiagram(builder);
+      }
+  });
 });
+
 </script>
