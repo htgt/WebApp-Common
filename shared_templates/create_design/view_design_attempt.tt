@@ -49,12 +49,12 @@
     </table>
   </div>
 </div>
-
+[% IF design_target_report_url %]
   <a href="[% c.uri_for( design_target_report_url da.gene_id, { 'crispr_types' => 'single' } ) %]" target="_blank" class="btn btn-info">
           single crispr report for [% da.gene_id %]</a>
   <a href="[% c.uri_for( design_target_report_url da.gene_id, { 'crispr_types' => 'pair' } ) %]" target="_blank" class="btn btn-info">
           crispr pair report for [% da.gene_id %]</a>
-
+[% END %]
 <div class="row">
   <div class="span6">
     <h5>Design Parameters</h5>
