@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.005';
+    $WebAppCommon::Plugin::Design::VERSION = '0.006';
 }
 ## use critic
 
@@ -531,7 +531,7 @@ sub c_create_design_attempt {
             )
         }
     );
-    $self->log->debug( 'Created design attempt ' . $design_attempt->id );
+    $self->log->info( 'Created design attempt ' . $design_attempt->id );
 
     return $design_attempt;
 }
