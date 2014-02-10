@@ -1,4 +1,10 @@
 package WebAppCommon::FormValidator;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $WebAppCommon::FormValidator::VERSION = '0.007';
+}
+## use critic
+
 
 =head1 NAME
 

@@ -1,4 +1,10 @@
 package WebAppCommon::Plugin::Design;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $WebAppCommon::Plugin::Design::VERSION = '0.007';
+}
+## use critic
+
 
 use strict;
 use warnings FATAL => 'all';
