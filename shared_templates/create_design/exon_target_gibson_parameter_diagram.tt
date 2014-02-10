@@ -7,7 +7,7 @@ function createGibsonDiagram(builder) {
   var fiveR = builder.addBox("5R");
   var EF = builder.addBoxWithoutSpacing("EF");
 
-  var critExon = builder.addCriticalExon();
+  var critExon = builder.addCriticalExon("Exon");
 
   var ER = builder.addBox("ER");
   var threeF = builder.addBoxWithoutSpacing("3F");
@@ -33,7 +33,7 @@ function createGibsonDeletionDiagram(builder) {
 
   var fiveR = builder.addBox("5R");
 
-  var critExon = builder.addCriticalExon();
+  var critExon = builder.addCriticalExon("Exon");
 
   var threeF = builder.addBox("3F");
 

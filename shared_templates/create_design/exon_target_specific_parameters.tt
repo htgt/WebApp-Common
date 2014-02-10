@@ -1,0 +1,15 @@
+<fieldset>
+  <div class="form-horizontal">
+
+    <div class="control-group">
+      <label class="control-label" for="exon_id">Exon ID</label>
+      <div class="controls">
+        <input type="text" id="exon_id" name="exon_id" placeholder="Ensembl Exon ID" value="[% exon_id %]" /><br/>
+          <span class="help-block">Must be a Ensembl Exon ID</span>
+      </div>
+    </div>
+
+    <input type="hidden" id="ensembl_gene_id" name="ensembl_gene_id" value="[% ensembl_gene_id %]" />
+
+  </div>
+</fieldset>

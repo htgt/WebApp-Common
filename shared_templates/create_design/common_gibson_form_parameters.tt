@@ -1,46 +1,12 @@
-<fieldset>
-  <legend>Oligo Parameters</legend>
-
-  <div id="diagram" style="position: relative;">
-    <div id="holder" style="padding-top:20px; padding-botton:20px;">
-    </div>
-  </div>
-
-
-</fieldset>
 
 <fieldset>
   <div class="form-horizontal">
-    <legend>Design Parameters</legend>
-
-    <div class="control-group">
-      <label class="control-label">Gibson Type</label>
-      <div class="controls">
-        <label class="radio">
-          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional" checked>
-          Conditional Ready
-        </label>
-        <label class="radio">
-          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion">
-          Deletion
-        </label>
-      </div>
-    </div>
 
     <div class="control-group">
       <label class="control-label" for="gene_id">Gene ID</label>
       <div class="controls">
         <input type="text" id="gene_id" name="gene_id" placeholder="Target Gene ID" value="[% gene_id %]" /><br/>
-        <input type="hidden" id="ensembl_gene_id" name="ensembl_gene_id" value="[% ensembl_gene_id %]" />
         <span class="help-block">[% gene_id_label %]</span>
-      </div>
-    </div>
-
-    <div class="control-group">
-      <label class="control-label" for="exon_id">Exon ID</label>
-      <div class="controls">
-        <input type="text" id="exon_id" name="exon_id" placeholder="Ensembl Exon ID" value="[% exon_id %]" /><br/>
-          <span class="help-block">Must be a Ensembl Exon ID</span>
       </div>
     </div>
 
@@ -73,10 +39,6 @@
         <span class="help-block">If no value picked then no check will be done.</span>
       </div>
     </div>
-
-    [% IF extra_parameters %]
-      [% extra_parameters %]
-    [% END %]
 
     <div class="control-group">
       <div class="controls">
