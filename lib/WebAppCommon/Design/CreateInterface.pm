@@ -96,6 +96,61 @@ sub c_build_gene_exon_data {
     return;
 }
 
+sub pspec_target_params_from_exons {
+    return {
+        gene_id           => { validate => 'non_empty_string' },
+        five_prime_exon   => { validate => 'ensembl_exon_id' },
+        three_prime_exon  => { validate => 'ensembl_exon_id', optional => 1 },
+        target_from_exons => { optional => 1 },
+    };
+}
+
+=head2 c_target_params_from_exons
+
+Given target exons return target coordinates
+
+=cut
+sub c_target_params_from_exons {
+    my ( $self ) = @_;
+
+    my $validated_params = $self->check_params(
+        $self->catalyst->request->params, $self->pspec_target_params_from_exons );
+
+    my %target_data;
+    $target_data{gene_id} = $validated_params->{gene_id};
+
+    $self->log->info( 'Calculating target coordinates for exon(s)' );
+    my $exon_adaptor = $self->ensembl_util->exon_adaptor;
+    my $five_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{five_prime_exon} );
+
+    $target_data{chromosome} = $five_prime_exon->seq_region_name;
+    $target_data{strand} = $five_prime_exon->strand;
+
+    my $three_prime_exon;
+    if ( $validated_params->{three_prime_exon} ) {
+        $three_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{three_prime_exon} );
+    }
+
+    # if there is no three prime exon then just specify target start and end
+    # as the start and end of the five prime exon
+    unless ( $three_prime_exon ) {
+        $target_data{start} = $five_prime_exon->seq_region_start;
+        $target_data{end} = $five_prime_exon->seq_region_end;
+        return \%target_data;
+    }
+
+    if ( $target_data{strand} == 1 ) {
+        $target_data{start} = $five_prime_exon->seq_region_start;
+        $target_data{end}   = $three_prime_exon->seq_region_end;
+    }
+    else {
+        $target_data{start} = $three_prime_exon->seq_region_start;
+        $target_data{end}   = $five_prime_exon->seq_region_end;
+    }
+
+    return \%target_data;
+}
+
 =head2 exon_ranks
 
 Get rank of exons on canonical transcript.
