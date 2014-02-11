@@ -1,3 +1,7 @@
+<link href="[% c.uri_for( '/css/jquery.qtip.min.css' ) %]" rel="stylesheet">
+<script type="text/javascript" src="[% c.uri_for( '/js/raphael-min.js' ) %]"></script>
+<script type="text/javascript" src="[% c.uri_for( '/js/jquery.qtip.min.js' ) %]"></script>
+<script type="text/javascript" src="[% c.uri_for( '/js/diagram.builder.js' ) %]"></script>
 
 <script type="text/javascript">
 

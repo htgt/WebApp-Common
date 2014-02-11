@@ -1,3 +1,7 @@
+<link href="[% c.uri_for( '/css/jquery.qtip.min.css' ) %]" rel="stylesheet">
+<script type="text/javascript" src="[% c.uri_for( '/js/raphael-min.js' ) %]"></script>
+<script type="text/javascript" src="[% c.uri_for( '/js/jquery.qtip.min.js' ) %]"></script>
+<script type="text/javascript" src="[% c.uri_for( '/js/diagram.builder.js' ) %]"></script>
 
 <script type="text/javascript">
 
@@ -27,9 +31,9 @@ function createCustomTargetGibsonDiagram(builder) {
   builder.addField(threeR, "3R_length", 500, "3R block size");
 
   //add target start and end
+  builder._attributes.textWidth = 80;
   builder.addField(target, "target_start", '[% target_start %]', "Start", "top left");
   builder.addField(target, "target_end", '[% target_end %]', "End", "top right");
-
 }
 
 function createCustomTargetGibsonDeletionDiagram(builder) {
@@ -56,9 +60,9 @@ function createCustomTargetGibsonDeletionDiagram(builder) {
   builder.addField(threeR, "3R_length", 500, "3R block size");
 
   //add target start and end
+  builder._attributes.textWidth = 80;
   builder.addField(target, "target_start", '[% target_start %]', "Start", "top left");
   builder.addField(target, "target_end", '[% target_end %]', "End", "top right");
-
 }
 
 var builder;
