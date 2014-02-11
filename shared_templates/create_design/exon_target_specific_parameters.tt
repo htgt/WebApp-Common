@@ -10,6 +10,7 @@
     </div>
 
     <input type="hidden" id="ensembl_gene_id" name="ensembl_gene_id" value="[% ensembl_gene_id %]" />
+    <input type="hidden" id="target_type" name="target_type" value="exon" />
 
   </div>
 </fieldset>

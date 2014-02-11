@@ -17,5 +17,7 @@
       </div>
     </div>
 
+    <input type="hidden" id="target_type" name="target_type" value="custom" />
+
   </div>
 </fieldset>
