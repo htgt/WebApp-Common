@@ -38,14 +38,17 @@
               <a href="[% c.uri_for( design_create_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id, 'exon_pick' => '1' } ) %]" class="btn btn-info btn-mini btn-block">
               Pick Exon</a>
             </td>
+            <!-- Only show the "Get Crisprs" button if a get_crisprs_url has been provided to template -->
+            [% IF get_crisprs_url %]            
             <td>
-            [% IF !exon.crispr_count %]
-              <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
-              Get Crisprs</a>
-            [% ELSE %]
-              [% exon.crispr_count %] crisprs
-            [% END %]
+             [% IF !exon.crispr_count %]
+               <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
+               Get Crisprs</a>
+             [% ELSE %]
+               [% exon.crispr_count %] crisprs
+             [% END %]
             </td>
+            [% END %]
 
           </tr>
         [% END %]
