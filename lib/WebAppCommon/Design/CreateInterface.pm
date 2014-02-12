@@ -71,13 +71,13 @@ sub c_build_gene_exon_data {
     my %exon_data;
     for my $exon ( @{ $exons } ) {
         my %data;
-        $data{id} = $exon->stable_id;
-        $data{size} = $exon->length;
-        $data{chr} = $exon->seq_region_name;
-        $data{start} = $exon->start;
-        $data{end} = $exon->end;
+        $data{id}          = $exon->stable_id;
+        $data{size}        = $exon->length;
+        $data{chr}         = $exon->seq_region_name;
+        $data{start}       = $exon->start;
+        $data{end}         = $exon->end;
         $data{start_phase} = $exon->phase;
-        $data{end_phase} = $exon->end_phase;
+        $data{end_phase}   = $exon->end_phase;
         #TODO this may not be expected data sp12 Tue 03 Dec 2013 11:16:27 GMT
         #     not clear what constitutive means to Ensembl
         $data{constitutive} = $exon->is_constitutive ? 'yes' : 'no';
