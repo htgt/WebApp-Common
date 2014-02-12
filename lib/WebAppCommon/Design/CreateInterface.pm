@@ -393,7 +393,7 @@ sub c_generate_gibson_design_cmd {
         die( 'Unknown gibson target type: ' . $params->{target_type} );
     }
 
-    # put command name at from of parameters
+    # put command name in front of other parameters
     unshift @gibson_cmd_parameters, (
         'design-create',
         $gibson_cmd,
