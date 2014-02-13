@@ -50,8 +50,8 @@ function createCustomTargetGibsonDeletionDiagram(builder) {
   //add all the offset size fields to the fields we want them on
   builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "5F_offset", 1000);
   builder.addLabel(threeF, threeR, "3R offset", "end to start", "3R_offset", 1000);
-  builder.addLabel(fiveR, target, "5R offset", "end to start", "5R_offset", 200);
-  builder.addLabel(target, threeF, "3F offset", "end to start", "3F_offset", 100);
+  builder.addLabel(fiveR, target, "5R offset", "end to start", "5R_offset", 1);
+  builder.addLabel(target, threeF, "3F offset", "end to start", "3F_offset", 1);
 
   //add all the block size fields to the fields we want them on
   builder.addField(fiveF, "5F_length", 500, "5F block size");
@@ -72,7 +72,7 @@ $(document).ready(function() {
   builder = new DiagramBuilder("holder", 1000, 150);
   builder._attributes.spacing = 150;
 
-  createCustomTargetGibsonDiagram(builder);
+  createCustomTargetGibsonDeletionDiagram(builder);
 
   $("input[name='gibson_type']:radio").change(function(){
       var gibson_type = $(this).val();
