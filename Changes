@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.009     2014-02-13 10:33:34 Europe/London
+
+    Minor interface changes to gibson UI, defaults to deletion type gibsons.
+
 0.008     2014-02-13 07:04:02 Europe/London
 
     Add common code / templates for location specified gibson design interface
