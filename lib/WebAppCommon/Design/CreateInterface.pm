@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.006';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.008';
 }
 ## use critic
 
@@ -77,13 +77,13 @@ sub c_build_gene_exon_data {
     my %exon_data;
     for my $exon ( @{ $exons } ) {
         my %data;
-        $data{id} = $exon->stable_id;
-        $data{size} = $exon->length;
-        $data{chr} = $exon->seq_region_name;
-        $data{start} = $exon->start;
-        $data{end} = $exon->end;
+        $data{id}          = $exon->stable_id;
+        $data{size}        = $exon->length;
+        $data{chr}         = $exon->seq_region_name;
+        $data{start}       = $exon->start;
+        $data{end}         = $exon->end;
         $data{start_phase} = $exon->phase;
-        $data{end_phase} = $exon->end_phase;
+        $data{end_phase}   = $exon->end_phase;
         #TODO this may not be expected data sp12 Tue 03 Dec 2013 11:16:27 GMT
         #     not clear what constitutive means to Ensembl
         $data{constitutive} = $exon->is_constitutive ? 'yes' : 'no';
@@ -100,6 +100,63 @@ sub c_build_gene_exon_data {
     }
 
     return;
+}
+
+sub pspec_target_params_from_exons {
+    return {
+        gene_id           => { validate => 'non_empty_string' },
+        ensembl_gene_id   => { validate => 'ensembl_gene_id', optional => 1 },
+        five_prime_exon   => { validate => 'ensembl_exon_id' },
+        three_prime_exon  => { validate => 'ensembl_exon_id', optional => 1 },
+        target_from_exons => { optional => 1 },
+    };
+}
+
+=head2 c_target_params_from_exons
+
+Given target exons return target coordinates
+
+=cut
+sub c_target_params_from_exons {
+    my ( $self ) = @_;
+
+    my $validated_params = $self->check_params(
+        $self->catalyst->request->params, $self->pspec_target_params_from_exons );
+
+    my %target_data;
+    $target_data{gene_id} = $validated_params->{gene_id};
+    $target_data{ensembl_gene_id} = $validated_params->{ensembl_gene_id};
+
+    $self->log->info( 'Calculating target coordinates for exon(s)' );
+    my $exon_adaptor = $self->ensembl_util->exon_adaptor;
+    my $five_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{five_prime_exon} );
+
+    $target_data{chromosome} = $five_prime_exon->seq_region_name;
+    $target_data{strand} = $five_prime_exon->strand;
+
+    my $three_prime_exon;
+    if ( $validated_params->{three_prime_exon} ) {
+        $three_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{three_prime_exon} );
+    }
+
+    # if there is no three prime exon then just specify target start and end
+    # as the start and end of the five prime exon
+    unless ( $three_prime_exon ) {
+        $target_data{start} = $five_prime_exon->seq_region_start;
+        $target_data{end} = $five_prime_exon->seq_region_end;
+        return \%target_data;
+    }
+
+    if ( $target_data{strand} == 1 ) {
+        $target_data{start} = $five_prime_exon->seq_region_start;
+        $target_data{end}   = $three_prime_exon->seq_region_end;
+    }
+    else {
+        $target_data{start} = $three_prime_exon->seq_region_start;
+        $target_data{end}   = $five_prime_exon->seq_region_end;
+    }
+
+    return \%target_data;
 }
 
 =head2 exon_ranks
@@ -123,12 +180,11 @@ sub exon_ranks {
     return;
 }
 
-sub pspec_parse_and_validate_gibson_params {
+sub pspec_common_gibson_params {
     return {
-        gene_id         => { validate => 'non_empty_string' },
-        exon_id         => { validate => 'ensembl_exon_id' },
-        ensembl_gene_id => { validate => 'ensembl_gene_id' },
-        gibson_type     => { validate => 'non_empty_string' },
+        gene_id      => { validate => 'non_empty_string' },
+        target_type  => { validate => 'non_empty_string' },
+        gibson_type  => { validate => 'non_empty_string' },
         # fields from the diagram
         '5F_length'    => { validate => 'integer' },
         '5F_offset'    => { validate => 'integer' },
@@ -145,25 +201,35 @@ sub pspec_parse_and_validate_gibson_params {
         '3F_length'    => { validate => 'integer', optional => 1 },
         '3F_offset'    => { validate => 'integer', optional => 1 },
         # other options
-        exon_check_flank_length => { validate => 'integer', optional => 1 },
-        repeat_mask_classes     => { validate => 'repeat_mask_class', optional => 1 },
-        alt_designs             => { validate => 'boolean', optional => 1 },
+        repeat_mask_classes => { validate => 'repeat_mask_class', optional => 1 },
+        alt_designs         => { validate => 'boolean', optional => 1 },
         #submit
         create_design => { optional => 0 }
+    }
+}
+
+sub pspec_parse_and_validate_exon_target_gibson_params {
+    my $self = shift;
+    my $common_gibson_params = $self->pspec_common_gibson_params;
+    return {
+        exon_id                 => { validate => 'ensembl_exon_id' },
+        ensembl_gene_id         => { validate => 'ensembl_gene_id' },
+        exon_check_flank_length => { validate => 'integer', optional => 1 },
+        %{ $common_gibson_params },
     };
 }
 
-=head2 c_parse_and_validate_gibson_params
+=head2 c_parse_and_validate_exon_target_gibson_params
 
 Check the parameters needed to create the gibson design are all present
 and valid.
 
 =cut
-sub c_parse_and_validate_gibson_params {
+sub c_parse_and_validate_exon_target_gibson_params {
     my ( $self ) = @_;
 
     my $validated_params = $self->check_params(
-        $self->catalyst->request->params, $self->pspec_parse_and_validate_gibson_params );
+        $self->catalyst->request->params, $self->pspec_parse_and_validate_exon_target_gibson_params );
 
     my $uuid = Data::UUID->new->create_str;
     $validated_params->{uuid}        = $uuid;
@@ -180,7 +246,55 @@ sub c_parse_and_validate_gibson_params {
         gene_id => $validated_params->{gene_id},
         exon_id => $validated_params->{exon_id}
     } );
-    $self->log->info( 'Validated gibson design parameters' );
+    $self->log->info( 'Validated exon target gibson design parameters' );
+
+    return $validated_params;
+}
+
+sub pspec_parse_and_validate_custom_target_gibson_params {
+    my $self = shift;
+    my $common_gibson_params = $self->pspec_common_gibson_params;
+    return {
+        target_start    => { validate => 'integer' },
+        target_end      => { validate => 'integer' },
+        chromosome      => { validate => 'existing_chromosome' },
+        strand          => { validate => 'strand' },
+        ensembl_gene_id => { validate => 'ensembl_gene_id', optional => 1 },
+        %{ $common_gibson_params },
+    };
+}
+
+=head2 c_parse_and_validate_exon_target_gibson_params
+
+Check the parameters needed to create the gibson design are all present
+and valid.
+
+=cut
+sub c_parse_and_validate_custom_target_gibson_params {
+    my ( $self ) = @_;
+
+    my $validated_params = $self->check_params(
+        $self->catalyst->request->params, $self->pspec_parse_and_validate_custom_target_gibson_params );
+
+    my $uuid = Data::UUID->new->create_str;
+    $validated_params->{uuid}        = $uuid;
+    $validated_params->{output_dir}  = $self->base_design_dir->subdir( $uuid );
+    $validated_params->{species}     = $self->species;
+    $validated_params->{build_id}    = $self->build_id;
+    $validated_params->{assembly_id} = $self->assembly_id;
+    $validated_params->{user}        = $self->user;
+
+    #create dir
+    $validated_params->{output_dir}->mkpath();
+
+    $self->catalyst->stash( {
+        gene_id      => $validated_params->{gene_id},
+        target_start => $validated_params->{target_start},
+        target_end   => $validated_params->{target_end},
+        chromosome   => $validated_params->{chromosome},
+        strand       => $validated_params->{strand},
+    } );
+    $self->log->info( 'Validated custom target gibson design parameters' );
 
     return $validated_params;
 }
@@ -224,25 +338,12 @@ generate the gibson design create command with all its parameters
 sub c_generate_gibson_design_cmd {
     my ( $self, $params ) = @_;
 
-    my $gibson_cmd;
-    if ( $params->{gibson_type} eq 'conditional' ) {
-        $gibson_cmd = 'gibson-design';
-    }
-    elsif ( $params->{gibson_type} eq 'deletion' ) {
-        $gibson_cmd = 'gibson-deletion-design';
-    }
-    else {
-        die( 'Unknown gibson design type: ' . $params->{gibson_type} );
-    }
-
+    # common gibson design parameters
     my @gibson_cmd_parameters = (
-        'design-create',
-        $gibson_cmd,
         '--debug',
         #required parameters
         '--created-by',  $params->{user},
         '--target-gene', $params->{gene_id},
-        '--target-exon', $params->{exon_id},
         '--species',     $params->{species},
         '--dir',         $params->{output_dir}->subdir('workdir')->stringify,
         '--da-id',       $params->{da_id},
@@ -254,7 +355,10 @@ sub c_generate_gibson_design_cmd {
         '--persist',
     );
 
+    my $gibson_cmd;
+    # gibson design type specific parameters
     if ( $params->{gibson_type} eq 'conditional' ) {
+        $gibson_cmd = 'gibson-design';
         push @gibson_cmd_parameters, (
             '--region-length-5r-ef', $params->{'5R_EF_length'},
             '--region-offset-5r-ef', $params->{'5R_EF_offset'},
@@ -263,6 +367,7 @@ sub c_generate_gibson_design_cmd {
         );
     }
     elsif ( $params->{gibson_type} eq 'deletion' ) {
+        $gibson_cmd = 'gibson-deletion-design';
         push @gibson_cmd_parameters, (
             '--region-length-5r', $params->{'5R_length'},
             '--region-offset-5r', $params->{'5R_offset'},
@@ -270,10 +375,44 @@ sub c_generate_gibson_design_cmd {
             '--region-offset-3f', $params->{'3F_offset'},
         );
     }
+    else {
+        die( 'Unknown gibson design type: ' . $params->{gibson_type} );
+    }
+
+    # target type specific parameters
+    if ( $params->{target_type} eq 'exon' ) {
+        $gibson_cmd .= '-exon';
+        push @gibson_cmd_parameters, (
+            '--target-exon', $params->{exon_id},
+        );
+    }
+    elsif ( $params->{target_type} eq 'location' ) {
+        $gibson_cmd .= '-location';
+        push @gibson_cmd_parameters, (
+            '--target-start', $params->{target_start},
+            '--target-end'  , $params->{target_end},
+            '--chromosome'  , $params->{chromosome},
+            '--strand'      , $params->{strand},
+        );
+    }
+    else {
+        die( 'Unknown gibson target type: ' . $params->{target_type} );
+    }
+
+    # put command name in front of other parameters
+    unshift @gibson_cmd_parameters, (
+        'design-create',
+        $gibson_cmd,
+    );
 
     if ( $params->{repeat_mask_classes} ) {
-        for my $class ( @{ $params->{repeat_mask_classes} } ){
-            push @gibson_cmd_parameters, '--repeat-mask-class ' . $class;
+        if ( ref( $params->{repeat_mask_classes} ) eq 'ARRAY' ) {
+            for my $class ( @{ $params->{repeat_mask_classes} } ) {
+                push @gibson_cmd_parameters, '--repeat-mask-class ' . $class;
+            }
+        }
+        else {
+            push @gibson_cmd_parameters, '--repeat-mask-class ' . $params->{repeat_mask_classes};
         }
     }
 

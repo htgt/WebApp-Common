@@ -1,0 +1,23 @@
+<fieldset>
+  <div class="form-horizontal">
+
+    <div class="control-group">
+      <label class="control-label" for="chromosome">Chromosome</label>
+      <div class="controls">
+        <input type="text" id="chromosome" name="chromosome" placeholder="chromosome name" value="[% chromosome %]" /><br/>
+          <span class="help-block">Must be valid chromosome name</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="strand">Strand</label>
+      <div class="controls">
+        <input type="text" id="strand" name="strand" placeholder="strand" value="[% strand %]" /><br/>
+          <span class="help-block">Must be 1 or -1</span>
+      </div>
+    </div>
+
+    <input type="hidden" id="target_type" name="target_type" value="location" />
+
+  </div>
+</fieldset>
