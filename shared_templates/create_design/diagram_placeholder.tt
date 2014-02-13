@@ -15,13 +15,13 @@
     <div class="control-group">
       <label class="control-label">Gibson Type</label>
       <div class="controls">
-        <label class="radio">
-          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional" checked>
-          Conditional Ready
-        </label>
-        <label class="radio">
-          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion">
+        <label class="radio inline">
+          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion" checked>
           Deletion
+        </label>
+        <label class="radio inline">
+          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional">
+          Conditional
         </label>
       </div>
     </div>
