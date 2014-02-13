@@ -1,0 +1,30 @@
+<fieldset>
+  <legend>Oligo Parameters</legend>
+
+  <div id="diagram" style="position: relative;">
+    <div id="holder" style="padding-top:20px; padding-botton:20px;">
+    </div>
+  </div>
+
+</fieldset>
+
+<fieldset>
+  <legend>Design Parameters</legend>
+
+  <div class="form-horizontal">
+    <div class="control-group">
+      <label class="control-label">Gibson Type</label>
+      <div class="controls">
+        <label class="radio">
+          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional" checked>
+          Conditional Ready
+        </label>
+        <label class="radio">
+          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion">
+          Deletion
+        </label>
+      </div>
+    </div>
+  </div>
+
+</fieldset>
