@@ -8,29 +8,118 @@
         <input type="text" id="gene_id" name="gene_id" placeholder="Target Gene ID" value="[% gene_id %]" /><br/>
         <span class="help-block">[% gene_id_label %]</span>
       </div>
-    </div>
-
-    <div class="control-group">
-      <label class="control-label" for="alt_designs">Alternate Designs</label>
-      <div class="controls">
-        <input type="checkbox" id="alt_designs" name="alt_designs" value="1">
-        <span class="help-block">If checked mulitple designs may be created, each with a different set of valid oligos</span>
-      </div>
     <input type="hidden" id="ensembl_gene_id" name="ensembl_gene_id" value="[% ensembl_gene_id %]" />
     </div>
 
-    <div class="control-group">
-      <label class="control-label">Restrict Repeat Masking</label>
-      <div class="controls">
-        <label class="checkbox inline">
-          <input type="checkbox" name="repeat_mask_classes" value="trf"> trf
-        </label>
-        <label class="checkbox inline">
-          <input type="checkbox" name="repeat_mask_classes" value="dust"> dust
-        </label>
-        <span class="help-block">By default all repeat regions will be masked, ticking a checkbox makes sure only those classes of repeats are masked.</span>
+
+  <div class="accordion" id="accordian">
+
+    <div class="accordion-group">
+
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          <i class="icon-wrench"></i> Advanced Options
+        </a>
+      </div>
+
+      <div id="collapseOne" class="accordion-body collapse">
+        <div class="accordion-inner">
+
+          <div class="control-group">
+            <label class="control-label" for="alt_designs">Alternate Designs</label>
+            <div class="controls">
+              <input type="checkbox" id="alt_designs" name="alt_designs" value="1">
+              <span class="help-block">If checked mulitple designs may be created, each with a different set of valid oligos</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Restrict Repeat Masking</label>
+            <div class="controls">
+              <label class="checkbox inline">
+                <input type="checkbox" name="repeat_mask_classes" value="trf"> trf
+              </label>
+              <label class="checkbox inline">
+                <input type="checkbox" name="repeat_mask_classes" value="dust"> dust
+              </label>
+              <span class="help-block">By default all repeat regions will be masked, ticking a checkbox makes sure only those classes of repeats are masked.</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Primer Melting Temp</label>
+            <div class="controls">
+              <div class="input-prepend input-append">
+                <span class="add-on">Minimum</span>
+                <input class="span1" id="primer_min_tm" name="primer_min_tm" type="text" value="[% p3_conf.primer_min_tm %]">
+                <span class="add-on">&deg;C</span>
+              </div>
+              <div class="input-prepend input-append">
+                <span class="add-on">Optimum</span>
+                <input class="span1" id="primer_opt_tm" name="primer_opt_tm" type="text" value="[% p3_conf.primer_opt_tm %]">
+                <span class="add-on">&deg;C</span>
+              </div>
+              <div class="input-prepend input-append">
+                <span class="add-on">Maximum</span>
+                <input class="span1" id="primer_max_tm" name="primer_max_tm" type="text" value="[% p3_conf.primer_max_tm %]">
+                <span class="add-on">&deg;C</span>
+              </div>
+            </div>
+            <div class="controls">
+              <span class="help-block">The desired melting temperature of the primers, minimum, optimum and maximum values. ( in Celcius )</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Primer GC Content</label>
+            <div class="controls">
+              <div class="input-prepend input-append">
+                <span class="add-on">Minimum</span>
+                <input class="span1" id="primer_min_gc" name="primer_min_gc" type="text" value="[% p3_conf.primer_min_gc %]">
+                <span class="add-on">%</span>
+              </div>
+              <div class="input-prepend input-append">
+                <span class="add-on">Optimum</span>
+                <input class="span1" id="primer_opt_gc_percent" name="primer_opt_gc_percent" type="text" value="[% p3_conf.primer_opt_gc_percent %]">
+                <span class="add-on">%</span>
+              </div>
+              <div class="input-prepend input-append">
+                <span class="add-on">Maximum</span>
+                <input class="span1" id="primer_max_gc" name="primer_max_gc" type="text" value="[% p3_conf.primer_max_gc %]">
+                <span class="add-on">%</span>
+              </div>
+            </div>
+            <div class="controls">
+              <span class="help-block">The desired GC percentage content of the primers, minimum, optimum and maximum values.</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Primer Size</label>
+            <div class="controls">
+              <div class="input-prepend">
+                <span class="add-on">Minimum</span>
+                <input class="span1" id="primer_min_size" name="primer_min_size" type="text" value="[% p3_conf.primer_min_size %]">
+              </div>
+              <div class="input-prepend">
+                <span class="add-on">Optimum</span>
+                <input class="span1" id="primer_opt_size" name="primer_opt_size" type="text" value="[% p3_conf.primer_opt_size %]">
+              </div>
+              <div class="input-prepend">
+                <span class="add-on">Maximum</span>
+                <input class="span1" id="primer_max_size" name="primer_max_size" type="text" value="[% p3_conf.primer_max_size %]">
+              </div>
+            </div>
+            <div class="controls">
+              <span class="help-block">The desired size of the primers, minimum, optimum and maximum values.</span>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
+
+  </div>
 
     <div class="control-group">
       <div class="controls">
@@ -38,4 +127,5 @@
       </div>
     </div>
   </div>
+
 </fieldset>
