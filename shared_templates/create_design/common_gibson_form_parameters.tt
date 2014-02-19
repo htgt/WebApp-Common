@@ -51,17 +51,17 @@
             <div class="controls">
               <div class="input-prepend input-append">
                 <span class="add-on">Minimum</span>
-                <input class="span1" id="primer_min_tm" name="primer_min_tm" type="text" value="[% p3_conf.primer_min_tm %]">
+                <input class="span1" id="primer_min_tm" name="primer_min_tm" type="text" value="[% primer_min_tm %]">
                 <span class="add-on">&deg;C</span>
               </div>
               <div class="input-prepend input-append">
                 <span class="add-on">Optimum</span>
-                <input class="span1" id="primer_opt_tm" name="primer_opt_tm" type="text" value="[% p3_conf.primer_opt_tm %]">
+                <input class="span1" id="primer_opt_tm" name="primer_opt_tm" type="text" value="[% primer_opt_tm %]">
                 <span class="add-on">&deg;C</span>
               </div>
               <div class="input-prepend input-append">
                 <span class="add-on">Maximum</span>
-                <input class="span1" id="primer_max_tm" name="primer_max_tm" type="text" value="[% p3_conf.primer_max_tm %]">
+                <input class="span1" id="primer_max_tm" name="primer_max_tm" type="text" value="[% primer_max_tm %]">
                 <span class="add-on">&deg;C</span>
               </div>
             </div>
@@ -75,17 +75,17 @@
             <div class="controls">
               <div class="input-prepend input-append">
                 <span class="add-on">Minimum</span>
-                <input class="span1" id="primer_min_gc" name="primer_min_gc" type="text" value="[% p3_conf.primer_min_gc %]">
+                <input class="span1" id="primer_min_gc" name="primer_min_gc" type="text" value="[% primer_min_gc %]">
                 <span class="add-on">%</span>
               </div>
               <div class="input-prepend input-append">
                 <span class="add-on">Optimum</span>
-                <input class="span1" id="primer_opt_gc_percent" name="primer_opt_gc_percent" type="text" value="[% p3_conf.primer_opt_gc_percent %]">
+                <input class="span1" id="primer_opt_gc_percent" name="primer_opt_gc_percent" type="text" value="[% primer_opt_gc_percent %]">
                 <span class="add-on">%</span>
               </div>
               <div class="input-prepend input-append">
                 <span class="add-on">Maximum</span>
-                <input class="span1" id="primer_max_gc" name="primer_max_gc" type="text" value="[% p3_conf.primer_max_gc %]">
+                <input class="span1" id="primer_max_gc" name="primer_max_gc" type="text" value="[% primer_max_gc %]">
                 <span class="add-on">%</span>
               </div>
             </div>
@@ -99,15 +99,15 @@
             <div class="controls">
               <div class="input-prepend">
                 <span class="add-on">Minimum</span>
-                <input class="span1" id="primer_min_size" name="primer_min_size" type="text" value="[% p3_conf.primer_min_size %]">
+                <input class="span1" id="primer_min_size" name="primer_min_size" type="text" value="[% primer_min_size %]">
               </div>
               <div class="input-prepend">
                 <span class="add-on">Optimum</span>
-                <input class="span1" id="primer_opt_size" name="primer_opt_size" type="text" value="[% p3_conf.primer_opt_size %]">
+                <input class="span1" id="primer_opt_size" name="primer_opt_size" type="text" value="[% primer_opt_size %]">
               </div>
               <div class="input-prepend">
                 <span class="add-on">Maximum</span>
-                <input class="span1" id="primer_max_size" name="primer_max_size" type="text" value="[% p3_conf.primer_max_size %]">
+                <input class="span1" id="primer_max_size" name="primer_max_size" type="text" value="[% primer_max_size %]">
               </div>
             </div>
             <div class="controls">
@@ -141,17 +141,17 @@
 
 function resetPrimer3Params() {
 
-  $('#primer_min_size').val('[% p3_conf.primer_min_size %]');
-  $('#primer_opt_size').val('[% p3_conf.primer_opt_size %]');
-  $('#primer_max_size').val('[% p3_conf.primer_max_size %]');
+  $('#primer_min_size').val('[% default_p3_conf.primer_min_size %]');
+  $('#primer_opt_size').val('[% default_p3_conf.primer_opt_size %]');
+  $('#primer_max_size').val('[% default_p3_conf.primer_max_size %]');
 
-  $('#primer_min_tm').val('[% p3_conf.primer_min_tm %]');
-  $('#primer_opt_tm').val('[% p3_conf.primer_opt_tm %]');
-  $('#primer_max_tm').val('[% p3_conf.primer_max_tm %]');
+  $('#primer_min_tm').val('[% default_p3_conf.primer_min_tm %]');
+  $('#primer_opt_tm').val('[% default_p3_conf.primer_opt_tm %]');
+  $('#primer_max_tm').val('[% default_p3_conf.primer_max_tm %]');
 
-  $('#primer_min_gc').val('[% p3_conf.primer_min_gc %]');
-  $('#primer_opt_gc_percent').val('[% p3_conf.primer_opt_gc_percent %]');
-  $('#primer_max_gc').val('[% p3_conf.primer_max_gc %]');
+  $('#primer_min_gc').val('[% default_p3_conf.primer_min_gc %]');
+  $('#primer_opt_gc_percent').val('[% default_p3_conf.primer_opt_gc_percent %]');
+  $('#primer_max_gc').val('[% default_p3_conf.primer_max_gc %]');
 
 }
 
