@@ -8,6 +8,8 @@ use Data::UUID;
 use JSON;
 use Hash::MoreUtils qw( slice_def );
 use WebAppCommon::Util::FarmJobRunner;
+use DesignCreate::Constants qw( $PRIMER3_CONFIG_FILE );
+use YAML::Any qw( LoadFile );
 
 requires qw(
 species
@@ -153,6 +155,19 @@ sub c_target_params_from_exons {
     return \%target_data;
 }
 
+=head2 c_primer3_default_config
+
+The default primer3 parameters for:
+melting temp
+GC percentage
+primer size
+
+=cut
+sub c_primer3_default_config {
+    my ( $self ) = @_;
+    return LoadFile( $PRIMER3_CONFIG_FILE );
+}
+
 =head2 exon_ranks
 
 Get rank of exons on canonical transcript.
@@ -194,9 +209,19 @@ sub pspec_common_gibson_params {
         '5R_offset'    => { validate => 'integer', optional => 1 },
         '3F_length'    => { validate => 'integer', optional => 1 },
         '3F_offset'    => { validate => 'integer', optional => 1 },
-        # other options
+        # advanced options
         repeat_mask_classes => { validate => 'repeat_mask_class', optional => 1 },
         alt_designs         => { validate => 'boolean', optional => 1 },
+        # primer3 config
+        primer_min_size       => { validate => 'integer' },
+        primer_max_size       => { validate => 'integer' },
+        primer_opt_size       => { validate => 'integer' },
+        primer_opt_gc_percent => { validate => 'integer' },
+        primer_max_gc         => { validate => 'integer' },
+        primer_min_gc         => { validate => 'integer' },
+        primer_opt_tm         => { validate => 'integer' },
+        primer_max_tm         => { validate => 'integer' },
+        primer_min_tm         => { validate => 'integer' },
         #submit
         create_design => { optional => 0 }
     }
@@ -346,6 +371,16 @@ sub c_generate_gibson_design_cmd {
         '--region-offset-5f',    $params->{'5F_offset'},
         '--region-length-3r',    $params->{'3R_length'},
         '--region-offset-3r',    $params->{'3R_offset'},
+        #primer3 config params
+        '--primer-min-size',       $params->{primer_min_size},
+        '--primer-max-size',       $params->{primer_max_size},
+        '--primer-opt-size',       $params->{primer_opt_size},
+        '--primer-opt-gc-percent', $params->{primer_opt_gc_percent},
+        '--primer-max-gc',         $params->{primer_max_gc},
+        '--primer-min-gc',         $params->{primer_min_gc},
+        '--primer-opt-tm',         $params->{primer_opt_tm},
+        '--primer-max-tm',         $params->{primer_max_tm},
+        '--primer-min-tm',         $params->{primer_min_tm},
         '--persist',
     );
 
