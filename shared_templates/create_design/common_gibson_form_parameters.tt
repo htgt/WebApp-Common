@@ -115,6 +115,13 @@
             </div>
           </div>
 
+          <div class="control-group">
+            <div class="controls">
+              <button class="btn" id="reset_params" type="button" onclick="resetPrimer3Params();">
+                <i class="icon-refresh"></i> Reset Primer3 Parameters</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -129,3 +136,23 @@
   </div>
 
 </fieldset>
+
+<script>
+
+function resetPrimer3Params() {
+
+  $('#primer_min_size').val('[% p3_conf.primer_min_size %]');
+  $('#primer_opt_size').val('[% p3_conf.primer_opt_size %]');
+  $('#primer_max_size').val('[% p3_conf.primer_max_size %]');
+
+  $('#primer_min_tm').val('[% p3_conf.primer_min_tm %]');
+  $('#primer_opt_tm').val('[% p3_conf.primer_opt_tm %]');
+  $('#primer_max_tm').val('[% p3_conf.primer_max_tm %]');
+
+  $('#primer_min_gc').val('[% p3_conf.primer_min_gc %]');
+  $('#primer_opt_gc_percent').val('[% p3_conf.primer_opt_gc_percent %]');
+  $('#primer_max_gc').val('[% p3_conf.primer_max_gc %]');
+
+}
+
+</script>
