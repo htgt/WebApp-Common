@@ -115,7 +115,6 @@ Given target exons return target coordinates
 =cut
 sub c_target_params_from_exons {
     my ( $self ) = @_;
-use Smart::Comments;
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_target_params_from_exons );
 
