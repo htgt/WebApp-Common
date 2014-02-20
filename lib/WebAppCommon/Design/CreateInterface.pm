@@ -138,18 +138,18 @@ sub c_target_params_from_exons {
     # if there is no three prime exon then just specify target start and end
     # as the start and end of the five prime exon
     unless ( $three_prime_exon ) {
-        $target_data{start} = $five_prime_exon->seq_region_start;
-        $target_data{end} = $five_prime_exon->seq_region_end;
+        $target_data{target_start} = $five_prime_exon->seq_region_start;
+        $target_data{target_end} = $five_prime_exon->seq_region_end;
         return \%target_data;
     }
 
     if ( $target_data{strand} == 1 ) {
-        $target_data{start} = $five_prime_exon->seq_region_start;
-        $target_data{end}   = $three_prime_exon->seq_region_end;
+        $target_data{target_start} = $five_prime_exon->seq_region_start;
+        $target_data{target_end}   = $three_prime_exon->seq_region_end;
     }
     else {
-        $target_data{start} = $three_prime_exon->seq_region_start;
-        $target_data{end}   = $five_prime_exon->seq_region_end;
+        $target_data{target_start} = $three_prime_exon->seq_region_start;
+        $target_data{target_end}   = $five_prime_exon->seq_region_end;
     }
 
     return \%target_data;
@@ -250,16 +250,7 @@ sub c_parse_and_validate_exon_target_gibson_params {
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_exon_target_gibson_params );
 
-    my $uuid = Data::UUID->new->create_str;
-    $validated_params->{uuid}        = $uuid;
-    $validated_params->{output_dir}  = $self->base_design_dir->subdir( $uuid );
-    $validated_params->{species}     = $self->species;
-    $validated_params->{build_id}    = $self->build_id;
-    $validated_params->{assembly_id} = $self->assembly_id;
-    $validated_params->{user}        = $self->user;
-
-    #create dir
-    $validated_params->{output_dir}->mkpath();
+    $self->common_gibson_param_validation( $validated_params );
 
     $self->catalyst->stash( {
         gene_id => $validated_params->{gene_id},
@@ -295,16 +286,7 @@ sub c_parse_and_validate_custom_target_gibson_params {
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_custom_target_gibson_params );
 
-    my $uuid = Data::UUID->new->create_str;
-    $validated_params->{uuid}        = $uuid;
-    $validated_params->{output_dir}  = $self->base_design_dir->subdir( $uuid );
-    $validated_params->{species}     = $self->species;
-    $validated_params->{build_id}    = $self->build_id;
-    $validated_params->{assembly_id} = $self->assembly_id;
-    $validated_params->{user}        = $self->user;
-
-    #create dir
-    $validated_params->{output_dir}->mkpath();
+    $self->common_gibson_param_validation( $validated_params );
 
     $self->catalyst->stash( {
         gene_id      => $validated_params->{gene_id},
@@ -316,6 +298,71 @@ sub c_parse_and_validate_custom_target_gibson_params {
     $self->log->info( 'Validated custom target gibson design parameters' );
 
     return $validated_params;
+}
+
+=head2 common_gibson_param_validation
+
+Common code for gibson design parameter validation
+and setup of gibson design.
+
+=cut
+sub common_gibson_param_validation {
+    my ( $self, $vp  ) = @_;
+
+    # additional Primer3 parameter validation
+    my $errors;
+    # primer size can not be greater than 35 bases
+    for my $name ( qw( primer_min_size  primer_opt_size  primer_max_size ) ) {
+        if ( $vp->{$name} > 35 ) {
+            $errors .= "$name can not be greater than 35\n";
+        }
+    }
+
+    # gc content is a percentage, so should be between 0 and 100
+    for my $name ( qw( primer_min_gc  primer_opt_gc_percent  primer_max_gc ) ) {
+        if ( $vp->{$name} > 100 || $vp->{$name} < 0 ) {
+            $errors .= "$name is a percentage gc content, must be between 0 and 100\n";
+        }
+    }
+
+    # standardise value to make following easier to code, delete afterwards
+    $vp->{primer_opt_gc} = $vp->{primer_opt_gc_percent};
+
+    # for the tm, size and gc values following should always be true:
+    # min < opt < max
+    for my $type ( qw( gc size tm ) ) {
+        my $min = $vp->{'primer_min_' . $type};
+        my $opt = $vp->{'primer_opt_' . $type};
+        my $max = $vp->{'primer_max_' . $type};
+        if ( $min > $opt ) {
+            $errors .= "Primer minimum $type value ($min) can not be greater than optimum $type value ($opt)\n";
+        }
+
+        if ( $min > $max ) {
+            $errors .= "Primer minumum $type value ($min) can not be greater than maximum $type value ($max)\n";
+        }
+
+        if ( $opt > $max ) {
+            $errors .= "Primer optimum $type value ($opt) can not be greater than maximum $type value ($max)\n";
+        }
+    }
+    delete $vp->{primer_opt_gc};
+
+    if ( $errors ) {
+        $self->throw_validation_error( $errors );
+    }
+
+    my $uuid = Data::UUID->new->create_str;
+    $vp->{uuid}        = $uuid;
+    $vp->{output_dir}  = $self->base_design_dir->subdir( $uuid );
+    $vp->{species}     = $self->species;
+    $vp->{build_id}    = $self->build_id;
+    $vp->{assembly_id} = $self->assembly_id;
+    $vp->{user}        = $self->user;
+    #create dir
+    $vp->{output_dir}->mkpath();
+
+    return $vp;
 }
 
 =head2 c_initiate_design_attempt
@@ -483,6 +530,18 @@ sub c_run_design_create_cmd {
     $self->log->info( "Successfully submitted gibson design create job $job_id with run id $params->{uuid}" );
 
     return $job_id;
+}
+
+=head2 throw_validation_error
+
+Method to throw validation error, should be overridden in
+the consuming object.
+
+=cut
+sub throw_validation_error {
+    my ( $self, $errors  ) = @_;
+
+    die( $errors );
 }
 
 1;
