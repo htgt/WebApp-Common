@@ -16,11 +16,11 @@
       <label class="control-label">Gibson Type</label>
       <div class="controls">
         <label class="radio inline">
-          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion" checked>
+          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion" [% IF gibson_type == 'deletion' %] checked [% END %]>
           Deletion
         </label>
         <label class="radio inline">
-          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional">
+          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional" [% IF gibson_type == 'conditional' %] checked [% END %]>
           Conditional
         </label>
       </div>
