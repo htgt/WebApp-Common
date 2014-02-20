@@ -8,6 +8,8 @@ use Data::UUID;
 use JSON;
 use Hash::MoreUtils qw( slice_def );
 use WebAppCommon::Util::FarmJobRunner;
+use DesignCreate::Constants qw( $PRIMER3_CONFIG_FILE );
+use YAML::Any qw( LoadFile );
 
 requires qw(
 species
@@ -134,21 +136,34 @@ use Smart::Comments;
     # if there is no three prime exon then just specify target start and end
     # as the start and end of the five prime exon
     unless ( $three_prime_exon ) {
-        $target_data{start} = $five_prime_exon->seq_region_start;
-        $target_data{end} = $five_prime_exon->seq_region_end;
+        $target_data{target_start} = $five_prime_exon->seq_region_start;
+        $target_data{target_end} = $five_prime_exon->seq_region_end;
         return \%target_data;
     }
 
     if ( $target_data{strand} == 1 ) {
-        $target_data{start} = $five_prime_exon->seq_region_start;
-        $target_data{end}   = $three_prime_exon->seq_region_end;
+        $target_data{target_start} = $five_prime_exon->seq_region_start;
+        $target_data{target_end}   = $three_prime_exon->seq_region_end;
     }
     else {
-        $target_data{start} = $three_prime_exon->seq_region_start;
-        $target_data{end}   = $five_prime_exon->seq_region_end;
+        $target_data{target_start} = $three_prime_exon->seq_region_start;
+        $target_data{target_end}   = $five_prime_exon->seq_region_end;
     }
 
     return \%target_data;
+}
+
+=head2 c_primer3_default_config
+
+The default primer3 parameters for:
+melting temp
+GC percentage
+primer size
+
+=cut
+sub c_primer3_default_config {
+    my ( $self ) = @_;
+    return LoadFile( $PRIMER3_CONFIG_FILE );
 }
 
 =head2 exon_ranks
@@ -192,9 +207,19 @@ sub pspec_common_gibson_params {
         '5R_offset'    => { validate => 'integer', optional => 1 },
         '3F_length'    => { validate => 'integer', optional => 1 },
         '3F_offset'    => { validate => 'integer', optional => 1 },
-        # other options
+        # advanced options
         repeat_mask_classes => { validate => 'repeat_mask_class', optional => 1 },
         alt_designs         => { validate => 'boolean', optional => 1 },
+        # primer3 config
+        primer_min_size       => { validate => 'integer' },
+        primer_max_size       => { validate => 'integer' },
+        primer_opt_size       => { validate => 'integer' },
+        primer_opt_gc_percent => { validate => 'integer' },
+        primer_max_gc         => { validate => 'integer' },
+        primer_min_gc         => { validate => 'integer' },
+        primer_opt_tm         => { validate => 'integer' },
+        primer_max_tm         => { validate => 'integer' },
+        primer_min_tm         => { validate => 'integer' },
         #submit
         create_design => { optional => 0 }
     }
@@ -224,16 +249,7 @@ sub c_parse_and_validate_exon_target_gibson_params {
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_exon_target_gibson_params );
 
-    my $uuid = Data::UUID->new->create_str;
-    $validated_params->{uuid}        = $uuid;
-    $validated_params->{output_dir}  = $self->base_design_dir->subdir( $uuid );
-    $validated_params->{species}     = $self->species;
-    $validated_params->{build_id}    = $self->build_id;
-    $validated_params->{assembly_id} = $self->assembly_id;
-    $validated_params->{user}        = $self->user;
-
-    #create dir
-    $validated_params->{output_dir}->mkpath();
+    $self->common_gibson_param_validation( $validated_params );
 
     $self->catalyst->stash( {
         gene_id => $validated_params->{gene_id},
@@ -270,16 +286,7 @@ sub c_parse_and_validate_custom_target_gibson_params {
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_custom_target_gibson_params );
 
-    my $uuid = Data::UUID->new->create_str;
-    $validated_params->{uuid}        = $uuid;
-    $validated_params->{output_dir}  = $self->base_design_dir->subdir( $uuid );
-    $validated_params->{species}     = $self->species;
-    $validated_params->{build_id}    = $self->build_id;
-    $validated_params->{assembly_id} = $self->assembly_id;
-    $validated_params->{user}        = $self->user;
-
-    #create dir
-    $validated_params->{output_dir}->mkpath();
+    $self->common_gibson_param_validation( $validated_params );
 
     $self->catalyst->stash( {
         gene_id      => $validated_params->{gene_id},
@@ -291,6 +298,71 @@ sub c_parse_and_validate_custom_target_gibson_params {
     $self->log->info( 'Validated custom target gibson design parameters' );
 
     return $validated_params;
+}
+
+=head2 common_gibson_param_validation
+
+Common code for gibson design parameter validation
+and setup of gibson design.
+
+=cut
+sub common_gibson_param_validation {
+    my ( $self, $vp  ) = @_;
+
+    # additional Primer3 parameter validation
+    my $errors;
+    # primer size can not be greater than 35 bases
+    for my $name ( qw( primer_min_size  primer_opt_size  primer_max_size ) ) {
+        if ( $vp->{$name} > 35 ) {
+            $errors .= "$name can not be greater than 35\n";
+        }
+    }
+
+    # gc content is a percentage, so should be between 0 and 100
+    for my $name ( qw( primer_min_gc  primer_opt_gc_percent  primer_max_gc ) ) {
+        if ( $vp->{$name} > 100 || $vp->{$name} < 0 ) {
+            $errors .= "$name is a percentage gc content, must be between 0 and 100\n";
+        }
+    }
+
+    # standardise value to make following easier to code, delete afterwards
+    $vp->{primer_opt_gc} = $vp->{primer_opt_gc_percent};
+
+    # for the tm, size and gc values following should always be true:
+    # min < opt < max
+    for my $type ( qw( gc size tm ) ) {
+        my $min = $vp->{'primer_min_' . $type};
+        my $opt = $vp->{'primer_opt_' . $type};
+        my $max = $vp->{'primer_max_' . $type};
+        if ( $min > $opt ) {
+            $errors .= "Primer minimum $type value ($min) can not be greater than optimum $type value ($opt)\n";
+        }
+
+        if ( $min > $max ) {
+            $errors .= "Primer minumum $type value ($min) can not be greater than maximum $type value ($max)\n";
+        }
+
+        if ( $opt > $max ) {
+            $errors .= "Primer optimum $type value ($opt) can not be greater than maximum $type value ($max)\n";
+        }
+    }
+    delete $vp->{primer_opt_gc};
+
+    if ( $errors ) {
+        $self->throw_validation_error( $errors );
+    }
+
+    my $uuid = Data::UUID->new->create_str;
+    $vp->{uuid}        = $uuid;
+    $vp->{output_dir}  = $self->base_design_dir->subdir( $uuid );
+    $vp->{species}     = $self->species;
+    $vp->{build_id}    = $self->build_id;
+    $vp->{assembly_id} = $self->assembly_id;
+    $vp->{user}        = $self->user;
+    #create dir
+    $vp->{output_dir}->mkpath();
+
+    return $vp;
 }
 
 =head2 c_initiate_design_attempt
@@ -346,6 +418,16 @@ sub c_generate_gibson_design_cmd {
         '--region-offset-5f',    $params->{'5F_offset'},
         '--region-length-3r',    $params->{'3R_length'},
         '--region-offset-3r',    $params->{'3R_offset'},
+        #primer3 config params
+        '--primer-min-size',       $params->{primer_min_size},
+        '--primer-max-size',       $params->{primer_max_size},
+        '--primer-opt-size',       $params->{primer_opt_size},
+        '--primer-opt-gc-percent', $params->{primer_opt_gc_percent},
+        '--primer-max-gc',         $params->{primer_max_gc},
+        '--primer-min-gc',         $params->{primer_min_gc},
+        '--primer-opt-tm',         $params->{primer_opt_tm},
+        '--primer-max-tm',         $params->{primer_max_tm},
+        '--primer-min-tm',         $params->{primer_min_tm},
         '--persist',
     );
 
@@ -453,6 +535,18 @@ sub c_run_design_create_cmd {
     $self->log->info( "Successfully submitted gibson design create job $job_id with run id $params->{uuid}" );
 
     return $job_id;
+}
+
+=head2 throw_validation_error
+
+Method to throw validation error, should be overridden in
+the consuming object.
+
+=cut
+sub throw_validation_error {
+    my ( $self, $errors  ) = @_;
+
+    die( $errors );
 }
 
 1;

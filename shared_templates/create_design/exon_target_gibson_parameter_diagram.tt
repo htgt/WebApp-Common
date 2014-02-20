@@ -64,7 +64,14 @@ $(document).ready(function() {
   builder = new DiagramBuilder("holder", 1000, 150);
   builder._attributes.spacing = 150;
 
-  createGibsonDeletionDiagram(builder);
+  var gibson_type_field = $("input[name='gibson_type']:checked");
+  var gibson_type = gibson_type_field.val();
+  if (gibson_type =='conditional') {
+    createGibsonDiagram(builder);
+  }
+  else {
+    createGibsonDeletionDiagram(builder);
+  }
 
   $("input[name='gibson_type']:radio").change(function(){
       var gibson_type = $(this).val();
