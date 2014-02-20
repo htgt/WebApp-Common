@@ -26,6 +26,7 @@ requires:
   Data::FormValidator: 0
   Data::UUID: 0
   DateTime::Format::ISO8601: 0
+  DesignCreate::Constants: 0
   File::Which: 0
   Hash::MoreUtils: 0
   IPC::Run: 0
@@ -46,7 +47,8 @@ requires:
   Text::CSV: 0
   Try::Tiny: 0
   URI: 0
+  YAML::Any: 0
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.007
+version: 0.011

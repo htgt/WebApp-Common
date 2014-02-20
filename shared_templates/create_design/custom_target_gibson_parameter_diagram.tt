@@ -1,13 +1,17 @@
+<link href="[% c.uri_for( '/css/jquery.qtip.min.css' ) %]" rel="stylesheet">
+<script type="text/javascript" src="[% c.uri_for( '/js/raphael-min.js' ) %]"></script>
+<script type="text/javascript" src="[% c.uri_for( '/js/jquery.qtip.min.js' ) %]"></script>
+<script type="text/javascript" src="[% c.uri_for( '/js/diagram.builder.js' ) %]"></script>
 
 <script type="text/javascript">
 
-function createGibsonDiagram(builder) {
+function createCustomTargetGibsonDiagram(builder) {
   var fiveF = builder.addBox("5F");
 
   var fiveR = builder.addBox("5R");
   var EF = builder.addBoxWithoutSpacing("EF");
 
-  var critExon = builder.addCriticalExon();
+  var target = builder.addTarget();
 
   var ER = builder.addBox("ER");
   var threeF = builder.addBoxWithoutSpacing("3F");
@@ -17,8 +21,8 @@ function createGibsonDiagram(builder) {
   //add all the offset size fields to the fields we want them on
   builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "5F_offset", 1000);
   builder.addLabel(threeF, threeR, "3R offset", "end to start", "3R_offset", 1000);
-  builder.addLabel(EF, critExon, "5R-EF offset", "end to start", "5R_EF_offset", 200);
-  builder.addLabel(critExon, ER, "ER-3F offset", "end to start", "ER_3F_offset", 100);
+  builder.addLabel(EF, target, "5R-EF offset", "end to start", "5R_EF_offset", 200);
+  builder.addLabel(target, ER, "ER-3F offset", "end to start", "ER_3F_offset", 100);
 
   //add all the block size fields to the fields we want them on
   builder.addField(fiveF, "5F_length", 500, "5F block size");
@@ -26,14 +30,18 @@ function createGibsonDiagram(builder) {
   builder.addField(ER, "ER_3F_length", 200, "ER-3F block size", "top block");
   builder.addField(threeR, "3R_length", 500, "3R block size");
 
+  //add target start and end
+  builder._attributes.textWidth = 80;
+  builder.addField(target, "target_start", '[% target_start %]', "Start", "top left");
+  builder.addField(target, "target_end", '[% target_end %]', "End", "top right");
 }
 
-function createGibsonDeletionDiagram(builder) {
+function createCustomTargetGibsonDeletionDiagram(builder) {
   var fiveF = builder.addBox("5F");
 
   var fiveR = builder.addBox("5R");
 
-  var critExon = builder.addCriticalExon();
+  var target = builder.addTarget();
 
   var threeF = builder.addBox("3F");
 
@@ -42,8 +50,8 @@ function createGibsonDeletionDiagram(builder) {
   //add all the offset size fields to the fields we want them on
   builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "5F_offset", 1000);
   builder.addLabel(threeF, threeR, "3R offset", "end to start", "3R_offset", 1000);
-  builder.addLabel(fiveR, critExon, "5R offset", "end to start", "5R_offset", 200);
-  builder.addLabel(critExon, threeF, "3F offset", "end to start", "3F_offset", 100);
+  builder.addLabel(fiveR, target, "5R offset", "end to start", "5R_offset", 1);
+  builder.addLabel(target, threeF, "3F offset", "end to start", "3F_offset", 1);
 
   //add all the block size fields to the fields we want them on
   builder.addField(fiveF, "5F_length", 500, "5F block size");
@@ -51,6 +59,10 @@ function createGibsonDeletionDiagram(builder) {
   builder.addField(threeF, "3F_length", 100, "3F block size");
   builder.addField(threeR, "3R_length", 500, "3R block size");
 
+  //add target start and end
+  builder._attributes.textWidth = 80;
+  builder.addField(target, "target_start", '[% target_start %]', "Start", "top left");
+  builder.addField(target, "target_end", '[% target_end %]', "End", "top right");
 }
 
 var builder;
@@ -60,7 +72,14 @@ $(document).ready(function() {
   builder = new DiagramBuilder("holder", 1000, 150);
   builder._attributes.spacing = 150;
 
-  createGibsonDiagram(builder);
+  var gibson_type_field = $("input[name='gibson_type']:checked");
+  var gibson_type = gibson_type_field.val();
+  if (gibson_type == 'conditional') {
+    createCustomTargetGibsonDiagram(builder);
+  }
+  else {
+    createCustomTargetGibsonDeletionDiagram(builder);
+  }
 
   $("input[name='gibson_type']:radio").change(function(){
       var gibson_type = $(this).val();
@@ -68,12 +87,12 @@ $(document).ready(function() {
       if (gibson_type=='deletion') {
         builder.clearDiagram();
         builder._attributes.spacing = 150;
-        createGibsonDeletionDiagram(builder);
+        createCustomTargetGibsonDeletionDiagram(builder);
       }
       else {
         builder.clearDiagram();
         builder._attributes.spacing = 150;
-        createGibsonDiagram(builder);
+        createCustomTargetGibsonDiagram(builder);
       }
   });
 });
