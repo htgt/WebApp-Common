@@ -1,3 +1,19 @@
+<script type="text/javascript">
+  function validate(){
+    count = 0; gend = 0;
+    len = document.testForm.elements.length;
+    for(i=0;i<len;i++){
+      elt = document.testForm.elements[i];
+      if(elt.type == 'checkbox' && elt.name=='exon_pick' && elt.checked){
+        count++;
+      }        
+    }
+    if(count >2 ){
+      alert("Please Select 2 Exons");
+    }
+  }
+</script>
+
 <div class="row">
   <form method"POST" id="crispr_picks" action="[% c.uri_for( design_create_url, { 'five_prime_exon' => five_prime_exon, 'three_prime_exon' => three_prime_exon, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id, 'exon_pick' => '1' } ) %]">
   <div class="span12" >
@@ -42,15 +58,14 @@
             <!-- Only show the "Get Crisprs" button if a get_crisprs_url has been provided to template -->
             [% IF get_crisprs_url %]
             <td>
-              [% IF !exon.crispr_count %]
-                <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
-                Get Crisprs</a>
-              [% ELSE %]
-                [% exon.crispr_count %] crisprs
-              [% END %]
+            [% IF !exon.crispr_count %]
+              <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
+              Get Crisprs</a>
+            [% ELSE %]
+              [% exon.crispr_count %] crisprs
+            [% END %]
             </td>
             [% END %]
-
           </tr>
         [% END %]
       </tbody>

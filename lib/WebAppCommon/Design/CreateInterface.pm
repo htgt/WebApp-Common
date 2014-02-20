@@ -115,7 +115,7 @@ Given target exons return target coordinates
 =cut
 sub c_target_params_from_exons {
     my ( $self ) = @_;
-
+use Smart::Comments;
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_target_params_from_exons );
 
@@ -246,6 +246,9 @@ and valid.
 sub c_parse_and_validate_exon_target_gibson_params {
     my ( $self ) = @_;
 
+print "inside c_parse_and_validate_exon_target_gibson_params\n";
+
+
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_exon_target_gibson_params );
 
@@ -372,6 +375,9 @@ create design attempt record with status pending
 =cut
 sub c_initiate_design_attempt {
     my ( $self, $params ) = @_;
+
+
+print "c_initiate_design_attempt\n";
 
     # create design attempt record
     my $design_parameters = encode_json(
@@ -508,6 +514,7 @@ sub c_generate_gibson_design_cmd {
 
     $self->log->debug('Design create command: ' . join(' ', @gibson_cmd_parameters ) );
 
+print @gibson_cmd_parameters;
     return \@gibson_cmd_parameters;
 }
 
