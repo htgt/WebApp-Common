@@ -1,3 +1,9 @@
+0.010     2014-02-20 07:32:20 Europe/London
+
+    Add multiple Primer3 options to gibson design interface.
+    Add validation checks for these options.
+    Make reloading page after error keep the user parameters.
+
 0.009     2014-02-13 10:33:34 Europe/London
 
     Minor interface changes to gibson UI, defaults to deletion type gibsons.
