@@ -2,9 +2,17 @@
   <div class="form-horizontal">
 
     <div class="control-group">
-      <label class="control-label" for="exon_id">Exon ID</label>
+      <label class="control-label" for="five_prime_exon">Five Prime Exon ID</label>
       <div class="controls">
-        <input type="text" id="exon_id" name="exon_id" placeholder="Ensembl Exon ID" value="[% exon_id %]" /><br/>
+        <input type="text" id="five_prime_exon" name="five_prime_exon" placeholder="Ensembl Exon ID" value="[% five_prime_exon %]" /><br/>
+        [% IF three_prime_exon %]
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="three_prime_exon">Three Prime Exon ID</label>
+      <div class="controls">
+        <input type="text" id="three_prime_exon" name="three_prime_exon" placeholder="Ensembl Exon ID" value="[% three_prime_exon %]" /><br/>
+        [% END %]
           <span class="help-block">Must be a Ensembl Exon ID</span>
       </div>
     </div>
