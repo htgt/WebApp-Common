@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.013     2014-02-21 08:40:27 Europe/London
+
+    Bugfixes - make all parameters on gibson design ui refresh properly.
+
 0.012     2014-02-20 17:34:25 Europe/London
 
 0.011     2014-02-20 16:37:52 Europe/London
