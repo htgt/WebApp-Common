@@ -195,20 +195,20 @@ sub pspec_common_gibson_params {
         target_type  => { validate => 'non_empty_string' },
         gibson_type  => { validate => 'non_empty_string' },
         # fields from the diagram
-        '5F_length'    => { validate => 'integer' },
-        '5F_offset'    => { validate => 'integer' },
-        '3R_length'    => { validate => 'integer' },
-        '3R_offset'    => { validate => 'integer' },
+        length_5F    => { validate => 'integer' },
+        offset_5F    => { validate => 'integer' },
+        length_3R    => { validate => 'integer' },
+        offset_3R    => { validate => 'integer' },
         # conditional
-        '5R_EF_length' => { validate => 'integer', optional => 1 },
-        '5R_EF_offset' => { validate => 'integer', optional => 1 },
-        'ER_3F_length' => { validate => 'integer', optional => 1 },
-        'ER_3F_offset' => { validate => 'integer', optional => 1 },
+        length_5R_EF => { validate => 'integer', optional => 1 },
+        offset_5R_EF => { validate => 'integer', optional => 1 },
+        length_ER_3F => { validate => 'integer', optional => 1 },
+        offset_ER_3F => { validate => 'integer', optional => 1 },
         # deletion
-        '5R_length'    => { validate => 'integer', optional => 1 },
-        '5R_offset'    => { validate => 'integer', optional => 1 },
-        '3F_length'    => { validate => 'integer', optional => 1 },
-        '3F_offset'    => { validate => 'integer', optional => 1 },
+        length_5R    => { validate => 'integer', optional => 1 },
+        offset_5R    => { validate => 'integer', optional => 1 },
+        length_3F    => { validate => 'integer', optional => 1 },
+        offset_3F    => { validate => 'integer', optional => 1 },
         # advanced options
         repeat_mask_classes => { validate => 'repeat_mask_class', optional => 1 },
         alt_designs         => { validate => 'boolean', optional => 1 },
@@ -414,10 +414,10 @@ sub c_generate_gibson_design_cmd {
         '--dir',         $params->{output_dir}->subdir('workdir')->stringify,
         '--da-id',       $params->{da_id},
         #user specified params
-        '--region-length-5f',    $params->{'5F_length'},
-        '--region-offset-5f',    $params->{'5F_offset'},
-        '--region-length-3r',    $params->{'3R_length'},
-        '--region-offset-3r',    $params->{'3R_offset'},
+        '--region-length-5f',    $params->{length_5F},
+        '--region-offset-5f',    $params->{offset_5F},
+        '--region-length-3r',    $params->{length_3R},
+        '--region-offset-3r',    $params->{offset_3R},
         #primer3 config params
         '--primer-min-size',       $params->{primer_min_size},
         '--primer-max-size',       $params->{primer_max_size},
@@ -436,19 +436,19 @@ sub c_generate_gibson_design_cmd {
     if ( $params->{gibson_type} eq 'conditional' ) {
         $gibson_cmd = 'gibson-design';
         push @gibson_cmd_parameters, (
-            '--region-length-5r-ef', $params->{'5R_EF_length'},
-            '--region-offset-5r-ef', $params->{'5R_EF_offset'},
-            '--region-length-er-3f', $params->{'ER_3F_length'},
-            '--region-offset-er-3f', $params->{'ER_3F_offset'},
+            '--region-length-5r-ef', $params->{length_5R_EF},
+            '--region-offset-5r-ef', $params->{offset_5R_EF},
+            '--region-length-er-3f', $params->{length_ER_3F},
+            '--region-offset-er-3f', $params->{offset_ER_3F},
         );
     }
     elsif ( $params->{gibson_type} eq 'deletion' ) {
         $gibson_cmd = 'gibson-deletion-design';
         push @gibson_cmd_parameters, (
-            '--region-length-5r', $params->{'5R_length'},
-            '--region-offset-5r', $params->{'5R_offset'},
-            '--region-length-3f', $params->{'3F_length'},
-            '--region-offset-3f', $params->{'3F_offset'},
+            '--region-length-5r', $params->{length_5R},
+            '--region-offset-5r', $params->{offset_5R},
+            '--region-length-3f', $params->{length_3F},
+            '--region-offset-3f', $params->{offset_3F},
         );
     }
     else {
