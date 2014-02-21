@@ -15,7 +15,7 @@
 </script>
 
 <div class="row">
-  <form method"POST" id="crispr_picks" action="[% c.uri_for( design_create_url, { 'five_prime_exon' => five_prime_exon, 'three_prime_exon' => three_prime_exon, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id, 'exon_pick' => '1' } ) %]">
+  <form method"POST" id="crispr_picks" action="[% c.uri_for( design_create_url ) %]">
   <div class="span12" >
     <table id="design-target-report" class="table table-bordered table-condensed" style="max-width: none">
 

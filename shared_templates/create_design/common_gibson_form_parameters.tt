@@ -28,7 +28,7 @@
           <div class="control-group">
             <label class="control-label" for="alt_designs">Alternate Designs</label>
             <div class="controls">
-              <input type="checkbox" id="alt_designs" name="alt_designs" value="1">
+              <input type="checkbox" id="alt_designs" name="alt_designs" value="1" [% IF alt_designs %]checked[% END %]>
               <span class="help-block">If checked mulitple designs may be created, each with a different set of valid oligos</span>
             </div>
           </div>
@@ -37,10 +37,10 @@
             <label class="control-label">Restrict Repeat Masking</label>
             <div class="controls">
               <label class="checkbox inline">
-                <input type="checkbox" name="repeat_mask_classes" value="trf"> trf
+                <input type="checkbox" name="repeat_mask_classes" value="trf" [% IF repeat_mask_classes && (matches = repeat_mask_classes.join('').match('trf')) %]checked[% END %]> trf
               </label>
               <label class="checkbox inline">
-                <input type="checkbox" name="repeat_mask_classes" value="dust"> dust
+                <input type="checkbox" name="repeat_mask_classes" value="dust" [% IF repeat_mask_classes && (matches = repeat_mask_classes.join('').match('dust')) %]checked[% END %]> dust
               </label>
               <span class="help-block">By default all repeat regions will be masked, ticking a checkbox makes sure only those classes of repeats are masked.</span>
             </div>
