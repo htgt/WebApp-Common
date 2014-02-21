@@ -230,7 +230,7 @@ sub pspec_parse_and_validate_exon_target_gibson_params {
     return {
         five_prime_exon         => { validate => 'ensembl_exon_id' },
         three_prime_exon        => { validate => 'ensembl_exon_id', optional => 1 },
-        ensembl_gene_id         => { validate => 'ensembl_gene_id' },
+        ensembl_gene_id         => { validate => 'ensembl_gene_id', optional => 1 },
         exon_check_flank_length => { validate => 'integer', optional => 1 },
         %{ $common_gibson_params },
     };
@@ -244,9 +244,6 @@ and valid.
 =cut
 sub c_parse_and_validate_exon_target_gibson_params {
     my ( $self ) = @_;
-
-print "inside c_parse_and_validate_exon_target_gibson_params\n";
-
 
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_exon_target_gibson_params );
@@ -374,9 +371,6 @@ create design attempt record with status pending
 =cut
 sub c_initiate_design_attempt {
     my ( $self, $params ) = @_;
-
-
-print "c_initiate_design_attempt\n";
 
     # create design attempt record
     my $design_parameters = encode_json(
@@ -513,7 +507,6 @@ sub c_generate_gibson_design_cmd {
 
     $self->log->debug('Design create command: ' . join(' ', @gibson_cmd_parameters ) );
 
-print @gibson_cmd_parameters;
     return \@gibson_cmd_parameters;
 }
 
