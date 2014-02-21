@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.010';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.013';
 }
 ## use critic
 
@@ -121,7 +121,6 @@ Given target exons return target coordinates
 =cut
 sub c_target_params_from_exons {
     my ( $self ) = @_;
-
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_target_params_from_exons );
 
@@ -132,7 +131,6 @@ sub c_target_params_from_exons {
     $self->log->info( 'Calculating target coordinates for exon(s)' );
     my $exon_adaptor = $self->ensembl_util->exon_adaptor;
     my $five_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{five_prime_exon} );
-
     $target_data{chromosome} = $five_prime_exon->seq_region_name;
     $target_data{strand} = $five_prime_exon->strand;
 
@@ -140,7 +138,6 @@ sub c_target_params_from_exons {
     if ( $validated_params->{three_prime_exon} ) {
         $three_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{three_prime_exon} );
     }
-
     # if there is no three prime exon then just specify target start and end
     # as the start and end of the five prime exon
     unless ( $three_prime_exon ) {
@@ -237,7 +234,8 @@ sub pspec_parse_and_validate_exon_target_gibson_params {
     my $self = shift;
     my $common_gibson_params = $self->pspec_common_gibson_params;
     return {
-        exon_id                 => { validate => 'ensembl_exon_id' },
+        five_prime_exon         => { validate => 'ensembl_exon_id' },
+        three_prime_exon        => { validate => 'ensembl_exon_id', optional => 1 },
         ensembl_gene_id         => { validate => 'ensembl_gene_id' },
         exon_check_flank_length => { validate => 'integer', optional => 1 },
         %{ $common_gibson_params },
@@ -253,6 +251,9 @@ and valid.
 sub c_parse_and_validate_exon_target_gibson_params {
     my ( $self ) = @_;
 
+print "inside c_parse_and_validate_exon_target_gibson_params\n";
+
+
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_parse_and_validate_exon_target_gibson_params );
 
@@ -260,7 +261,8 @@ sub c_parse_and_validate_exon_target_gibson_params {
 
     $self->catalyst->stash( {
         gene_id => $validated_params->{gene_id},
-        exon_id => $validated_params->{exon_id}
+        five_prime_exon => $validated_params->{five_prime_exon},
+        three_prime_exon => $validated_params->{three_prime_exon},
     } );
     $self->log->info( 'Validated exon target gibson design parameters' );
 
@@ -379,6 +381,9 @@ create design attempt record with status pending
 sub c_initiate_design_attempt {
     my ( $self, $params ) = @_;
 
+
+print "c_initiate_design_attempt\n";
+
     # create design attempt record
     my $design_parameters = encode_json(
         {   dir => $params->{output_dir}->stringify,
@@ -465,8 +470,13 @@ sub c_generate_gibson_design_cmd {
     if ( $params->{target_type} eq 'exon' ) {
         $gibson_cmd .= '-exon';
         push @gibson_cmd_parameters, (
-            '--target-exon', $params->{exon_id},
+            '--five-prime-exon' , $params->{five_prime_exon},
         );
+        if( $params->{three_prime_exon} ) {
+            push @gibson_cmd_parameters, (
+                '--three-prime-exon', $params->{three_prime_exon},
+            );
+        }
     }
     elsif ( $params->{target_type} eq 'location' ) {
         $gibson_cmd .= '-location';
@@ -509,6 +519,7 @@ sub c_generate_gibson_design_cmd {
 
     $self->log->debug('Design create command: ' . join(' ', @gibson_cmd_parameters ) );
 
+print @gibson_cmd_parameters;
     return \@gibson_cmd_parameters;
 }
 
