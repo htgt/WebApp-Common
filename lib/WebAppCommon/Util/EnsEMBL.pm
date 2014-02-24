@@ -149,7 +149,7 @@ sub _fetch_by_external_name {
 
     my @genes = @{ $self->gene_adaptor->fetch_all_by_external_name($gene_name, $type) };
     unless( @genes ) {
-        die("Unable to find gene $gene_name in EnsEMBL" );
+        die("Unable to find gene $gene_name in EnsEMBL database" );
     }
 
     if ( scalar(@genes) > 1 ) {
