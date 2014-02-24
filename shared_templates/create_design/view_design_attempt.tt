@@ -49,12 +49,23 @@
     </table>
   </div>
 </div>
+
+[% IF redo_design_url %]
+  <p>
+  <a href="[% c.uri_for( base_design_attempt_url da.id redo_design_url ) %]" class="btn btn-success"> Redo Design </a>
+  </p>
+[% END %]
+
 [% IF design_target_report_url %]
+  <p>
   <a href="[% c.uri_for( design_target_report_url da.gene_id, { 'crispr_types' => 'single' } ) %]" target="_blank" class="btn btn-info">
           single crispr report for [% da.gene_id %]</a>
   <a href="[% c.uri_for( design_target_report_url da.gene_id, { 'crispr_types' => 'pair' } ) %]" target="_blank" class="btn btn-info">
           crispr pair report for [% da.gene_id %]</a>
+  </p>
 [% END %]
+
+
 <div class="row">
   <div class="span6">
     <h5>Design Parameters</h5>
