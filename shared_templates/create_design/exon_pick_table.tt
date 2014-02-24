@@ -1,21 +1,5 @@
-<script type="text/javascript">
-  function validate(){
-    count = 0; gend = 0;
-    len = document.testForm.elements.length;
-    for(i=0;i<len;i++){
-      elt = document.testForm.elements[i];
-      if(elt.type == 'checkbox' && elt.name=='exon_pick' && elt.checked){
-        count++;
-      }        
-    }
-    if(count >2 ){
-      alert("Please Select 2 Exons");
-    }
-  }
-</script>
-
 <div class="row">
-  <form method"POST" id="crispr_picks" action="[% c.uri_for( design_create_url ) %]">
+  <form method"POST" id="crispr_picks" action="[% c.uri_for( exon_pick_url ) %]">
   <div class="span12" >
     <table id="design-target-report" class="table table-bordered table-condensed" style="max-width: none">
 
@@ -72,9 +56,10 @@
 
     </table>
     <div align="right">
-      <input type="submit" name="action" class="btn btn-primary" value="Make Exon Pick" />
+      <input type="submit" name="pick_exons" class="btn btn-primary" value="Make Exon Pick" />
       <input type="hidden" name="ensembl_gene_id" value="[% gene.ensembl_id %]" />
       <input type="hidden" name="gene_id" value="[% gene.gene_id %]" />
+      <input type="hidden" name="show_exons" value="[% show_exons %]" />
     </div>
   </div>
   </form>

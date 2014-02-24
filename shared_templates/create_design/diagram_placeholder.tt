@@ -11,6 +11,7 @@
 <fieldset>
   <legend>Design Parameters</legend>
 
+  [% DEFAULT gibson_type = 'deletion' %]
   <div class="form-horizontal">
     <div class="control-group">
       <label class="control-label">Gibson Type</label>
