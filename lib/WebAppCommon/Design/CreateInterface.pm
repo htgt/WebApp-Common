@@ -548,6 +548,25 @@ sub throw_validation_error {
     die( $errors );
 }
 
+=head2 redo_design_attempt
+
+desc
+
+=cut
+sub redo_design_attempt {
+    my ( $self, $da ) = @_;
+
+    my $da_data = $da->as_hash( { json_as_hash => 1 } );
+    my $params = $da_data->{design_parameters};
+    my $species = $da_data->{species};
+    my $gene_id = $da_data->{gene_id};
+    my $design_target_type;
+
+    # gene_id
+
+    return $design_target_type; #exon or location
+}
+
 1;
 
 __END__
