@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.013';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.014';
 }
 ## use critic
 
@@ -169,6 +169,28 @@ primer size
 sub c_primer3_default_config {
     my ( $self ) = @_;
     return LoadFile( $PRIMER3_CONFIG_FILE );
+}
+
+=head2 c_exon_target_data
+
+Gather data required to target exon if user enters ensemble exon id
+to target directly.
+
+=cut
+sub c_exon_target_data {
+    my ( $self, $exon_id ) = @_;
+
+    my $gene = $self->ensembl_util->get_gene_from_exon_id( $exon_id );
+    die "Could not get gene for $exon_id" unless $gene;
+
+    my $gene_type_id = $self->species eq 'Human' ? 'HGNC'
+                     : $self->species eq 'Mouse' ? 'MGI'
+                     :                              undef;
+    return {
+        gene_id         => $self->ensembl_util->external_gene_id( $gene, $gene_type_id ),
+        ensembl_gene_id => $gene->stable_id,
+        marker_symbol   => $gene->external_name,
+    }
 }
 
 =head2 exon_ranks

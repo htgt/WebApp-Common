@@ -1,3 +1,7 @@
+0.014     2014-02-24 15:27:49 Europe/London
+    
+    Bugfixes - ensembl 73 was removed from the internaldb so we are now looking at the external one again
+
 0.013     2014-02-21 09:55:36 Europe/London
 
     Bugfixes - make all parameters on gibson design ui refresh properly.
