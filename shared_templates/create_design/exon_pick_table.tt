@@ -35,21 +35,21 @@
               [% INCLUDE design_links exon = exon %]
             [% END %]
 
-            <td>
+            <td width=72>
               <input type="checkbox" name="exon_pick" value="[% exon.id %]" />
             </td>
 
             <!-- Only show the "Get Crisprs" button if a get_crisprs_url has been provided to template -->
+            <td width=72>
             [% IF get_crisprs_url %]
-            <td>
-            [% IF !exon.crispr_count %]
-              <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
-              Get Crisprs</a>
-            [% ELSE %]
-              [% exon.crispr_count %] crisprs
+              [% IF !exon.crispr_count %]
+                <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
+                Get Crisprs</a>
+              [% ELSE %]
+                [% exon.crispr_count %] crisprs
+              [% END %]
             [% END %]
             </td>
-            [% END %]
           </tr>
         [% END %]
       </tbody>
