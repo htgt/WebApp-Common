@@ -402,6 +402,8 @@ sub c_initiate_design_attempt {
         }
     );
 
+    #TODO to make this compatible with the redo button
+    #     I am going to have to pass a lot more params
     my $design_attempt = $self->create_design_attempt(
         {
             gene_id           => $params->{gene_id},
@@ -572,21 +574,85 @@ sub throw_validation_error {
 
 =head2 redo_design_attempt
 
-desc
+Setup parameters to redo a design from the data gathered from a previous design attempt.
 
 =cut
 sub redo_design_attempt {
     my ( $self, $da ) = @_;
+    my %redo_data;
 
     my $da_data = $da->as_hash( { json_as_hash => 1 } );
     my $params = $da_data->{design_parameters};
-    my $species = $da_data->{species};
-    my $gene_id = $da_data->{gene_id};
-    my $design_target_type;
 
-    # gene_id
+    unless ( keys %{ $params } ) {
+        die('No design parameters set');
+    }
 
-    return $design_target_type; #exon or location
+    $redo_data{gene_id} = $da_data->{gene_id};
+    $redo_data{fail} = $da_data->{fail} if $da_data->{fail};
+    my $command_name = $params->{'command-name'};
+    die('No command name set') unless $command_name;
+
+    my $target_type;
+    if ( $command_name =~ /location/ ) {
+        # TODO must have there all
+        $target_type = 'location';
+        $redo_data{target_type}  = 'location';
+        $redo_data{target_start} = $params->{target_start};
+        $redo_data{target_end}   = $params->{target_end};
+        $redo_data{chromosome}   = $params->{chr_name};
+        $redo_data{strand}       = $params->{chr_strand};
+    }
+    elsif ( $command_name =~ /exon/ ) {
+        # TODO must have there all
+        $target_type = 'exon';
+        $redo_data{target_type}      = 'exon';
+        $redo_data{five_prime_exon}  = $params->{five_prime_exon};
+        $redo_data{three_prime_exon} = $params->{three_prime_exon} if $params->{three_prime_exon};
+        $redo_data{exon_check_flank_length} = $params->{exon_check_flank_length}
+            if defined $params->{exon_check_flank_length};
+    }
+    else {
+        die( "Can not work out design target type for cmd: $command_name" );
+    }
+
+    if ( $command_name =~ /deletion/ ) {
+        $redo_data{gibson_type} = 'deletion';
+        for my $name ( qw( length_5R offset_5R length_3F offset_3F ) ) {
+            my $param_name = 'region_' . $name;
+            $redo_data{$name} = $params->{$param_name};
+        }
+    }
+    elsif ( $command_name eq 'gibson-design-exon' || $command_name eq 'gibson-design-location' ) {
+        $redo_data{gibson_type} = 'conditional';
+        for my $name ( qw( length_5R_EF offset_5R_EF length_ER_3F offset_ER_3F ) ) {
+            my $param_name = 'region_' . $name;
+            $redo_data{$name} = $params->{$param_name};
+        }
+    }
+    else {
+        die( "Can not work out gibson design type from cmd: $command_name" );
+    }
+
+    for my $name ( qw( length_5F offset_5F length_3R offset_3R ) ) {
+        my $param_name = 'region_' . $name;
+        $redo_data{$name} = $params->{$param_name};
+    }
+
+    $redo_data{repeat_mask_classes} = $params->{repeat_mask_class};
+
+    # PRIMER3 CONFIG
+    for my $name (
+        qw( primer_min_size primer_max_size primer_opt_size primer_opt_gc_percent
+            primer_max_gc primer_min_gc primer_opt_tm primer_max_tm primer_min_tm )
+        )
+    {
+        $redo_data{$name} = $params->{$name};
+    }
+
+    $self->catalyst->stash( %redo_data );
+
+    return $target_type;
 }
 
 1;
