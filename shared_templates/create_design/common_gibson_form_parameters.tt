@@ -1,3 +1,14 @@
+[% DEFAULT
+  primer_min_size       = default_p3_conf.primer_min_size
+  primer_opt_size       = default_p3_conf.primer_opt_size
+  primer_max_size       = default_p3_conf.primer_max_size
+  primer_min_tm         = default_p3_conf.primer_min_tm
+  primer_opt_tm         = default_p3_conf.primer_opt_tm
+  primer_max_tm         = default_p3_conf.primer_max_tm
+  primer_min_gc         = default_p3_conf.primer_min_gc
+  primer_opt_gc_percent = default_p3_conf.primer_opt_gc_percent
+  primer_max_gc         = default_p3_conf.primer_max_gc
+%]
 
 <fieldset>
   <div class="form-horizontal">
