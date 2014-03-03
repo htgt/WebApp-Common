@@ -1,0 +1,54 @@
+[% IF fail %]
+
+<div class="well alert-error">
+
+<h5>[% fail.error %]</h5>
+  [% UNLESS fail.reasons %]
+    <p>Sorry no extra details available</p>
+  [% END %]
+
+  [% IF fail.class == 'DesignCreate::Exception::Primer3RunFail' %]
+    <p>
+      There was a error running Primer3 for the [% fail.region %] region:<br>
+      <em>[% fail.reasons %]</em>
+    </p>
+  [% ELSIF fail.class == 'DesignCreate::Exception::OligoValidation' %]
+    <p>
+      The validation failed for the all of the oligos of the following types:
+      <strong>[% fail.oligo_Types.join(', ') %]</strong>
+    </p>
+    <table class="table table-bordered table-condensed">
+     [% FOREACH key IN fail.reasons.keys.sort %]
+        <tr>
+          <th>[% key %]</th>
+          <td>[% fail.reasons.$key %]</td>
+        </tr>
+      [% END %]
+    </table>
+
+  [% ELSIF fail.class == 'DesignCreate::Exception::Primer3FailedFindOligos' %]
+    <p>
+      Primer3 failed to find oligos for the following regions:
+      <strong>[% fail.regions.join(', ') %]</strong>
+    </p>
+
+    <table class="table table-bordered table-condensed">
+      [% FOREACH region IN fail.regions %]
+        <tr>
+          <th colspan="2">[% region.replace('_', ' ').upper %]</th>
+        </tr>
+        <tr>
+          <th>Left Primer</th>
+          <td>[% fail.reasons.$region.PRIMER_LEFT_EXPLAIN %]</td>
+        </tr>
+        <tr>
+          <th>Right Primer</th>
+          <td>[% fail.reasons.$region.PRIMER_RIGHT_EXPLAIN %]</td>
+        </tr>
+      [% END %]
+    </table>
+  [% END %]
+
+</div>
+
+[% END %]

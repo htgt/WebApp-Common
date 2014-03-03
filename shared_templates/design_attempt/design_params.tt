@@ -1,0 +1,107 @@
+[% IF params %]
+
+[% target_params = [
+  'species'
+  'assembly'
+  'chr_name'
+  'chr_strand'
+  'target_end'
+  'target_start'
+  'five_prime_exon'
+  'three_prime_exon'
+  'target_genes'
+  ]
+%]
+
+[% oligo_params = [
+  'region_length_3F'
+  'region_length_3R'
+  'region_length_5F'
+  'region_length_5R'
+  'region_length_5R_EF'
+  'region_length_EF'
+  'region_length_ER'
+  'region_length_ER_3F'
+  'region_offset_3R'
+  'region_offset_3F'
+  'region_offset_5F'
+  'region_offset_5R'
+  'region_offset_5R_EF'
+  'region_offset_ER_3F'
+  ]
+%]
+
+[% primer_params = [
+  'primer_max_gc'
+  'primer_max_size'
+  'primer_max_tm'
+  'primer_min_gc'
+  'primer_min_size'
+  'primer_min_tm'
+  'primer_opt_gc_percent'
+  'primer_opt_size'
+  'primer_opt_tm'
+  ]
+%]
+
+[% other_params = [
+  'command-name'
+  'design_method'
+  'ensembl-version'
+  'exon_check_flank_length'
+  'repeat_mask_class'
+  ]
+%]
+
+[% IF da.status == 'success';
+    row_class = 'success';
+  ELSIF da.status == 'fail';
+    row_class = 'error';
+  ELSIF da.status == 'error';
+    row_class = 'error';
+  ELSE;
+    row_class = "info";
+  END
+%]
+
+<div class="row">
+  <div class="span5 offset1">
+    <table class="table table-bordered table-condensed">
+
+    [% FOREACH array_name IN [ 'target_params', 'primer_params' ] %]
+
+      <tr class="[% row_class %]">
+        <td colspan="2"><strong>[% array_name.replace('_', ' ').upper %]</strong></td>
+      </tr>
+      [% FOREACH key IN $array_name %]
+        [% NEXT UNLESS params.defined(key) %]
+        <tr>
+          <th>[% key.replace('primer_','').replace('_', ' ') %]</th>
+          <td>[% params.$key.join(', ') %]</td>
+        </tr>
+      [% END %]
+    [% END %]
+    </table>
+
+  </div>
+
+  <div class="span5">
+    <table class="table table-bordered table-condensed">
+    [% FOREACH array_name IN [ 'oligo_params', 'other_params' ] %]
+
+      <tr class="[% row_class %]">
+        <td colspan="2"><strong>[% array_name.replace('_', ' ').upper %]</strong></td>
+      </tr>
+      [% FOREACH key IN $array_name %]
+        [% NEXT UNLESS params.defined(key) %]
+        <tr>
+          <th>[% key.replace.replace('region_', '').replace('_', ' ') %]</th>
+          <td>[% params.$key.join(', ') %]</td>
+        </tr>
+      [% END %]
+    [% END %]
+    </table>
+
+  </div>
+</div>
+[% END %]
