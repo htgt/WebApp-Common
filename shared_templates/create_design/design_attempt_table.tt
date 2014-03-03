@@ -42,7 +42,7 @@
                 <a href="[% c.uri_for( view_design_url, { design_id => id } ) %]">[% id %]</a>
               [% END %]
             </td>
-            <td>[% da.error %]</td>
+            <td>[% da.fail.error %]</td>
             <td>[% da.created_by %]</td>
             <td>[% da.created_at %]</td>
           </tr>
