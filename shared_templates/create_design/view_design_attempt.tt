@@ -10,7 +10,7 @@
         <tr [% IF da.status == 'success' %]
               class="success"
             [% ELSIF da.status == 'fail' %]
-              class="warning"
+              class="error"
             [% ELSIF da.status == 'error' %]
               class="error"
             [% ELSIF da.status == 'started' %]
@@ -40,17 +40,13 @@
           <th>Created At</th>
           <td>[% da.created_at %]</td>
         </tr>
-        <tr>
-          <th>Comment</th>
-          <td>[% da.comment %]</td>
-        </tr>
       </tbody>
 
     </table>
   </div>
 </div>
 
-[% IF redo_design_url %]
+[% UNLESS redo_design_url && ( da.status == 'started' || da.status == 'pending' ) %]
   <p>
   <a href="[% c.uri_for( base_design_attempt_url da.id redo_design_url ) %]" class="btn btn-success"> Redo Design </a>
   </p>
@@ -65,19 +61,30 @@
   </p>
 [% END %]
 
+[% IF da.fail %]
+  [% INCLUDE 'design_attempt/fail_reason.tt' %]
+[% ELSIF da.error %]
+  <h4>Fail Reasons</h4>
+  <pre>[% da.error %]</pre>
+[% END %]
 
-<div class="row">
-  <div class="span6">
-    <h5>Design Parameters</h5>
-    <pre>[% da.design_parameters %]</pre>
-  </div>
-  <div class="span6">
-    [% IF da.fail %]
-      <h5>Fail Reasons</h5>
-      <pre>[% da.fail %]</pre>
-    [% ELSIF da.error %]
-      <h5>Fail Reasons</h5>
-      <pre>[% da.error %]</pre>
-    [% END %]
+<div class="accordion" id="accordian">
+  <div class="accordion-group">
+
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+        <i class="icon-info-sign"></i> Design Parameters
+      </a>
+    </div>
+
+    <div id="collapseOne" class="accordion-body collapse">
+
+      <div class="accordion-inner">
+        [% INCLUDE 'design_attempt/design_params.tt' %]
+      </div>
+
+    </div>
+
   </div>
 </div>
+
