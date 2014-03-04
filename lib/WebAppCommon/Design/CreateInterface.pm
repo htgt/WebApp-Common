@@ -361,7 +361,7 @@ sub common_gibson_param_validation {
         }
 
         if ( $min > $max ) {
-            $errors .= "Primer minumum $type value ($min) can not be greater than maximum $type value ($max)\n";
+            $errors .= "Primer minimum $type value ($min) can not be greater than maximum $type value ($max)\n";
         }
 
         if ( $opt > $max ) {
