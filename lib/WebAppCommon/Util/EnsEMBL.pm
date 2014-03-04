@@ -25,6 +25,9 @@ sub _build_registry {
         -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous'
     );
 
+    # make sure database connection is not lost before use
+    Bio::EnsEMBL::Registry->set_reconnect_when_lost();
+
     return 'Bio::EnsEMBL::Registry';
 }
 
