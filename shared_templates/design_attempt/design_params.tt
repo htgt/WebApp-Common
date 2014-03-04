@@ -66,40 +66,79 @@
 
 <div class="row">
   <div class="span5 offset1">
+
     <table class="table table-bordered table-condensed">
-
-    [% FOREACH array_name IN [ 'target_params', 'primer_params' ] %]
-
       <tr class="[% row_class %]">
-        <td colspan="2"><strong>[% array_name.replace('_', ' ').upper %]</strong></td>
+        <td colspan="2"><strong>TARGET PARAMETERS</strong></td>
       </tr>
-      [% FOREACH key IN $array_name %]
+      [% FOREACH key IN target_params %]
         [% NEXT UNLESS params.defined(key) %]
         <tr>
-          <th>[% key.replace('primer_','').replace('_', ' ') %]</th>
+          <th>[% key.replace('_', ' ') %]</th>
           <td>[% params.$key.join(', ') %]</td>
         </tr>
       [% END %]
-    [% END %]
+    </table>
+
+    <table class="table table-bordered table-condensed">
+      <tr class="[% row_class %]">
+        <td><strong>Primer Option</strong></td>
+        <td><strong>Minumum</strong></td>
+        <td><strong>Optimum</strong></td>
+        <td><strong>Maximum</strong></td>
+      </tr>
+
+      <tr>
+        <th>Size (bases)</th>
+        <td>[% params.primer_min_size %]</td>
+        <td>[% params.primer_opt_size %]</td>
+        <td>[% params.primer_max_size %]</td>
+      </tr>
+
+      <tr>
+        <th>Melting Temp (&deg;C)</th>
+        <td>[% params.primer_min_tm %]</td>
+        <td>[% params.primer_opt_tm %]</td>
+        <td>[% params.primer_max_tm %]</td>
+      </tr>
+
+      <tr>
+        <th>GC Content (%)</th>
+        <td>[% params.primer_min_gc %]</td>
+        <td>[% params.primer_opt_gc_percent %]</td>
+        <td>[% params.primer_max_gc %]</td>
+      </tr>
+
     </table>
 
   </div>
 
   <div class="span5">
     <table class="table table-bordered table-condensed">
-    [% FOREACH array_name IN [ 'oligo_params', 'other_params' ] %]
-
       <tr class="[% row_class %]">
-        <td colspan="2"><strong>[% array_name.replace('_', ' ').upper %]</strong></td>
+        <td colspan="2"><strong>OLIGO PARAMETERS</strong></td>
       </tr>
-      [% FOREACH key IN $array_name %]
+      [% FOREACH key IN oligo_params %]
         [% NEXT UNLESS params.defined(key) %]
         <tr>
           <th>[% key.replace.replace('region_', '').replace('_', ' ') %]</th>
           <td>[% params.$key.join(', ') %]</td>
         </tr>
       [% END %]
-    [% END %]
+    </table>
+
+    <table class="table table-bordered table-condensed">
+      <tr class="[% row_class %]">
+        <td colspan="2"><strong>OTHER PARAMETERS</strong></td>
+      </tr>
+      [% FOREACH key IN other_params %]
+        [% NEXT UNLESS params.defined(key) %]
+        <tr>
+          <th>[% key.replace.replace('region_', '').replace('_', ' ') %]</th>
+          <td>[% params.$key.join(', ') %]</td>
+        </tr>
+      [% END %]
+
     </table>
 
   </div>
