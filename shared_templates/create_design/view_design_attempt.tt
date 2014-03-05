@@ -1,8 +1,31 @@
+
+[% IF params.defined('five_prime_exon');
+    target_type = 'exon(s)';
+  ELSE;
+    target_type = 'custom location';
+  END
+%]
+
+[% IF params.defined('command-name');
+    IF params.item('command-name').match('deletion');
+      design_type = 'deletion';
+    ELSE;
+      design_type = 'conditional';
+    END;
+  ELSE;
+    design_type = '';
+  END
+%]
+
 <div class="row">
   <div class="span12" >
     <table class="table table-bordered table-condensed">
 
       <tbody>
+        <tr>
+          <th>Design Type</th>
+          <td>Gibson [% design_type %] design, targeting [% target_type %].</td>
+        </tr>
         <tr>
           <th>Gene ID(s)</th>
           <td>[% da.gene_id %]</td>
