@@ -25,6 +25,9 @@ sub _build_registry {
         -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous'
     );
 
+    # make sure database connection is not lost before use
+    Bio::EnsEMBL::Registry->set_reconnect_when_lost();
+
     return 'Bio::EnsEMBL::Registry';
 }
 
@@ -147,7 +150,10 @@ Wrapper around fetching ensembl gene given external gene name.
 sub _fetch_by_external_name {
     my ( $self, $gene_name, $type ) = @_;
 
-    my @genes = @{ $self->gene_adaptor->fetch_all_by_external_name($gene_name, $type) };
+    my @all_results = @{ $self->gene_adaptor->fetch_all_by_external_name($gene_name, $type) };
+
+    my @genes = $self->_remove_ensembl_lrg_results(\@all_results);
+
     unless( @genes ) {
         die("Unable to find gene $gene_name in EnsEMBL database" );
     }
@@ -167,6 +173,22 @@ sub _fetch_by_external_name {
     return;
 }
 
+=head2 _remove_ensembl_lrg_results
+
+Filter a list of ensembl genes (arrayref) to remove those from LRG database
+
+Return array or arrayref depending on context
+
+=cut
+
+sub _remove_ensembl_lrg_results{
+    my ($self, $genes) = @_;
+
+    my @all = @{ $genes || [] };
+    my @filtered = grep { $_->source ne 'LRG database' } @all;
+
+    return wantarray ? @filtered : \@filtered;
+}
 =head2 external_gene_id
 
 Work out external gene id:

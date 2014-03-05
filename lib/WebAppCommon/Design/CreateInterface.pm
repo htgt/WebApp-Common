@@ -10,6 +10,7 @@ use Hash::MoreUtils qw( slice_def );
 use WebAppCommon::Util::FarmJobRunner;
 use DesignCreate::Constants qw( $PRIMER3_CONFIG_FILE );
 use YAML::Any qw( LoadFile );
+use String::ShellQuote;
 
 requires qw(
 species
@@ -360,7 +361,7 @@ sub common_gibson_param_validation {
         }
 
         if ( $min > $max ) {
-            $errors .= "Primer minumum $type value ($min) can not be greater than maximum $type value ($max)\n";
+            $errors .= "Primer minimum $type value ($min) can not be greater than maximum $type value ($max)\n";
         }
 
         if ( $opt > $max ) {
@@ -429,8 +430,8 @@ sub c_generate_gibson_design_cmd {
     my @gibson_cmd_parameters = (
         '--debug',
         #required parameters
-        '--created-by',  $params->{user},
-        '--target-gene', $params->{gene_id},
+        '--created-by',  shell_quote( $params->{user} ),
+        '--target-gene', shell_quote( $params->{gene_id} ),
         '--species',     $params->{species},
         '--dir',         $params->{output_dir}->subdir('workdir')->stringify,
         '--da-id',       $params->{da_id},
