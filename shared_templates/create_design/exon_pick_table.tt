@@ -15,7 +15,8 @@
           <th group-header>End Phase</th>
           [% IF show_current_designs %]<th group-header>Existing Designs</th>[% END %]
           <th group-header>Pick Exon</th>
-          <th group-header>Crisprs</th>
+          [% IF !hide_get_crisprs %]<th group-header>Crisprs</th>[% END %]
+
         </tr>
       </thead>
       <tbody>
@@ -35,18 +36,20 @@
               [% INCLUDE design_links exon = exon %]
             [% END %]
 
-            <td>
+            <td width=72>
               <input type="checkbox" name="exon_pick" value="[% exon.id %]" />
             </td>
 
             <!-- Only show the "Get Crisprs" button if a get_crisprs_url has been provided to template -->
+            [% IF !hide_get_crisprs %]
+            <td width=72>
             [% IF get_crisprs_url %]
-            <td>
-            [% IF !exon.crispr_count %]
-              <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
-              Get Crisprs</a>
-            [% ELSE %]
-              [% exon.crispr_count %] crisprs
+              [% IF !exon.crispr_count %]
+                <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
+                Get Crisprs</a>
+              [% ELSE %]
+                [% exon.crispr_count %] crisprs
+              [% END %]
             [% END %]
             </td>
             [% END %]
