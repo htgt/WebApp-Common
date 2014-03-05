@@ -24,7 +24,7 @@
       <tbody>
         <tr>
           <th>Design Type</th>
-          <td>Gibson [% design_type %] design, targeting [% target_type %].</td>
+          <td>Gibson [% design_type %] design,[% IF target_type %] targeting [% target_type %][% END %].</td>
         </tr>
         <tr>
           <th>Gene ID(s)</th>
