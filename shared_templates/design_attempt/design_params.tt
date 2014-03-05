@@ -13,22 +13,22 @@
   ]
 %]
 
-[% oligo_params = [
-  'region_length_3F'
-  'region_length_3R'
-  'region_length_5F'
-  'region_length_5R'
-  'region_length_5R_EF'
-  'region_length_EF'
-  'region_length_ER'
-  'region_length_ER_3F'
-  'region_offset_3R'
-  'region_offset_3F'
-  'region_offset_5F'
-  'region_offset_5R'
-  'region_offset_5R_EF'
-  'region_offset_ER_3F'
-  ]
+[% oligo_params = {
+ '3F Length'    => 'region_length_3F',
+ '3R Length'    => 'region_length_3R',
+ '5F Length'    => 'region_length_5F',
+ '5R Length'    => 'region_length_5R',
+ '5R-EF Length' => 'region_length_5R_EF',
+ 'EF Length'    => 'region_length_EF',
+ 'ER Length'    => 'region_length_ER',
+ 'ER-3F Length' => 'region_length_ER_3F',
+ '3R Offset'    => 'region_offset_3R',
+ '3F Offset'    => 'region_offset_3F',
+ '5F Offset'    => 'region_offset_5F',
+ '5R Offset'    => 'region_offset_5R',
+ '5R-EF Offset' => 'region_offset_5R_EF',
+ 'ER-3F Offset' => 'region_offset_ER_3F',
+  }
 %]
 
 [% primer_params = [
@@ -65,6 +65,7 @@
 %]
 
 <div class="row">
+
   <div class="span5 offset1">
 
     <table class="table table-bordered table-condensed">
@@ -118,11 +119,11 @@
       <tr class="[% row_class %]">
         <td colspan="2"><strong>OLIGO PARAMETERS</strong></td>
       </tr>
-      [% FOREACH key IN oligo_params %]
-        [% NEXT UNLESS params.defined(key) %]
+      [% FOREACH key IN oligo_params.keys.sort %]
+        [% NEXT UNLESS params.defined(oligo_params.$key) %]
         <tr>
-          <th>[% key.replace.replace('region_', '').replace('_', ' ') %]</th>
-          <td>[% params.$key.join(', ') %]</td>
+          <th>[% key %]</th>
+          <td>[% params.item(oligo_params.$key).join(', ') %]</td>
         </tr>
       [% END %]
     </table>
