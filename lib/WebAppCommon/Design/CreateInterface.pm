@@ -584,77 +584,143 @@ sub redo_design_attempt {
 
     my $da_data = $da->as_hash( { json_as_hash => 1 } );
     my $params = $da_data->{design_parameters};
+    die('No design parameters set') unless keys %{ $params };
 
-    unless ( keys %{ $params } ) {
-        die('No design parameters set');
-    }
-
-    $redo_data{gene_id} = $da_data->{gene_id};
-    $redo_data{fail} = $da_data->{fail} if $da_data->{fail};
     my $command_name = $params->{'command-name'};
     die('No command name set') unless $command_name;
 
-    my $target_type;
     if ( $command_name =~ /location/ ) {
-        # TODO must have there all
-        $target_type = 'location';
-        $redo_data{target_type}  = 'location';
-        $redo_data{target_start} = $params->{target_start};
-        $redo_data{target_end}   = $params->{target_end};
-        $redo_data{chromosome}   = $params->{chr_name};
-        $redo_data{strand}       = $params->{chr_strand};
+        $self->_redo_location_target_params( \%redo_data, $params );
     }
     elsif ( $command_name =~ /exon/ ) {
-        # TODO must have there all
-        $target_type = 'exon';
-        $redo_data{target_type}      = 'exon';
-        $redo_data{five_prime_exon}  = $params->{five_prime_exon};
-        $redo_data{three_prime_exon} = $params->{three_prime_exon} if $params->{three_prime_exon};
-        $redo_data{exon_check_flank_length} = $params->{exon_check_flank_length}
-            if defined $params->{exon_check_flank_length};
+        $self->_redo_exon_target_params( \%redo_data, $params );
     }
     else {
         die( "Can not work out design target type for cmd: $command_name" );
     }
 
     if ( $command_name =~ /deletion/ ) {
-        $redo_data{gibson_type} = 'deletion';
-        for my $name ( qw( length_5R offset_5R length_3F offset_3F ) ) {
-            my $param_name = 'region_' . $name;
-            $redo_data{$name} = $params->{$param_name};
-        }
+        $self->_redo_gibson_deletion_params( \%redo_data, $params );
     }
     elsif ( $command_name eq 'gibson-design-exon' || $command_name eq 'gibson-design-location' ) {
-        $redo_data{gibson_type} = 'conditional';
-        for my $name ( qw( length_5R_EF offset_5R_EF length_ER_3F offset_ER_3F ) ) {
-            my $param_name = 'region_' . $name;
-            $redo_data{$name} = $params->{$param_name};
-        }
+        $self->_redo_gibson_conditional_params( \%redo_data, $params );
     }
     else {
         die( "Can not work out gibson design type from cmd: $command_name" );
     }
 
-    for my $name ( qw( length_5F offset_5F length_3R offset_3R ) ) {
-        my $param_name = 'region_' . $name;
-        $redo_data{$name} = $params->{$param_name};
-    }
-
-    $redo_data{repeat_mask_classes} = $params->{repeat_mask_class};
-
-    # PRIMER3 CONFIG
-    for my $name (
-        qw( primer_min_size primer_max_size primer_opt_size primer_opt_gc_percent
-            primer_max_gc primer_min_gc primer_opt_tm primer_max_tm primer_min_tm )
-        )
-    {
-        $redo_data{$name} = $params->{$name};
-    }
+    $self->_redo_common_gibson_params( \%redo_data, $params, $da_data );
 
     $self->catalyst->stash( %redo_data );
-
-    return $target_type;
+    return $redo_data{target_type};
 }
+
+=head2 _redo_location_target_params
+
+Store redo parameters specific to gibson designs that have a custom location target.
+
+=cut
+sub _redo_location_target_params {
+    my ( $self, $redo_data, $params  ) = @_;
+
+    my @not_set;
+    for my $name ( qw( target_start target_end chr_name chr_strand ) ) {
+        push @not_set, $name unless $params->{$name};
+    }
+    die ('Following parameters not set: ' . join(',', @not_set)) if @not_set;
+
+    $redo_data->{target_type}  = 'location';
+    $redo_data->{target_start} = $params->{target_start};
+    $redo_data->{target_end}   = $params->{target_end};
+    $redo_data->{chromosome}   = $params->{chr_name};
+    $redo_data->{strand}       = $params->{chr_strand};
+
+    return;
+}
+
+=head2 _redo_exon_target_params
+
+Store redo parameters specific to gibson designs that target exon(s).
+
+=cut
+sub _redo_exon_target_params {
+    my ( $self, $redo_data, $params ) = @_;
+
+    die ('No exon target set') unless $params->{five_prime_exon};
+    $redo_data->{target_type}      = 'exon';
+    $redo_data->{five_prime_exon}  = $params->{five_prime_exon};
+    $redo_data->{three_prime_exon} = $params->{three_prime_exon} if exists $params->{three_prime_exon};
+    $redo_data->{exon_check_flank_length} = $params->{exon_check_flank_length}
+        if exists $params->{exon_check_flank_length};
+
+    return;
+}
+
+=head2 _redo_gibson_deletion_params
+
+Store redo parameters specific to deletion gibson designs.
+
+=cut
+sub _redo_gibson_deletion_params {
+    my ( $self, $redo_data, $params ) = @_;
+
+    $redo_data->{gibson_type} = 'deletion';
+    for my $name ( qw( length_5R offset_5R length_3F offset_3F ) ) {
+        my $param_name = 'region_' . $name;
+        $redo_data->{$name} = $params->{$param_name} if exists $params->{$param_name};
+    }
+
+    return;
+}
+
+=head2 _redo_gibson_conditional_params
+
+Store redo parameters specific to conditional gibson designs.
+
+=cut
+sub _redo_gibson_conditional_params {
+    my ( $self, $redo_data, $params ) = @_;
+
+    $redo_data->{gibson_type} = 'conditional';
+    for my $name ( qw( length_5R_EF offset_5R_EF length_ER_3F offset_ER_3F ) ) {
+        my $param_name = 'region_' . $name;
+        $redo_data->{$name} = $params->{$param_name} if exists $params->{$param_name};
+    }
+
+    return;
+}
+
+=head2 _redo_common_gibson_params
+
+Store redo parameters specific common to all gibson designs.
+
+=cut
+sub _redo_common_gibson_params {
+    my ( $self, $redo_data, $params, $da_data ) = @_;
+
+    die ('No gene_id set for design attempt') unless $da_data->{gene_id};
+
+    $redo_data->{gene_id} = $da_data->{gene_id};
+    $redo_data->{fail} = $da_data->{fail} if $da_data->{fail};
+
+    for my $name ( qw( length_5F offset_5F length_3R offset_3R ) ) {
+        my $param_name = 'region_' . $name;
+        $redo_data->{$name} = $params->{$param_name} if exists $params->{$param_name};
+    }
+
+    $redo_data->{repeat_mask_classes} = $params->{repeat_mask_class} if exists $params->{repeat_mask_class};
+
+    for my $name (
+        qw( primer_min_size primer_max_size primer_opt_size primer_opt_gc_percent
+        primer_max_gc primer_min_gc primer_opt_tm primer_max_tm primer_min_tm )
+    )
+    {
+        $redo_data->{$name} = $params->{$name} if exists $params->{$name};
+    }
+
+    return;
+}
+
 
 1;
 
