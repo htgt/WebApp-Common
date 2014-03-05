@@ -13,7 +13,7 @@
 
   [% DEFAULT gibson_type = 'deletion' %]
   <div class="form-horizontal">
-    <div class="control-group">
+    <div class="control-group" [% IF hide_type %]style="display:none"[% END %]>
       <label class="control-label">Gibson Type</label>
       <div class="controls">
         <label class="radio inline">
