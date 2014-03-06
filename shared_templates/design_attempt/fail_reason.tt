@@ -38,11 +38,11 @@
           <th colspan="2">[% region.replace('_', ' ').upper %]</th>
         </tr>
         <tr>
-          <th>Left Primer</th>
+          <th>Left ( Forward ) Primer</th>
           <td>[% fail.reasons.$region.PRIMER_LEFT_EXPLAIN %]</td>
         </tr>
         <tr>
-          <th>Right Primer</th>
+          <th>Right ( Reverse ) Primer</th>
           <td>[% fail.reasons.$region.PRIMER_RIGHT_EXPLAIN %]</td>
         </tr>
       [% END %]
