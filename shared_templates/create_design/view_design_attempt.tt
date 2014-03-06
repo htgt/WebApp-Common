@@ -69,7 +69,7 @@
   </div>
 </div>
 
-[% UNLESS redo_design_url && ( da.status == 'started' || da.status == 'pending' ) %]
+[% IF redo_design_url %]
   <p>
   <a href="[% c.uri_for( base_design_attempt_url da.id redo_design_url ) %]" class="btn btn-success"> Redo Design </a>
   </p>
