@@ -34,7 +34,12 @@
               </a>
             </td>
             <td>[% da.gene_id %]</td>
-            <td>[% da.design_parameters.five_prime_exon %]</td>
+            <td>
+            [% da.design_parameters.five_prime_exon %]
+            [% IF da.design_parameters.three_prime_exon %]
+              - [% da.design_parameters.three_prime_exon %]
+            [% END %]
+            </td>
             [% IF show_species %]<td>[% da.species %]</td>[% END %]
             <td>[% da.status %]</td>
             <td>
