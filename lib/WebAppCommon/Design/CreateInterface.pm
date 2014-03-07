@@ -274,8 +274,8 @@ sub c_parse_and_validate_exon_target_gibson_params {
     $self->common_gibson_param_validation( $validated_params );
 
     $self->catalyst->stash( {
-        gene_id => $validated_params->{gene_id},
-        five_prime_exon => $validated_params->{five_prime_exon},
+        gene_id          => $validated_params->{gene_id},
+        five_prime_exon  => $validated_params->{five_prime_exon},
         three_prime_exon => $validated_params->{three_prime_exon},
     } );
     $self->log->info( 'Validated exon target gibson design parameters' );
