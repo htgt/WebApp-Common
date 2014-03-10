@@ -16,6 +16,26 @@
     <p>
       The validation failed for the all of the oligos of the following types:
       <strong>[% fail.oligo_Types.join(', ') %]</strong>
+      <br><br>
+      Details of all the oligos which failed the validation are shown in the table below.
+    </p>
+    <table class="table table-bordered table-condensed">
+     [% FOREACH key IN fail.reasons.keys.sort %]
+        <tr>
+          <th>[% key %]</th>
+          <td>[% fail.reasons.$key %]</td>
+        </tr>
+      [% END %]
+    </table>
+
+  [% ELSIF fail.class == 'DesignCreate::Exception::OligoPairRegionValidation' %]
+    <p>
+      Unable to find valid oligo pairs for the following region(s):
+      <strong>[% fail.oligo_regions.join(', ') %]</strong>
+      <br>
+      This means for every oligo pair Primer3 returned for the region(s) above either one or both of the oligos failed validation.
+      <br><br>
+      Details of all the oligos which failed the validation are shown in the table below.
     </p>
     <table class="table table-bordered table-condensed">
      [% FOREACH key IN fail.reasons.keys.sort %]
