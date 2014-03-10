@@ -152,7 +152,7 @@ sub _fetch_by_external_name {
 
     my @genes = @{ $self->gene_adaptor->fetch_all_by_external_name($gene_name, $type) };
     unless( @genes ) {
-        die("Unable to find gene $gene_name in EnsEMBL database" );
+        die("Unable to find gene $gene_name in EnsEMBL database\n" );
     }
 
     if ( scalar(@genes) > 1 ) {
@@ -160,8 +160,8 @@ sub _fetch_by_external_name {
         $type ||= 'marker symbol';
 
         die( "Found multiple EnsEMBL genes with $type id $gene_name,"
-                . " try using one of the following EnsEMBL gene ids: "
-                . join( ', ', @stable_ids ) );
+                . " try using one of the following EnsEMBL gene ids:\n"
+                . join( "\n", @stable_ids ) . "\n" );
     }
     else {
         return shift @genes;
