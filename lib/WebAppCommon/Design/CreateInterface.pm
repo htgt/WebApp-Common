@@ -601,6 +601,43 @@ sub throw_validation_error {
     die( $errors );
 }
 
+=head2 c_format_validation_errors
+
+Format LIMS2::Exception::Validation / WGE::Expection::Validation errors
+to display clear message to users about which of the parameters they
+entered failed the validation tests.
+
+=cut
+sub c_format_validation_errors {
+    my ( $self, $err ) = @_;
+    my $errors;
+    my $params = $err->params;
+    my $validation_results = $err->results;
+    if ( defined $validation_results ) {
+        if ( $validation_results->has_missing ) {
+            $errors .= "Missing following required parameters:\n";
+            for my $m ( $validation_results->missing ) {
+                $errors .= "  * $m\n" ;
+            }
+            $errors .= "\n";
+        }
+
+        if ( $validation_results->has_invalid ) {
+            $errors .= "Following parameters are invalid:\n";
+            for my $f ( $validation_results->invalid ) {
+                my $cur_val = exists $params->{$f} ? $params->{$f} : '';
+                $errors .= "  * $f = $cur_val " . '( failed '
+                        . join( q{,}, @{ $validation_results->invalid($f) } ) . " check )\n";
+            }
+        }
+    }
+    else {
+        $errors = "Error with parameters:\n" . $err->message;
+    }
+
+    return $errors;
+}
+
 =head2 redo_design_attempt
 
 Setup parameters to redo a design from the data gathered from a previous design attempt.
