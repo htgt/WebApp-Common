@@ -28,7 +28,10 @@ shared_templates/create_design/exon_pick_table.tt
 shared_templates/create_design/exon_target_gibson_parameter_diagram.tt
 shared_templates/create_design/exon_target_specific_parameters.tt
 shared_templates/create_design/pending_design_attempt.tt
+shared_templates/create_design/redo_design_attempt_data.tt
 shared_templates/create_design/view_design_attempt.tt
+shared_templates/design_attempt/design_params.tt
+shared_templates/design_attempt/fail_reason.tt
 t/00-compile.t
 t/10-webapp-common-util-ensembl.t
 t/10-webapp-common-util-farmjobrunner.t

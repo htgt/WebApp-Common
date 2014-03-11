@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.016';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.017';
 }
 ## use critic
 
@@ -132,8 +132,8 @@ sub c_target_params_from_exons {
     $self->log->info( 'Calculating target coordinates for exon(s)' );
     my $exon_adaptor = $self->ensembl_util->exon_adaptor;
     my $five_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{five_prime_exon} );
-    $target_data{chromosome} = $five_prime_exon->seq_region_name;
-    $target_data{strand} = $five_prime_exon->strand;
+    $target_data{chr_name} = $five_prime_exon->seq_region_name;
+    $target_data{chr_strand} = $five_prime_exon->strand;
 
     my $three_prime_exon;
     if ( $validated_params->{three_prime_exon} ) {
@@ -217,27 +217,27 @@ sub exon_ranks {
 
 sub pspec_common_gibson_params {
     return {
-        gene_id      => { validate => 'non_empty_string' },
-        target_type  => { validate => 'non_empty_string' },
-        gibson_type  => { validate => 'non_empty_string' },
+        gene_id     => { validate => 'non_empty_string' },
+        target_type => { validate => 'non_empty_string' },
+        gibson_type => { validate => 'non_empty_string' },
         # fields from the diagram
-        length_5F    => { validate => 'integer' },
-        offset_5F    => { validate => 'integer' },
-        length_3R    => { validate => 'integer' },
-        offset_3R    => { validate => 'integer' },
+        region_length_5F => { validate => 'integer' },
+        region_offset_5F => { validate => 'integer' },
+        region_length_3R => { validate => 'integer' },
+        region_offset_3R => { validate => 'integer' },
         # conditional
-        length_5R_EF => { validate => 'integer', optional => 1 },
-        offset_5R_EF => { validate => 'integer', optional => 1 },
-        length_ER_3F => { validate => 'integer', optional => 1 },
-        offset_ER_3F => { validate => 'integer', optional => 1 },
+        region_length_5R_EF => { validate => 'integer', optional => 1 },
+        region_offset_5R_EF => { validate => 'integer', optional => 1 },
+        region_length_ER_3F => { validate => 'integer', optional => 1 },
+        region_offset_ER_3F => { validate => 'integer', optional => 1 },
         # deletion
-        length_5R    => { validate => 'integer', optional => 1 },
-        offset_5R    => { validate => 'integer', optional => 1 },
-        length_3F    => { validate => 'integer', optional => 1 },
-        offset_3F    => { validate => 'integer', optional => 1 },
+        region_length_5R => { validate => 'integer', optional => 1 },
+        region_offset_5R => { validate => 'integer', optional => 1 },
+        region_length_3F => { validate => 'integer', optional => 1 },
+        region_offset_3F => { validate => 'integer', optional => 1 },
         # advanced options
-        repeat_mask_classes => { validate => 'repeat_mask_class', optional => 1 },
-        alt_designs         => { validate => 'boolean', optional => 1 },
+        repeat_mask_class => { validate => 'repeat_mask_class', optional => 1 },
+        alt_designs       => { validate => 'boolean', optional => 1 },
         # primer3 config
         primer_min_size       => { validate => 'integer' },
         primer_max_size       => { validate => 'integer' },
@@ -280,8 +280,8 @@ sub c_parse_and_validate_exon_target_gibson_params {
     $self->common_gibson_param_validation( $validated_params );
 
     $self->catalyst->stash( {
-        gene_id => $validated_params->{gene_id},
-        five_prime_exon => $validated_params->{five_prime_exon},
+        gene_id          => $validated_params->{gene_id},
+        five_prime_exon  => $validated_params->{five_prime_exon},
         three_prime_exon => $validated_params->{three_prime_exon},
     } );
     $self->log->info( 'Validated exon target gibson design parameters' );
@@ -295,8 +295,8 @@ sub pspec_parse_and_validate_custom_target_gibson_params {
     return {
         target_start    => { validate => 'integer' },
         target_end      => { validate => 'integer' },
-        chromosome      => { validate => 'existing_chromosome' },
-        strand          => { validate => 'strand' },
+        chr_name        => { validate => 'existing_chromosome' },
+        chr_strand      => { validate => 'strand' },
         ensembl_gene_id => { validate => 'ensembl_gene_id', optional => 1 },
         %{ $common_gibson_params },
     };
@@ -404,10 +404,12 @@ sub c_initiate_design_attempt {
     # create design attempt record
     my $design_parameters = encode_json(
         {   dir => $params->{output_dir}->stringify,
+            'command-name' => $self->calculate_gibson_cmd( $params ),
             slice_def $params,
-            qw( uuid gene_id exon_id ensembl_gene_id assembly_id build_id ),
+            grep { $_ ne 'output_dir' } keys %{ $params }
         }
     );
+    #repeat_mask_class
 
     my $design_attempt = $self->create_design_attempt(
         {
@@ -442,10 +444,10 @@ sub c_generate_gibson_design_cmd {
         '--dir',         $params->{output_dir}->subdir('workdir')->stringify,
         '--da-id',       $params->{da_id},
         #user specified params
-        '--region-length-5f',    $params->{length_5F},
-        '--region-offset-5f',    $params->{offset_5F},
-        '--region-length-3r',    $params->{length_3R},
-        '--region-offset-3r',    $params->{offset_3R},
+        '--region-length-5f',    $params->{region_length_5F},
+        '--region-offset-5f',    $params->{region_offset_5F},
+        '--region-length-3r',    $params->{region_length_3R},
+        '--region-offset-3r',    $params->{region_offset_3R},
         #primer3 config params
         '--primer-min-size',       $params->{primer_min_size},
         '--primer-max-size',       $params->{primer_max_size},
@@ -459,24 +461,22 @@ sub c_generate_gibson_design_cmd {
         '--persist',
     );
 
-    my $gibson_cmd;
+    my $gibson_cmd = $self->calculate_gibson_cmd( $params );
     # gibson design type specific parameters
     if ( $params->{gibson_type} eq 'conditional' ) {
-        $gibson_cmd = 'gibson-design';
         push @gibson_cmd_parameters, (
-            '--region-length-5r-ef', $params->{length_5R_EF},
-            '--region-offset-5r-ef', $params->{offset_5R_EF},
-            '--region-length-er-3f', $params->{length_ER_3F},
-            '--region-offset-er-3f', $params->{offset_ER_3F},
+            '--region-length-5r-ef', $params->{region_length_5R_EF},
+            '--region-offset-5r-ef', $params->{region_offset_5R_EF},
+            '--region-length-er-3f', $params->{region_length_ER_3F},
+            '--region-offset-er-3f', $params->{region_offset_ER_3F},
         );
     }
     elsif ( $params->{gibson_type} eq 'deletion' ) {
-        $gibson_cmd = 'gibson-deletion-design';
         push @gibson_cmd_parameters, (
-            '--region-length-5r', $params->{length_5R},
-            '--region-offset-5r', $params->{offset_5R},
-            '--region-length-3f', $params->{length_3F},
-            '--region-offset-3f', $params->{offset_3F},
+            '--region-length-5r', $params->{region_length_5R},
+            '--region-offset-5r', $params->{region_offset_5R},
+            '--region-length-3f', $params->{region_length_3F},
+            '--region-offset-3f', $params->{region_offset_3F},
         );
     }
     else {
@@ -485,7 +485,6 @@ sub c_generate_gibson_design_cmd {
 
     # target type specific parameters
     if ( $params->{target_type} eq 'exon' ) {
-        $gibson_cmd .= '-exon';
         push @gibson_cmd_parameters, (
             '--five-prime-exon' , $params->{five_prime_exon},
         );
@@ -496,12 +495,11 @@ sub c_generate_gibson_design_cmd {
         }
     }
     elsif ( $params->{target_type} eq 'location' ) {
-        $gibson_cmd .= '-location';
         push @gibson_cmd_parameters, (
             '--target-start', $params->{target_start},
             '--target-end'  , $params->{target_end},
-            '--chromosome'  , $params->{chromosome},
-            '--strand'      , $params->{strand},
+            '--chromosome'  , $params->{chr_name},
+            '--strand'      , $params->{chr_strand},
         );
     }
     else {
@@ -514,14 +512,14 @@ sub c_generate_gibson_design_cmd {
         $gibson_cmd,
     );
 
-    if ( $params->{repeat_mask_classes} ) {
-        if ( ref( $params->{repeat_mask_classes} ) eq 'ARRAY' ) {
-            for my $class ( @{ $params->{repeat_mask_classes} } ) {
+    if ( $params->{repeat_mask_class} ) {
+        if ( ref( $params->{repeat_mask_class} ) eq 'ARRAY' ) {
+            for my $class ( @{ $params->{repeat_mask_class} } ) {
                 push @gibson_cmd_parameters, '--repeat-mask-class ' . $class;
             }
         }
         else {
-            push @gibson_cmd_parameters, '--repeat-mask-class ' . $params->{repeat_mask_classes};
+            push @gibson_cmd_parameters, '--repeat-mask-class ' . $params->{repeat_mask_class};
         }
     }
 
@@ -537,6 +535,38 @@ sub c_generate_gibson_design_cmd {
     $self->log->debug('Design create command: ' . join(' ', @gibson_cmd_parameters ) );
 
     return \@gibson_cmd_parameters;
+}
+
+=head2 calculate_gibson_cmd
+
+Calculate the cmd needed to generate the gibson design.
+
+=cut
+sub calculate_gibson_cmd {
+    my ( $self, $params ) = @_;
+    my $gibson_cmd;
+
+    if ( $params->{gibson_type} eq 'conditional' ) {
+        $gibson_cmd = 'gibson-design';
+    }
+    elsif ( $params->{gibson_type} eq 'deletion' ) {
+        $gibson_cmd = 'gibson-deletion-design';
+    }
+    else {
+        die( 'Unknown gibson design type: ' . $params->{gibson_type} );
+    }
+
+    if ( $params->{target_type} eq 'exon' ) {
+        $gibson_cmd .= '-exon';
+    }
+    elsif ( $params->{target_type} eq 'location' ) {
+        $gibson_cmd .= '-location';
+    }
+    else {
+        die( 'Unknown gibson target type: ' . $params->{target_type} );
+    }
+
+    return $gibson_cmd;
 }
 
 =head2 c_run_design_create_cmd
@@ -576,6 +606,191 @@ sub throw_validation_error {
 
     die( $errors );
 }
+
+=head2 c_format_validation_errors
+
+Format LIMS2::Exception::Validation / WGE::Expection::Validation errors
+to display clear message to users about which of the parameters they
+entered failed the validation tests.
+
+=cut
+sub c_format_validation_errors {
+    my ( $self, $err ) = @_;
+    my $errors;
+    my $params = $err->params;
+    my $validation_results = $err->results;
+    if ( defined $validation_results ) {
+        if ( $validation_results->has_missing ) {
+            $errors .= "Missing following required parameters:\n";
+            for my $m ( $validation_results->missing ) {
+                $errors .= "  * $m\n" ;
+            }
+            $errors .= "\n";
+        }
+
+        if ( $validation_results->has_invalid ) {
+            $errors .= "Following parameters are invalid:\n";
+            for my $f ( $validation_results->invalid ) {
+                my $cur_val = exists $params->{$f} ? $params->{$f} : '';
+                $errors .= "  * $f = $cur_val " . '( failed '
+                        . join( q{,}, @{ $validation_results->invalid($f) } ) . " check )\n";
+            }
+        }
+    }
+    else {
+        $errors = "Error with parameters:\n" . $err->message;
+    }
+
+    return $errors;
+}
+
+=head2 redo_design_attempt
+
+Setup parameters to redo a design from the data gathered from a previous design attempt.
+
+=cut
+sub redo_design_attempt {
+    my ( $self, $da ) = @_;
+    my %redo_data;
+
+    my $da_data = $da->as_hash( { json_as_hash => 1 } );
+    my $params = $da_data->{design_parameters};
+    die('No design parameters set') unless keys %{ $params };
+
+    my $command_name = $params->{'command-name'};
+    die('No command name set') unless $command_name;
+
+    if ( $command_name =~ /location/ ) {
+        $self->_redo_location_target_params( \%redo_data, $params );
+    }
+    elsif ( $command_name =~ /exon/ ) {
+        $self->_redo_exon_target_params( \%redo_data, $params );
+    }
+    else {
+        die( "Can not work out design target type for cmd: $command_name" );
+    }
+
+    if ( $command_name =~ /deletion/ ) {
+        $self->_redo_gibson_deletion_params( \%redo_data, $params );
+    }
+    elsif ( $command_name eq 'gibson-design-exon' || $command_name eq 'gibson-design-location' ) {
+        $self->_redo_gibson_conditional_params( \%redo_data, $params );
+    }
+    else {
+        die( "Can not work out gibson design type from cmd: $command_name" );
+    }
+
+    $self->_redo_common_gibson_params( \%redo_data, $params, $da_data );
+
+    $self->catalyst->stash( %redo_data );
+    return $redo_data{target_type};
+}
+
+=head2 _redo_location_target_params
+
+Store redo parameters specific to gibson designs that have a custom location target.
+
+=cut
+sub _redo_location_target_params {
+    my ( $self, $redo_data, $params  ) = @_;
+
+    my @not_set;
+    for my $name ( qw( target_start target_end chr_name chr_strand ) ) {
+        push @not_set, $name unless $params->{$name};
+    }
+    die ('Following parameters not set: ' . join(',', @not_set)) if @not_set;
+
+    $redo_data->{target_type}  = 'location';
+    $redo_data->{target_start} = $params->{target_start};
+    $redo_data->{target_end}   = $params->{target_end};
+    $redo_data->{chr_name}     = $params->{chr_name};
+    $redo_data->{chr_strand}   = $params->{chr_strand};
+
+    return;
+}
+
+=head2 _redo_exon_target_params
+
+Store redo parameters specific to gibson designs that target exon(s).
+
+=cut
+sub _redo_exon_target_params {
+    my ( $self, $redo_data, $params ) = @_;
+
+    die ('No exon target set') unless $params->{five_prime_exon};
+    $redo_data->{target_type}      = 'exon';
+    $redo_data->{five_prime_exon}  = $params->{five_prime_exon};
+    $redo_data->{three_prime_exon} = $params->{three_prime_exon} if exists $params->{three_prime_exon};
+    $redo_data->{exon_check_flank_length} = $params->{exon_check_flank_length}
+        if exists $params->{exon_check_flank_length};
+
+    return;
+}
+
+=head2 _redo_gibson_deletion_params
+
+Store redo parameters specific to deletion gibson designs.
+
+=cut
+sub _redo_gibson_deletion_params {
+    my ( $self, $redo_data, $params ) = @_;
+
+    $redo_data->{gibson_type} = 'deletion';
+    for my $name ( qw( region_length_5R region_offset_5R region_length_3F region_offset_3F ) ) {
+        $redo_data->{$name} = $params->{$name} if exists $params->{$name};
+    }
+
+    return;
+}
+
+=head2 _redo_gibson_conditional_params
+
+Store redo parameters specific to conditional gibson designs.
+
+=cut
+sub _redo_gibson_conditional_params {
+    my ( $self, $redo_data, $params ) = @_;
+
+    $redo_data->{gibson_type} = 'conditional';
+    for my $name ( qw( region_length_5R_EF region_offset_5R_EF region_length_ER_3F region_offset_ER_3F ) ) {
+        $redo_data->{$name} = $params->{$name} if exists $params->{$name};
+    }
+
+    return;
+}
+
+=head2 _redo_common_gibson_params
+
+Store redo parameters specific common to all gibson designs.
+
+=cut
+sub _redo_common_gibson_params {
+    my ( $self, $redo_data, $params, $da_data ) = @_;
+
+    die ('No gene_id set for design attempt') unless $da_data->{gene_id};
+
+    $redo_data->{gene_id} = $da_data->{gene_id};
+    $redo_data->{fail} = $da_data->{fail} if $da_data->{fail};
+
+    # common region parameters
+    for my $name ( qw( region_length_5F region_offset_5F region_length_3R region_offset_3R ) ) {
+        $redo_data->{$name} = $params->{$name} if exists $params->{$name};
+    }
+
+    $redo_data->{repeat_mask_class} = $params->{repeat_mask_class} if exists $params->{repeat_mask_class};
+
+    # Primer3 parameters
+    for my $name (
+        qw( primer_min_size primer_max_size primer_opt_size primer_opt_gc_percent
+        primer_max_gc primer_min_gc primer_opt_tm primer_max_tm primer_min_tm )
+    )
+    {
+        $redo_data->{$name} = $params->{$name} if exists $params->{$name};
+    }
+
+    return;
+}
+
 
 1;
 

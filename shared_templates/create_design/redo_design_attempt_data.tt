@@ -1,0 +1,11 @@
+<div class="well">
+  <p>
+    Redoing design attempt <a href="[% c.uri_for('/user/design_attempt', da.id, 'view' ) %]" target="_blank">[% da.id %]</a>,
+    status <span class="label label-[% IF da.status == 'success' %]success[% ELSE %]important[% END %]">[% da.status %]</span>
+  <p> 
+
+[% IF fail %]
+  <p>Reason for design attempt failure:</p>
+  [% INCLUDE 'design_attempt/fail_reason.tt' %]
+[% END %]
+</div>

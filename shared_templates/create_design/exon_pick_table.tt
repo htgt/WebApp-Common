@@ -62,6 +62,7 @@
       <input type="submit" name="pick_exons" class="btn btn-primary" value="Make Exon Pick" />
       <input type="hidden" name="ensembl_gene_id" value="[% gene.ensembl_id %]" />
       <input type="hidden" name="gene_id" value="[% gene.gene_id %]" />
+      <input type="hidden" name="search_gene" value="[% search_gene %]" />
       <input type="hidden" name="show_exons" value="[% show_exons %]" />
     </div>
   </div>

@@ -4,18 +4,18 @@
 <script type="text/javascript" src="[% c.uri_for( '/js/diagram.builder.js' ) %]"></script>
 
 [% DEFAULT
-  length_5F    = 500
-  length_5R    = 100
-  length_3F    = 100
-  length_3R    = 500
-  length_5R_EF = 200
-  length_ER_3F = 200
-  offset_5F    = 1000
-  offset_3R    = 1000
-  offset_5R    = 1
-  offset_3F    = 1
-  offset_5R_EF = 200
-  offset_ER_3F = 100
+  region_length_5F    = 500
+  region_length_5R    = 100
+  region_length_3F    = 100
+  region_length_3R    = 500
+  region_length_5R_EF = 200
+  region_length_ER_3F = 200
+  region_offset_5F    = 1000
+  region_offset_3R    = 1000
+  region_offset_5R    = 1
+  region_offset_3F    = 1
+  region_offset_5R_EF = 200
+  region_offset_ER_3F = 100
 %]
 
 <script type="text/javascript">
@@ -34,16 +34,16 @@ function createGibsonDiagram(builder) {
   var threeR = builder.addBox("3R");
 
   //add all the offset size fields to the fields we want them on
-  builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "offset_5F", '[% offset_5F %]');
-  builder.addLabel(threeF, threeR, "3R offset", "end to start", "offset_3R", '[% offset_3R %]');
-  builder.addLabel(EF, critExon, "5R-EF offset", "end to start", "offset_5R_EF", '[% offset_5R_EF %]');
-  builder.addLabel(critExon, ER, "ER-3F offset", "end to start", "offset_ER_3F", '[% offset_ER_3F %]');
+  builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "region_offset_5F", '[% region_offset_5F %]');
+  builder.addLabel(threeF, threeR, "3R offset", "end to start", "region_offset_3R", '[% region_offset_3R %]');
+  builder.addLabel(EF, critExon, "5R-EF offset", "end to start", "region_offset_5R_EF", '[% region_offset_5R_EF %]');
+  builder.addLabel(critExon, ER, "ER-3F offset", "end to start", "region_offset_ER_3F", '[% region_offset_ER_3F %]');
 
   //add all the block size fields to the fields we want them on
-  builder.addField(fiveF, "length_5F", '[% length_5F %]', "5F block size");
-  builder.addField(fiveR, "length_5R_EF", '[% length_5R_EF %]', "5R-EF block size", "top block");
-  builder.addField(ER, "length_ER_3F", '[% length_ER_3F %]', "ER-3F block size", "top block");
-  builder.addField(threeR, "length_3R", '[% length_3R %]', "3R block size");
+  builder.addField(fiveF, "region_length_5F", '[% region_length_5F %]', "5F block size");
+  builder.addField(fiveR, "region_length_5R_EF", '[% region_length_5R_EF %]', "5R-EF block size", "top block");
+  builder.addField(ER, "region_length_ER_3F", '[% region_length_ER_3F %]', "ER-3F block size", "top block");
+  builder.addField(threeR, "region_length_3R", '[% region_length_3R %]', "3R block size");
 
 }
 
@@ -59,16 +59,16 @@ function createGibsonDeletionDiagram(builder) {
   var threeR = builder.addBox("3R");
 
   //add all the offset size fields to the fields we want them on
-  builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "offset_5F", '[% offset_5F %]');
-  builder.addLabel(threeF, threeR, "3R offset", "end to start", "offset_3R", '[% offset_3R %]');
-  builder.addLabel(fiveR, critExon, "5R offset", "end to start", "offset_5R", '[% offset_5R %]');
-  builder.addLabel(critExon, threeF, "3F offset", "end to start", "offset_3F", '[% offset_3F %]');
+  builder.addLabel(fiveF, fiveR, "5F offset", "end to start", "region_offset_5F", '[% region_offset_5F %]');
+  builder.addLabel(threeF, threeR, "3R offset", "end to start", "region_offset_3R", '[% region_offset_3R %]');
+  builder.addLabel(fiveR, critExon, "5R offset", "end to start", "region_offset_5R", '[% region_offset_5R %]');
+  builder.addLabel(critExon, threeF, "3F offset", "end to start", "region_offset_3F", '[% region_offset_3F %]');
 
   //add all the block size fields to the fields we want them on
-  builder.addField(fiveF, "length_5F", '[% length_5F %]', "5F block size");
-  builder.addField(fiveR, "length_5R", '[% length_5R %]', "5R block size");
-  builder.addField(threeF, "length_3F", '[% length_3F %]', "3F block size");
-  builder.addField(threeR, "length_3R", '[% length_3R %]', "3R block size");
+  builder.addField(fiveF, "region_length_5F", '[% region_length_5F %]', "5F block size");
+  builder.addField(fiveR, "region_length_5R", '[% region_length_5R %]', "5R block size");
+  builder.addField(threeF, "region_length_3F", '[% region_length_3F %]', "3F block size");
+  builder.addField(threeR, "region_length_3R", '[% region_length_3R %]', "3R block size");
 
 }
 

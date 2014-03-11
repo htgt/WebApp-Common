@@ -1,3 +1,14 @@
+[% DEFAULT
+  primer_min_size       = default_p3_conf.primer_min_size
+  primer_opt_size       = default_p3_conf.primer_opt_size
+  primer_max_size       = default_p3_conf.primer_max_size
+  primer_min_tm         = default_p3_conf.primer_min_tm
+  primer_opt_tm         = default_p3_conf.primer_opt_tm
+  primer_max_tm         = default_p3_conf.primer_max_tm
+  primer_min_gc         = default_p3_conf.primer_min_gc
+  primer_opt_gc_percent = default_p3_conf.primer_opt_gc_percent
+  primer_max_gc         = default_p3_conf.primer_max_gc
+%]
 
 <fieldset>
   <div class="form-horizontal">
@@ -37,10 +48,10 @@
             <label class="control-label">Restrict Repeat Masking</label>
             <div class="controls">
               <label class="checkbox inline">
-                <input type="checkbox" name="repeat_mask_classes" value="trf" [% IF repeat_mask_classes && (matches = repeat_mask_classes.join('').match('trf')) %]checked[% END %]> trf
+                <input type="checkbox" name="repeat_mask_class" value="trf" [% IF repeat_mask_class && (matches = repeat_mask_class.join('').match('trf')) %]checked[% END %]> trf
               </label>
               <label class="checkbox inline">
-                <input type="checkbox" name="repeat_mask_classes" value="dust" [% IF repeat_mask_classes && (matches = repeat_mask_classes.join('').match('dust')) %]checked[% END %]> dust
+                <input type="checkbox" name="repeat_mask_class" value="dust" [% IF repeat_mask_class && (matches = repeat_mask_class.join('').match('dust')) %]checked[% END %]> dust
               </label>
               <span class="help-block">By default all repeat regions will be masked, ticking a checkbox makes sure only those classes of repeats are masked.</span>
             </div>
