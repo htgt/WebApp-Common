@@ -1,6 +1,19 @@
 {{$NEXT}}
 
-0.013     2014-02-21 08:40:27 Europe/London
+0.016     2014-03-05 14:12:34 Europe/London
+
+    Hidden gibson type selection in WGE
+
+0.015     2014-03-05 12:11:30 Europe/London
+
+	Template changes for WGE
+	LRG_ results removed from ensembl search results
+
+0.014     2014-02-24 15:27:49 Europe/London
+    
+    Bugfixes - ensembl 73 was removed from the internaldb so we are now looking at the external one again
+
+0.013     2014-02-21 09:55:36 Europe/London
 
     Bugfixes - make all parameters on gibson design ui refresh properly.
 
