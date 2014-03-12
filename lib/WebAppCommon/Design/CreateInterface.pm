@@ -638,12 +638,12 @@ sub c_format_validation_errors {
     return $errors;
 }
 
-=head2 redo_design_attempt
+=head2 c_redo_design_attempt
 
 Setup parameters to redo a design from the data gathered from a previous design attempt.
 
 =cut
-sub redo_design_attempt {
+sub c_redo_design_attempt {
     my ( $self, $da ) = @_;
     my %redo_data;
 
