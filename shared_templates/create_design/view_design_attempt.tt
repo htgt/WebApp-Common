@@ -86,9 +86,11 @@
 
 [% IF da.fail %]
   [% INCLUDE 'design_attempt/fail_reason.tt' %]
+  [% INCLUDE 'design_attempt/candidate_oligos.tt' %]
 [% ELSIF da.error %]
   <h4>Fail Reasons</h4>
   <pre>[% da.error %]</pre>
+  [% INCLUDE 'design_attempt/candidate_oligos.tt' %]
 [% END %]
 
 <div class="accordion" id="accordian">
@@ -109,5 +111,24 @@
     </div>
 
   </div>
+  [% IF da.candidate_regions %]
+  <div class="accordion-group">
+
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <i class="icon-info-sign"></i> Oligo Search Regions
+      </a>
+    </div>
+
+    <div id="collapseTwo" class="accordion-body collapse">
+
+      <div class="accordion-inner">
+        [% INCLUDE 'design_attempt/candidate_regions.tt' %]
+      </div>
+
+    </div>
+
+  </div>
+  [% END %]
 </div>
 
