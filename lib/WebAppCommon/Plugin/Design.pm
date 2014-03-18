@@ -507,6 +507,8 @@ sub pspec_create_design_attempt {
         created_at        => { validate => 'date_time', post_filter => 'parse_date_time', optional => 1 },
         created_by        => { validate => 'existing_user', post_filter => 'user_id_for' },
         comment           => { optional => 1 },
+        candidate_oligos  => { validate => 'json', optional => 1 },
+        candidate_regions => { validate => 'json', optional => 1 },
     }
 }
 
@@ -521,6 +523,7 @@ sub c_create_design_attempt {
                 $validated_params,
                 qw ( design_parameters gene_id status fail error species_id
                      design_ids created_at created_by comment
+                     candidate_oligos candidate_regions
                    )
             )
         }
@@ -539,6 +542,8 @@ sub pspec_update_design_attempt {
         error             => { validate => 'non_empty_string', optional => 1 },
         design_ids        => { validate => 'non_empty_string', optional => 1 },
         comment           => { optional => 1 },
+        candidate_oligos  => { validate => 'json', optional => 1 },
+        candidate_regions => { validate => 'json', optional => 1 },
     }
 }
 
@@ -550,7 +555,9 @@ sub c_update_design_attempt {
 
     $design_attempt->update(
         {   slice_def $validated_params,
-            qw( status fail error design_ids comment design_parameters )
+            qw( status fail error design_ids comment design_parameters
+                candidate_oligos candidate_regions
+              )
         }
     );
 
