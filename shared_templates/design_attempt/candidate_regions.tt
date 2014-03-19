@@ -1,0 +1,26 @@
+<div class="row">
+
+  <div class="span10 offset1">
+    <h5>Candidate Oligo Regions</h5>
+
+      <table class="table table-bordered table-condensed">
+        <tr>
+          <th>Region</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Chromosome</th>
+        </tr>
+
+        [% FOR region_type IN da.candidate_regions.keys %]
+        <tr>
+          <td>[% region_type %]</td>
+          <td>[% da.candidate_regions.$region_type.start %]</td>
+          <td>[% da.candidate_regions.$region_type.end %]</td>
+          <td>[% da.candidate_regions.$region_type.chromosome %]</td>
+        </tr>
+        [% END %]
+
+      </table>
+  </div>
+
+</div>

@@ -30,6 +30,8 @@ shared_templates/create_design/exon_target_specific_parameters.tt
 shared_templates/create_design/pending_design_attempt.tt
 shared_templates/create_design/redo_design_attempt_data.tt
 shared_templates/create_design/view_design_attempt.tt
+shared_templates/design_attempt/candidate_oligos.tt
+shared_templates/design_attempt/candidate_regions.tt
 shared_templates/design_attempt/design_params.tt
 shared_templates/design_attempt/fail_reason.tt
 t/00-compile.t
