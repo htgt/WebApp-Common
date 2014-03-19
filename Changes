@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.018     2014-03-19 07:12:10 Europe/London
+
+    Add candidate_oligos and candidate_regions columns to design attempt table
+
 0.017     2014-03-11 14:16:51 Europe/London
 
     Added redo button to design attempts.
