@@ -85,7 +85,7 @@ sub build_search_str {
             return $search_term->[0] . ':' . $self->quote_str( $search_term->[1] );
         }
         elsif ( scalar @$search_term == 4 ) {
-            return $search_term->[0] . ':' . $self->quote_str( $search_term->[1] ) . 
+            return $search_term->[0] . ':' . $self->quote_str( $search_term->[1] ) .
             ' AND ' . $search_term->[2] . ':' . $self->quote_str( $search_term->[3] );
         }
         die "Cannot build search string from $reftype";
