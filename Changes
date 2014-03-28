@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.019     2014-03-28 10:26:14 Europe/London
+
+    Added solr index for gene names
+
 0.018     2014-03-19 07:12:10 Europe/London
 
     Add candidate_oligos and candidate_regions columns to design attempt table
