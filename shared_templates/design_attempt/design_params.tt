@@ -1,0 +1,146 @@
+[% IF params %]
+
+[% target_params = [
+  'species'
+  'assembly'
+  'chr_name'
+  'chr_strand'
+  'target_end'
+  'target_start'
+  'five_prime_exon'
+  'three_prime_exon'
+  ]
+%]
+
+[% oligo_params = {
+ '3F Length'    => 'region_length_3F',
+ '3R Length'    => 'region_length_3R',
+ '5F Length'    => 'region_length_5F',
+ '5R Length'    => 'region_length_5R',
+ '5R-EF Length' => 'region_length_5R_EF',
+ 'EF Length'    => 'region_length_EF',
+ 'ER Length'    => 'region_length_ER',
+ 'ER-3F Length' => 'region_length_ER_3F',
+ '3R Offset'    => 'region_offset_3R',
+ '3F Offset'    => 'region_offset_3F',
+ '5F Offset'    => 'region_offset_5F',
+ '5R Offset'    => 'region_offset_5R',
+ '5R-EF Offset' => 'region_offset_5R_EF',
+ 'ER-3F Offset' => 'region_offset_ER_3F',
+  }
+%]
+
+[% primer_params = [
+  'primer_max_gc'
+  'primer_max_size'
+  'primer_max_tm'
+  'primer_min_gc'
+  'primer_min_size'
+  'primer_min_tm'
+  'primer_opt_gc_percent'
+  'primer_opt_size'
+  'primer_opt_tm'
+  ]
+%]
+
+[% other_params = [
+  'command-name'
+  'design_method'
+  'ensembl-version'
+  'exon_check_flank_length'
+  'repeat_mask_class'
+  ]
+%]
+
+[% IF da.status == 'success';
+    row_class = 'success';
+  ELSIF da.status == 'fail';
+    row_class = 'error';
+  ELSIF da.status == 'error';
+    row_class = 'error';
+  ELSE;
+    row_class = "info";
+  END
+%]
+
+<div class="row">
+
+  <div class="span5 offset1">
+
+    <table class="table table-bordered table-condensed">
+      <tr class="[% row_class %]">
+        <td colspan="2"><strong>TARGET PARAMETERS</strong></td>
+      </tr>
+      [% FOREACH key IN target_params %]
+        [% NEXT UNLESS params.defined(key) %]
+        <tr>
+          <th>[% key.replace('_', ' ') %]</th>
+          <td>[% params.$key.join(', ') %]</td>
+        </tr>
+      [% END %]
+    </table>
+
+    <table class="table table-bordered table-condensed">
+      <tr class="[% row_class %]">
+        <td><strong>Primer Option</strong></td>
+        <td><strong>Minumum</strong></td>
+        <td><strong>Optimum</strong></td>
+        <td><strong>Maximum</strong></td>
+      </tr>
+
+      <tr>
+        <th>Size (bases)</th>
+        <td>[% params.primer_min_size %]</td>
+        <td>[% params.primer_opt_size %]</td>
+        <td>[% params.primer_max_size %]</td>
+      </tr>
+
+      <tr>
+        <th>Melting Temp (&deg;C)</th>
+        <td>[% params.primer_min_tm %]</td>
+        <td>[% params.primer_opt_tm %]</td>
+        <td>[% params.primer_max_tm %]</td>
+      </tr>
+
+      <tr>
+        <th>GC Content (%)</th>
+        <td>[% params.primer_min_gc %]</td>
+        <td>[% params.primer_opt_gc_percent %]</td>
+        <td>[% params.primer_max_gc %]</td>
+      </tr>
+
+    </table>
+
+  </div>
+
+  <div class="span5">
+    <table class="table table-bordered table-condensed">
+      <tr class="[% row_class %]">
+        <td colspan="2"><strong>OLIGO PARAMETERS</strong></td>
+      </tr>
+      [% FOREACH key IN oligo_params.keys.sort %]
+        [% NEXT UNLESS params.defined(oligo_params.$key) %]
+        <tr>
+          <th>[% key %]</th>
+          <td>[% params.item(oligo_params.$key).join(', ') %]</td>
+        </tr>
+      [% END %]
+    </table>
+
+    <table class="table table-bordered table-condensed">
+      <tr class="[% row_class %]">
+        <td colspan="2"><strong>OTHER PARAMETERS</strong></td>
+      </tr>
+      [% FOREACH key IN other_params %]
+        [% NEXT UNLESS params.defined(key) %]
+        <tr>
+          <th>[% key.replace.replace('region_', '').replace('_', ' ') %]</th>
+          <td>[% params.$key.join(', ') %]</td>
+        </tr>
+      [% END %]
+
+    </table>
+
+  </div>
+</div>
+[% END %]

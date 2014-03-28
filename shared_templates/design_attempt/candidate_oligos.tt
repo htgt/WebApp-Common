@@ -1,0 +1,37 @@
+[% IF da.candidate_oligos %]
+<div class="well">
+
+  <h5>Candidate Oligos</h5>
+    <p class="alert alert-error">
+      WARNING: These oligos may not have been fully validated.<br>
+      You should try to redo the design, modifying
+      the parameters by taking into account the error message shown above.
+    </p>
+
+    <table class="table table-bordered table-condensed">
+      <tr>
+        <th>Oligo Type</th>
+        <th>ID</th>
+        <th>Sequence</th>
+        <th>Invalid Reason</th>
+        <th>Start Coordinate</th>
+        <th>End Coordinate</th>
+        <th>Direction</th>
+      </tr>
+
+      [% FOR oligo_type IN da.candidate_oligos.keys %]
+      <tr>
+        <td>[% oligo_type %]</td>
+        <td>[% da.candidate_oligos.$oligo_type.id %]</td>
+        <td>[% da.candidate_oligos.$oligo_type.oligo_seq.upper %]</td>
+        <td>[% da.candidate_oligos.$oligo_type.invalid %]</td>
+        <td>[% da.candidate_oligos.$oligo_type.oligo_start %]</td>
+        <td>[% da.candidate_oligos.$oligo_type.oligo_end %]</td>
+        <td>[% da.candidate_oligos.$oligo_type.oligo_direction %]</td>
+      </tr>
+      [% END %]
+
+    </table>
+
+</div>
+[% END %]

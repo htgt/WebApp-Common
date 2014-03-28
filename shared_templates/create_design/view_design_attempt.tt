@@ -1,8 +1,31 @@
+
+[% IF params.defined('five_prime_exon');
+    target_type = 'exon(s)';
+  ELSE;
+    target_type = 'custom location';
+  END
+%]
+
+[% IF params.defined('command-name');
+    IF params.item('command-name').match('deletion');
+      design_type = 'deletion';
+    ELSE;
+      design_type = 'conditional';
+    END;
+  ELSE;
+    design_type = '';
+  END
+%]
+
 <div class="row">
   <div class="span12" >
     <table class="table table-bordered table-condensed">
 
       <tbody>
+        <tr>
+          <th>Design Type</th>
+          <td>Gibson [% design_type %] design,[% IF target_type %] targeting [% target_type %][% END %].</td>
+        </tr>
         <tr>
           <th>Gene ID(s)</th>
           <td>[% da.gene_id %]</td>
@@ -10,7 +33,7 @@
         <tr [% IF da.status == 'success' %]
               class="success"
             [% ELSIF da.status == 'fail' %]
-              class="warning"
+              class="error"
             [% ELSIF da.status == 'error' %]
               class="error"
             [% ELSIF da.status == 'started' %]
@@ -40,33 +63,72 @@
           <th>Created At</th>
           <td>[% da.created_at %]</td>
         </tr>
-        <tr>
-          <th>Comment</th>
-          <td>[% da.comment %]</td>
-        </tr>
       </tbody>
 
     </table>
   </div>
 </div>
+
+[% IF redo_design_url %]
+  <p>
+  <a href="[% c.uri_for( base_design_attempt_url da.id redo_design_url ) %]" class="btn btn-success"> Redo Design </a>
+  </p>
+[% END %]
+
 [% IF design_target_report_url %]
+  <p>
   <a href="[% c.uri_for( design_target_report_url da.gene_id, { 'crispr_types' => 'single' } ) %]" target="_blank" class="btn btn-info">
           single crispr report for [% da.gene_id %]</a>
   <a href="[% c.uri_for( design_target_report_url da.gene_id, { 'crispr_types' => 'pair' } ) %]" target="_blank" class="btn btn-info">
           crispr pair report for [% da.gene_id %]</a>
+  </p>
 [% END %]
-<div class="row">
-  <div class="span6">
-    <h5>Design Parameters</h5>
-    <pre>[% da.design_parameters %]</pre>
+
+[% IF da.fail %]
+  [% INCLUDE 'design_attempt/fail_reason.tt' %]
+  [% INCLUDE 'design_attempt/candidate_oligos.tt' %]
+[% ELSIF da.error %]
+  <h4>Fail Reasons</h4>
+  <pre>[% da.error %]</pre>
+  [% INCLUDE 'design_attempt/candidate_oligos.tt' %]
+[% END %]
+
+<div class="accordion" id="accordian">
+  <div class="accordion-group">
+
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+        <i class="icon-info-sign"></i> Design Parameters
+      </a>
+    </div>
+
+    <div id="collapseOne" class="accordion-body collapse">
+
+      <div class="accordion-inner">
+        [% INCLUDE 'design_attempt/design_params.tt' %]
+      </div>
+
+    </div>
+
   </div>
-  <div class="span6">
-    [% IF da.fail %]
-      <h5>Fail Reasons</h5>
-      <pre>[% da.fail %]</pre>
-    [% ELSIF da.error %]
-      <h5>Fail Reasons</h5>
-      <pre>[% da.error %]</pre>
-    [% END %]
+  [% IF da.candidate_regions %]
+  <div class="accordion-group">
+
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <i class="icon-info-sign"></i> Oligo Search Regions
+      </a>
+    </div>
+
+    <div id="collapseTwo" class="accordion-body collapse">
+
+      <div class="accordion-inner">
+        [% INCLUDE 'design_attempt/candidate_regions.tt' %]
+      </div>
+
+    </div>
+
   </div>
+  [% END %]
 </div>
+

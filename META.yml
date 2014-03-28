@@ -23,6 +23,7 @@ requires:
   Bio::EnsEMBL::Registry: 0
   Const::Fast: 0
   Data::Dump: 0
+  Data::Dumper: 0
   Data::FormValidator: 0
   Data::UUID: 0
   DateTime::Format::ISO8601: 0
@@ -32,6 +33,7 @@ requires:
   IPC::Run: 0
   JSON: 0
   LIMS2::Model::Util: 0
+  LWP::UserAgent: 0
   List::MoreUtils: 0
   List::Util: 0
   Log::Log4perl: 0
@@ -42,9 +44,11 @@ requires:
   MooseX::Log::Log4perl: 0
   MooseX::Params::Validate: 0
   MooseX::Types::Path::Class::MoreCoercions: 0
+  MooseX::Types::URI: 0
   Path::Class: 0
   Scalar::Util: 0
   String::ShellQuote: 0
+  Sub::Exporter: 0
   Text::CSV: 0
   Try::Tiny: 0
   URI: 0
@@ -52,4 +56,4 @@ requires:
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.016
+version: 0.019

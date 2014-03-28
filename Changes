@@ -1,3 +1,16 @@
+0.019     2014-03-28 10:26:14 Europe/London
+
+    Added solr index for gene names
+
+0.018     2014-03-19 07:12:10 Europe/London
+
+    Add candidate_oligos and candidate_regions columns to design attempt table
+
+0.017     2014-03-11 14:16:51 Europe/London
+
+    Added redo button to design attempts.
+    Better formatting of design attempt errors and design parameters.
+
 0.016     2014-03-05 14:12:34 Europe/London
 
     Hidden gibson type selection in WGE
