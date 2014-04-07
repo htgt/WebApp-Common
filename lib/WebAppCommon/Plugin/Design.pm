@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.019';
+    $WebAppCommon::Plugin::Design::VERSION = '0.020';
 }
 ## use critic
 
@@ -143,9 +143,7 @@ sub c_create_design_oligo {
 
     my $validated_params = $self->check_params( $params, $self->pspec_create_design_oligo );
     $self->trace( "Create design oligo", $validated_params );
-
     $design ||= $self->c_retrieve_design( { id => $validated_params->{design_id} } );
-
     delete $validated_params->{design_id};
     my $loci = delete $validated_params->{loci};
     my $oligo = $design->create_related( oligos => $validated_params );
@@ -168,6 +166,7 @@ sub pspec_create_design_oligo_locus {
         chr_strand => { validate => 'strand' },
         oligo_type => { validate => 'existing_design_oligo_type' },
         design_id  => { validate => 'integer' },
+        species    => { validate => 'existing_species', optional => 1 },
     };
 }
 

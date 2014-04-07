@@ -1,7 +1,7 @@
 package WebAppCommon::Util::Solr;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::Solr::VERSION = '0.019';
+    $WebAppCommon::Util::Solr::VERSION = '0.020';
 }
 ## use critic
 

@@ -1,3 +1,7 @@
+0.020     2014-04-07 16:32:51 Europe/London
+
+    Added opcional species in create_design_oligo_locus
+
 0.019     2014-03-28 10:26:14 Europe/London
 
     Added solr index for gene names
