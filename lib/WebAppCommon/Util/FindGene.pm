@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FindGene;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FindGene::VERSION = '0.020';
+    $WebAppCommon::Util::FindGene::VERSION = '0.021';
 }
 ## use critic
 
@@ -13,6 +13,7 @@ use Sub::Exporter -setup => {
     exports => [
         qw(
             c_find_gene
+            c_autocomplete_gene
           )
     ]
 };
@@ -59,6 +60,30 @@ sub c_find_gene {
     }
 
     return normalize_solr_result( shift @{$genes} );
+}
+
+sub c_autocomplete_gene {
+    my ( $params ) = @_;
+
+    my $search_term = $params->{search_term};
+    my $search_species = $params->{species};
+
+    my $genes;
+
+    if ( $search_term =~ $MGI_ACCESSION_ID_RX || $search_term =~ $HGNC_GENE_ID_RX ) {
+        $genes = $solr->query( [ text => $search_term, species => $search_species ] );
+    }
+    elsif ( $search_term =~ $ENSEMBL_GENE_ID_RX ) {
+        $genes = $solr->query( [ text => $search_term, species => $search_species ] );
+    }
+    else {
+        $genes = $solr->query( [ text => lc($search_term), species => $search_species ] );
+    }
+
+    for (my $i = 0; $i < scalar @{$genes}; $i++ ) {
+        ${$genes}[$i] = normalize_solr_result(${$genes}[$i])
+    }
+    return @{$genes};
 }
 
 sub normalize_solr_result {

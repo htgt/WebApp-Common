@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.020';
+    $WebAppCommon::Plugin::Design::VERSION = '0.021';
 }
 ## use critic
 

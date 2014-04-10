@@ -1,7 +1,7 @@
 package WebAppCommon::Util::Solr;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::Solr::VERSION = '0.020';
+    $WebAppCommon::Util::Solr::VERSION = '0.021';
 }
 ## use critic
 
@@ -24,7 +24,7 @@ has solr_uri => (
 has solr_rows => (
     is      => 'ro',
     isa     => 'Int',
-    default => 10
+    default => 25
 );
 
 has solr_max_rows => (
@@ -65,7 +65,6 @@ sub query {
         push @results, map { +{ slice $_, @attrs } } @{ $result->{response}{docs} };
         $start += $self->solr_rows;
     }
-
     return \@results;
 }
 
@@ -73,6 +72,7 @@ sub do_solr_query {
     my ( $self, $search_str, $start ) = @_;
 
     $self->solr_uri->query_form( q => $search_str, wt => 'json', rows => $self->solr_rows, start => $start );
+    my $uri = $self->solr_uri;
     my $response = $self->get($self->solr_uri);
     unless ( $response->is_success ) {
         die "Solr search for '$search_str' failed: " . $response->message;
@@ -91,8 +91,13 @@ sub build_search_str {
             return $search_term->[0] . ':' . $self->quote_str( $search_term->[1] );
         }
         elsif ( scalar @$search_term == 4 ) {
-            return $search_term->[0] . ':' . $self->quote_str( $search_term->[1] ) .
-            ' AND ' . $search_term->[2] . ':' . $self->quote_str( $search_term->[3] );
+            if ($search_term->[0] eq 'text') {
+                return $search_term->[1] . '* AND ' .
+                $search_term->[2] . ':' . $self->quote_str( $search_term->[3] );
+            } else {
+                return $search_term->[0] . ':' . $self->quote_str( $search_term->[1] ) .
+                ' AND ' . $search_term->[2] . ':' . $self->quote_str( $search_term->[3] );
+            }
         }
         die "Cannot build search string from $reftype";
     }
