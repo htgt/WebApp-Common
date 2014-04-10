@@ -7,7 +7,6 @@ use Hash::MoreUtils qw( slice );
 use URI;
 use JSON;
 use namespace::autoclean;
-use Smart::Comments;
 
 has solr_uri => (
     is      => 'ro',
