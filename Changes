@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.021     2014-04-10 10:27:55 Europe/London
+
+    Added autocomplete method for new solr index gene search
+
 0.020     2014-04-07 16:32:51 Europe/London
 
     Added opcional species in create_design_oligo_locus
