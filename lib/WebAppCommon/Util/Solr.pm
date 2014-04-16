@@ -78,7 +78,6 @@ sub do_solr_query {
 
 sub build_search_str {
     my ( $self, $search_term ) = @_;
-
     my $reftype = ref $search_term;
 
     if ( $reftype && $reftype eq ref []) {
@@ -87,6 +86,7 @@ sub build_search_str {
         }
         elsif ( scalar @$search_term == 4 ) {
             if ($search_term->[0] eq 'text') {
+                $search_term->[1] =~ s/\w*:/*/;
                 return $search_term->[1] . '* AND ' .
                 $search_term->[2] . ':' . $self->quote_str( $search_term->[3] );
             } else {
@@ -97,7 +97,7 @@ sub build_search_str {
         die "Cannot build search string from $reftype";
     }
 
-    return $self->quote_str($search_term);
+    die "No search_term provided";
 }
 
 sub quote_str {
