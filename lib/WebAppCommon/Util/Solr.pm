@@ -12,7 +12,8 @@ has solr_uri => (
     is      => 'ro',
     isa     => Uri,
     coerce  => 1,
-    default => sub { URI->new($ENV{SOLR_URL} || 'http://htgt3.internal.sanger.ac.uk:8983/solr/select') }
+    # default => sub { URI->new($ENV{SOLR_URL} || 'http://htgt3.internal.sanger.ac.uk:8983/solr/select') }
+    default => sub { URI->new($ENV{SOLR_URL} || 'http://t87-dev.internal.sanger.ac.uk:8983/solr/select') }
 );
 
 has solr_rows => (

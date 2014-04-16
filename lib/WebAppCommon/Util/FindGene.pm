@@ -38,7 +38,7 @@ sub c_find_gene {
         $genes = $solr->query( [ ensembl_id => $search_term ] );
     }
     else {
-        $genes = $solr->query( [ symbol_lc => lc($search_term), species => $search_species ] );
+        $genes = $solr->query( [ symbol => lc($search_term), species => $search_species ] );
     }
 
     if ( @{$genes} == 0 ) {
