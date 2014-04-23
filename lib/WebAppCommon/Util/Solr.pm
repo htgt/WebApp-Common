@@ -12,8 +12,7 @@ has solr_uri => (
     is      => 'ro',
     isa     => Uri,
     coerce  => 1,
-    # default => sub { URI->new($ENV{SOLR_URL} || 'http://htgt3.internal.sanger.ac.uk:8983/solr/select') }
-    default => sub { URI->new($ENV{SOLR_URL} || 'http://t87-dev.internal.sanger.ac.uk:8983/solr/select') }
+    default => sub { URI->new($ENV{SOLR_URL} || 'http://htgt3.internal.sanger.ac.uk:8983/solr/select') }
 );
 
 has solr_rows => (
@@ -41,13 +40,16 @@ sub _build_ua {
 }
 
 sub query {
-    my ( $self, $search_term ) = @_;
+    my ( $self, $search_term, $show_all ) = @_;
 
     # build the search string
     my $search_str = $self->build_search_str( $search_term );
 
     # what to get back from the search
     my @attrs = ('id', 'symbol', 'ensembl_id');
+    if ($show_all ) {
+        push @attrs, ('design_count', 'crispr_pairs_count');
+    }
 
     my @results;
     my ( $start, $num_found ) = ( 0, 0 );

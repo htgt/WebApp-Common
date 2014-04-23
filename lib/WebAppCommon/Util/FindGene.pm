@@ -28,17 +28,18 @@ sub c_find_gene {
 
     my $search_term = $params->{search_term};
     my $search_species = $params->{species};
+    my $show_all = $params->{show_all};
 
     my $genes;
 
     if ( $search_term =~ $MGI_ACCESSION_ID_RX || $search_term =~ $HGNC_GENE_ID_RX ) {
-        $genes = $solr->query( [ id => $search_term ] );
+        $genes = $solr->query( [ id => $search_term ], $show_all );
     }
     elsif ( $search_term =~ $ENSEMBL_GENE_ID_RX ) {
-        $genes = $solr->query( [ ensembl_id => $search_term ] );
+        $genes = $solr->query( [ ensembl_id => $search_term ], $show_all );
     }
     else {
-        $genes = $solr->query( [ symbol => lc($search_term), species => $search_species ] );
+        $genes = $solr->query( [ symbol => lc($search_term), species => $search_species ], $show_all );
     }
 
     if ( @{$genes} == 0 ) {
