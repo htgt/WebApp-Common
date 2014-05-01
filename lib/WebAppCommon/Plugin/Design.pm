@@ -55,6 +55,7 @@ sub pspec_create_design {
         gene_ids                => { validate => 'hashref', optional => 1 },
         design_parameters       => { validate => 'json', optional => 1 },
         cassette_first          => { validate => 'boolean', default => 1 },
+        global_arm_shortened    => { validate => 'integer', optional => 1 },
     };
 }
 
@@ -87,7 +88,7 @@ sub c_create_design {
             slice_def( $validated_params,
                        qw( id species_id name created_by created_at design_type_id
                            phase validated_by_annotation target_transcript
-                           design_parameters cassette_first ) )
+                           design_parameters cassette_first global_arm_shortened ) )
         }
     );
     $self->log->debug( 'Create design ' . $design->id );
