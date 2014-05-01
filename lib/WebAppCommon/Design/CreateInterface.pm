@@ -601,6 +601,7 @@ sub throw_validation_error {
     die( $errors );
 }
 
+# TODO remove ( move to the Validated object itself, in LIMS2 and WGE )
 =head2 c_format_validation_errors
 
 Format LIMS2::Exception::Validation / WGE::Expection::Validation errors
