@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.023     2014-05-01 10:25:43 Europe/London
+
+    Add design column to design create method: global_arm_shorten
+
 0.022     2014-04-24 09:38:26 Europe/London
 
     Support for extra information in the gene solr index
