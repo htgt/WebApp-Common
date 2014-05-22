@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.023';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.024';
 }
 ## use critic
 
@@ -236,8 +236,9 @@ sub pspec_common_gibson_params {
         region_length_3F => { validate => 'integer', optional => 1 },
         region_offset_3F => { validate => 'integer', optional => 1 },
         # advanced options
-        repeat_mask_class => { validate => 'repeat_mask_class', optional => 1 },
-        alt_designs       => { validate => 'boolean', optional => 1 },
+        repeat_mask_class       => { validate => 'repeat_mask_class', optional => 1 },
+        alt_designs             => { validate => 'boolean', optional => 1 },
+        max_primer_genomic_hits => { validate => 'integer', optional => 1 },
         # primer3 config
         primer_min_size       => { validate => 'integer' },
         primer_max_size       => { validate => 'integer' },
@@ -302,7 +303,7 @@ sub pspec_parse_and_validate_custom_target_gibson_params {
     };
 }
 
-=head2 c_parse_and_validate_exon_target_gibson_params
+=head2 c_parse_and_validate_custom_target_gibson_params
 
 Check the parameters needed to create the gibson design are all present
 and valid.
@@ -530,6 +531,11 @@ sub c_generate_gibson_design_cmd {
     if ( $params->{exon_check_flank_length} ) {
         push @gibson_cmd_parameters,
             '--exon-check-flank-length ' . $params->{exon_check_flank_length};
+    }
+
+    if ( $params->{max_primer_genomic_hits} ) {
+        push @gibson_cmd_parameters,
+            '--num-genomic-hits ' . $params->{max_primer_genomic_hits};
     }
 
     $self->log->debug('Design create command: ' . join(' ', @gibson_cmd_parameters ) );
@@ -779,6 +785,8 @@ sub _redo_common_gibson_params {
     }
 
     $redo_data->{repeat_mask_class} = $params->{repeat_mask_class} if exists $params->{repeat_mask_class};
+    $redo_data->{max_primer_genomic_hits} = $params->{max_primer_genomic_hits}
+        if exists $params->{max_primer_genomic_hits};
 
     # Primer3 parameters
     for my $name (

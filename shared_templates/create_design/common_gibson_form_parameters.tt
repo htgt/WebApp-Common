@@ -58,6 +58,22 @@
           </div>
 
           <div class="control-group">
+            <label class="control-label">Max Number Primer Genomic Alignments</label>
+            <div class="controls">
+
+            <select name="max_primer_genomic_hits">
+              <option [% IF max_primer_genomic_hits == 1 %]selected[% END %]>1</option>
+              <option [% IF max_primer_genomic_hits == 2 %]selected[% END %]>2</option>
+              <option [% IF max_primer_genomic_hits == 3 %]selected[% END %]>3</option>
+              <option [% IF max_primer_genomic_hits == 4 %]selected[% END %]>4</option>
+              <option [% IF max_primer_genomic_hits == 5 %]selected[% END %]>5</option>
+            </select>
+
+              <span class="help-block">Number of genomic hits each primer is allowed, any primer with more than this number of hits will be discarded.</span>
+            </div>
+          </div>
+
+          <div class="control-group">
             <label class="control-label">Primer Melting Temp</label>
             <div class="controls">
               <div class="input-prepend input-append">

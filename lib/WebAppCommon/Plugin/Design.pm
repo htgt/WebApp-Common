@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.023';
+    $WebAppCommon::Plugin::Design::VERSION = '0.024';
 }
 ## use critic
 
@@ -71,7 +71,7 @@ sub pspec_create_design_comment {
                              post_filter => 'design_comment_category_id_for',
                              rename      => 'design_comment_category_id' },
         comment_text   => { optional => 1 },
-        created_at     => { validate => 'date_time', post_filter => 'parse_date_time' },
+        created_at     => { validate => 'date_time', post_filter => 'parse_date_time', optional => 1 },
         created_by     => { validate => 'existing_user', post_filter => 'user_id_for' },
         is_public      => { validate => 'boolean', default => 0 }
     }
