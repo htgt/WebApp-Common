@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.024     2014-05-22 07:29:57 Europe/London
+    
+    Add max oligo oligo genomic hits option to design create interface for gibson designs.
+
 0.023     2014-05-01 10:25:43 Europe/London
 
     Add design column to design create method: global_arm_shorten
