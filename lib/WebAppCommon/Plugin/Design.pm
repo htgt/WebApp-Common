@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.024';
+    $WebAppCommon::Plugin::Design::VERSION = '0.025';
 }
 ## use critic
 
@@ -546,7 +546,7 @@ sub pspec_update_design_attempt {
         status            => { validate => 'non_empty_string', optional => 1 },
         fail              => { validate => 'json', optional => 1 },
         error             => { validate => 'non_empty_string', optional => 1 },
-        design_ids        => { validate => 'non_empty_string', optional => 1 },
+        design_ids        => { validate => 'integer', optional => 1 },
         comment           => { optional => 1 },
         candidate_oligos  => { validate => 'json', optional => 1 },
         candidate_regions => { validate => 'json', optional => 1 },

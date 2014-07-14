@@ -1,3 +1,7 @@
+0.025     2014-07-14 07:17:42 Europe/London
+
+    Design_ids column in design attempts table is now a array type column.
+
 0.024     2014-05-22 07:29:57 Europe/London
     
     Add max oligo oligo genomic hits option to design create interface for gibson designs.

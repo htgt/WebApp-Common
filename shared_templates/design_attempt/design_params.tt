@@ -49,6 +49,7 @@
   'ensembl-version'
   'exon_check_flank_length'
   'repeat_mask_class'
+  'num_genomic_hits'
   ]
 %]
 
