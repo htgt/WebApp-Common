@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.026     2014-07-23 09:29:46 Europe/London
+
+    Added Genoverse files to shared_static
+
 0.025     2014-07-14 07:17:42 Europe/London
 
     Design_ids column in design attempts table is now a array type column.
