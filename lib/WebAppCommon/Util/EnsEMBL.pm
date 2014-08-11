@@ -236,6 +236,32 @@ sub get_gene_from_exon_id {
     return $self->gene_adaptor->fetch_by_exon_stable_id( $exon_stable_id );
 }
 
+sub get_repeat_masked_slice {
+    my ( $self, $start, $end, $chr_name, $mask_method ) = @_;
+
+    my $slice = $self->get_slice( $start, $end, $chr_name );
+
+    # softmasked
+    return $slice->get_repeatmasked_seq( $mask_method , 1 );
+}
+
+sub get_slice {
+    my ( $self, $start, $end, $chr_name, $try_count ) = @_;
+
+    $self->log->logdie( 'Start must be less than end' )
+        if $start > $end;
+
+    # We always get sequence on the +ve strand
+    my $slice = $self->slice_adaptor->fetch_by_region(
+        'chromosome',
+        $chr_name,
+        $start,
+        $end,
+    );
+
+    return $slice;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
