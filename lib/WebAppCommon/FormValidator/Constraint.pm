@@ -111,6 +111,14 @@ sub integer {
     }
 }
 
+sub numeric {
+    my $self = shift;
+    return sub {
+        my $val = shift;
+        return $val =~ qr/^\d*\.?\d*$/ && $val >= $MIN_INT && $val <= $MAX_INT;
+    }
+}
+
 sub alphanumeric_string {
     return shift->regexp_matches(qr/^\w+$/);
 }
