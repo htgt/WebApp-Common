@@ -1,3 +1,8 @@
+0.027     2014-08-18 10:58:22 Europe/London
+
+    Add new get_slice method to EnsEMBL util
+    Add new numeric check constraint
+
 0.026     2014-07-23 09:29:46 Europe/London
 
     Added Genoverse files to shared_static

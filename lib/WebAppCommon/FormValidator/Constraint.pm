@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.026';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.027';
 }
 ## use critic
 
@@ -114,6 +114,14 @@ sub integer {
     return sub {
         my $val = shift;
         return $val =~ qr/^\d+$/ && $val >= $MIN_INT && $val <= $MAX_INT;
+    }
+}
+
+sub numeric {
+    my $self = shift;
+    return sub {
+        my $val = shift;
+        return $val =~ qr/^\d*\.?\d*$/ && $val >= $MIN_INT && $val <= $MAX_INT;
     }
 }
 
