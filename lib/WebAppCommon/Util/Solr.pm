@@ -7,6 +7,7 @@ use Hash::MoreUtils qw( slice );
 use URI;
 use JSON;
 use namespace::autoclean;
+use Try::Tiny;
 
 has solr_uri => (
     is      => 'ro',
@@ -36,7 +37,10 @@ has ua => (
 );
 
 sub _build_ua {
-    return LWP::UserAgent->new();
+    my $ua = LWP::UserAgent->new();
+    $ua->timeout(1);
+
+    return $ua;
 }
 
 sub query {
@@ -70,7 +74,9 @@ sub do_solr_query {
 
     $self->solr_uri->query_form( q => $search_str, wt => 'json', rows => $self->solr_rows, start => $start );
     my $uri = $self->solr_uri;
+
     my $response = $self->get($self->solr_uri);
+
     unless ( $response->is_success ) {
         die "Solr search for '$search_str' failed: " . $response->message;
     }
