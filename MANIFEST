@@ -82,6 +82,7 @@ shared_static/Genoverse/js/Track/library/Scalebar.js
 shared_static/Genoverse/js/Track/library/Scaleline.js
 shared_static/Genoverse/js/Track/library/Static.js
 shared_static/Genoverse/js/genomes/grch37.js
+shared_static/Genoverse/js/genomes/grch38.js
 shared_static/Genoverse/js/genomes/grcm38.js
 shared_static/Genoverse/js/genomes/node.js
 shared_static/Genoverse/js/genomes/tomato.js

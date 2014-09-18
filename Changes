@@ -1,3 +1,7 @@
+0.028     2014-09-18 13:49:46 Europe/London
+
+    Added new human assembly grch37 for Genoverse
+
 0.027     2014-08-18 10:58:22 Europe/London
 
     Add new get_slice method to EnsEMBL util
