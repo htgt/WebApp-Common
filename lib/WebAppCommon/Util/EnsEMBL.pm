@@ -1,7 +1,7 @@
 package WebAppCommon::Util::EnsEMBL;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::EnsEMBL::VERSION = '0.028';
+    $WebAppCommon::Util::EnsEMBL::VERSION = '0.029';
 }
 ## use critic
 
@@ -28,7 +28,7 @@ sub _build_registry {
 
     Bio::EnsEMBL::Registry->load_registry_from_db(
         -host => $ENV{LIMS2_ENSEMBL_HOST} || 'ensembldb.ensembl.org',
-        -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous'
+        -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous',
     );
 
     # make sure database connection is not lost before use
@@ -133,8 +133,8 @@ sub get_ensembl_gene {
     if ( $gene_name =~ /ENS(MUS)?G\d+/ ) {
         $gene = $self->gene_adaptor->fetch_by_stable_id( $gene_name );
     }
-    elsif ( $gene_name =~ /HGNC:(\d+)/ ) {
-        $gene = $self->_fetch_by_external_name( $1, 'HGNC' );
+    elsif ( $gene_name =~ /HGNC:\d+/ ) {
+        $gene = $self->_fetch_by_external_name( $gene_name, 'HGNC' );
     }
     elsif ( $gene_name =~ /MGI:\d+/  ) {
         $gene = $self->_fetch_by_external_name( $gene_name, 'MGI' );
@@ -213,7 +213,6 @@ sub external_gene_id {
 
     if ( @ids ) {
         my $id = shift @ids;
-        $id = 'HGNC:' . $id if $type eq 'HGNC';
         return $id;
     }
     else {
