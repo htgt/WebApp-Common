@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.029     2014-10-07 09:16:59 Europe/London
+
+    Changes for new human assembly, ensembl api treats hgnc ids differently now
+
 0.028     2014-09-18 13:49:46 Europe/London
 
     Added new human assembly grch37 for Genoverse
