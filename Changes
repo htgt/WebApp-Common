@@ -1,3 +1,7 @@
+0.030     2014-10-07 12:23:40 Europe/London
+
+    Corrected format of grch38.js
+
 0.029     2014-10-07 09:16:59 Europe/London
 
     Changes for new human assembly, ensembl api treats hgnc ids differently now
