@@ -107,7 +107,7 @@ sub integer {
     my $self = shift;
     return sub {
         my $val = shift;
-        return $val =~ qr/^\d+$/ && $val >= $MIN_INT && $val <= $MAX_INT;
+        return $val =~ qr/^-?\d+$/ && $val >= $MIN_INT && $val <= $MAX_INT;
     }
 }
 
