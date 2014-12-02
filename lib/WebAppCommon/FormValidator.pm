@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::VERSION = '0.030';
+    $WebAppCommon::FormValidator::VERSION = '0.031';
 }
 ## use critic
 
@@ -113,7 +113,7 @@ sub check_params {
     my $validated_params = $results->valid;
 
     while ( my ( $field, $f_spec ) = each %{$spec} ) {
-        next unless $validated_params->{$field};
+        next unless exists $validated_params->{$field};
 
         if ( $f_spec->{post_filter} ) {
             $validated_params->{$field} = $self->post_filter( $f_spec->{post_filter}, $validated_params->{$field} );
@@ -131,9 +131,10 @@ sub dfv_profile {
 
     my ( @required, @optional, %constraint_methods, %field_filters, %defaults );
 
-    my $dependencies      = delete $spec->{DEPENDENCIES};
-    my $dependency_groups = delete $spec->{DEPENDENCY_GROUPS};
-    my $require_some      = delete $spec->{REQUIRE_SOME};
+    my $dependencies           = delete $spec->{DEPENDENCIES};
+    my $dependency_groups      = delete $spec->{DEPENDENCY_GROUPS};
+    my $require_some           = delete $spec->{REQUIRE_SOME};
+    my $missing_optional_valid = delete $spec->{MISSING_OPTIONAL_VALID};
 
     while ( my ( $field, $f_spec ) = each %{$spec} ) {
         if ( $f_spec->{optional} ) {
@@ -157,14 +158,15 @@ sub dfv_profile {
     }
 
     return {
-        required           => \@required,
-        optional           => \@optional,
-        defaults           => \%defaults,
-        field_filters      => \%field_filters,
-        constraint_methods => \%constraint_methods,
-        dependencies       => $dependencies,
-        dependency_groups  => $dependency_groups,
-        require_some       => $require_some,
+        required               => \@required,
+        optional               => \@optional,
+        defaults               => \%defaults,
+        field_filters          => \%field_filters,
+        constraint_methods     => \%constraint_methods,
+        dependencies           => $dependencies,
+        dependency_groups      => $dependency_groups,
+        require_some           => $require_some,
+        missing_optional_valid => $missing_optional_valid,
     };
 }
 
