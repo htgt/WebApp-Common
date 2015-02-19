@@ -47,6 +47,7 @@ sub c_find_gene {
             gene_id     => $params->{search_term},
             gene_symbol => 'unknown',
             ensembl_id  => '',
+            chromosome  => '',
         };
     }
 
