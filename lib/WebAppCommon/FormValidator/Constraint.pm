@@ -140,7 +140,7 @@ sub ensembl_gene_id {
 }
 
 sub ensembl_transcript_id {
-    return shift->regexp_matches(qr/^ENSMUST\d+$/);
+    return shift->regexp_matches(qr/^ENS[A-Z]*T\d+$/);
 }
 
 sub ensembl_exon_id {
