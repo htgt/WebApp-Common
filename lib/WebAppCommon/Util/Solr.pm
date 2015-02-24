@@ -1,7 +1,7 @@
 package WebAppCommon::Util::Solr;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::Solr::VERSION = '0.031';
+    $WebAppCommon::Util::Solr::VERSION = '0.033';
 }
 ## use critic
 
@@ -56,10 +56,7 @@ sub query {
     my $search_str = $self->build_search_str( $search_term );
 
     # what to get back from the search
-    my @attrs = ('id', 'symbol', 'ensembl_id');
-    if ($show_all ) {
-        push @attrs, ('design_count', 'crispr_pairs_count');
-    }
+    my @attrs = ('id', 'symbol', 'ensembl_id', 'chromosome');
 
     my @results;
     my ( $start, $num_found ) = ( 0, 0 );

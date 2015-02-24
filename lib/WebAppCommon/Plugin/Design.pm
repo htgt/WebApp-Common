@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.031';
+    $WebAppCommon::Plugin::Design::VERSION = '0.033';
 }
 ## use critic
 
@@ -46,22 +46,23 @@ sub c_list_design_types {
 
 sub pspec_create_design {
     return {
-        species                 => { validate => 'existing_species', rename => 'species_id' },
-        id                      => { validate => 'integer', optional => 1 },
-        type                    => { validate => 'existing_design_type', rename => 'design_type_id' },
-        created_at              => { validate => 'date_time', post_filter => 'parse_date_time', optional => 1 },
-        created_by              => { validate => 'existing_user', post_filter => 'user_id_for' },
-        phase                   => { validate => 'phase', optional => 1 },
-        validated_by_annotation => { validate => 'validated_by_annotation', default => 'not done' },
-        name                    => { validate => 'alphanumeric_string', optional => 1 },
-        target_transcript       => { optional => 1, validate => 'ensembl_transcript_id' },
-        oligos                  => { optional => 1 },
-        comments                => { optional => 1 },
-        genotyping_primers      => { optional => 1 },
-        gene_ids                => { validate => 'hashref', optional => 1 },
-        design_parameters       => { validate => 'json', optional => 1 },
-        cassette_first          => { validate => 'boolean', default => 1 },
-        global_arm_shortened    => { validate => 'integer', optional => 1 },
+        species                   => { validate => 'existing_species', rename => 'species_id' },
+        id                        => { validate => 'integer', optional => 1 },
+        type                      => { validate => 'existing_design_type', rename => 'design_type_id' },
+        created_at                => { validate => 'date_time', post_filter => 'parse_date_time', optional => 1 },
+        created_by                => { validate => 'existing_user', post_filter => 'user_id_for' },
+        phase                     => { validate => 'phase', optional => 1 },
+        validated_by_annotation   => { validate => 'validated_by_annotation', default => 'not done' },
+        name                      => { validate => 'alphanumeric_string', optional => 1 },
+        target_transcript         => { optional => 1, validate => 'ensembl_transcript_id' },
+        oligos                    => { optional => 1 },
+        comments                  => { optional => 1 },
+        genotyping_primers        => { optional => 1 },
+        gene_ids                  => { validate => 'hashref', optional => 1 },
+        design_parameters         => { validate => 'json', optional => 1 },
+        cassette_first            => { validate => 'boolean', default => 1 },
+        global_arm_shortened      => { validate => 'integer', optional => 1 },
+        nonsense_design_crispr_id => { validate => 'integer', optional => 1 },
     };
 }
 
@@ -94,7 +95,10 @@ sub c_create_design {
             slice_def( $validated_params,
                        qw( id species_id name created_by created_at design_type_id
                            phase validated_by_annotation target_transcript
-                           design_parameters cassette_first global_arm_shortened ) )
+                           design_parameters cassette_first global_arm_shortened
+                           nonsense_design_crispr_id
+                          )
+                      )
         }
     );
     $self->log->debug( 'Create design ' . $design->id );

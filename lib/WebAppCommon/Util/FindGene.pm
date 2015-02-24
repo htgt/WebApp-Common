@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FindGene;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FindGene::VERSION = '0.031';
+    $WebAppCommon::Util::FindGene::VERSION = '0.033';
 }
 ## use critic
 
@@ -53,6 +53,7 @@ sub c_find_gene {
             gene_id     => $params->{search_term},
             gene_symbol => 'unknown',
             ensembl_id  => '',
+            chromosome  => '',
         };
     }
 

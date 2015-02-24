@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.031';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.033';
 }
 ## use critic
 
@@ -146,7 +146,7 @@ sub ensembl_gene_id {
 }
 
 sub ensembl_transcript_id {
-    return shift->regexp_matches(qr/^ENSMUST\d+$/);
+    return shift->regexp_matches(qr/^ENS[A-Z]*T\d+$/);
 }
 
 sub ensembl_exon_id {
