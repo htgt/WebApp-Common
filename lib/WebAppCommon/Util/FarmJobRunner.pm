@@ -147,6 +147,10 @@ sub submit_and_wait{
             if($info[2] eq 'DONE'){
                 return 1;
             }
+            elsif($info[2] ne 'PEND' and $info[2] ne 'RUN'){
+                # Job has failed in some way
+                return 0;
+            }
         }
         sleep($args{interval});
         $duration = time - $start;
