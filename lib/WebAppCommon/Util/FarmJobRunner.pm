@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FarmJobRunner;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.033';
+    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.034';
 }
 ## use critic
 
@@ -67,12 +67,15 @@ sub submit_pspec {
     return (
         out_file        => { isa => File, coerce => 1 },
         cmd             => { isa => 'ArrayRef' },
-        #the rest are optional
+        # the rest are optional
         queue           => { isa => 'Str', optional => 1, default => $self->default_queue },
         memory_required => { isa => 'Int', optional => 1, default => $self->default_memory },
         processors      => { isa => 'Int', optional => 1, default => $self->default_processors },
         err_file        => { isa => File,  optional => 1, coerce => 1 },
         dependencies    => { isa => 'ArrayRefOfInts', optional => 1, coerce => 1 },
+        # these are only relevant to submit_and_wait. times are in seconds
+        timeout         => { isa => 'Int', optional => 1, default => 600 },
+        interval        => { isa => 'Int', optional => 1, default => 10 },
     );
 }
 
@@ -119,6 +122,48 @@ sub submit {
     my ( $job_id ) = $output =~ /Job <(\d+)>/;
 
     return $job_id;
+}
+
+# Submit bsub command and then wait until it has finished running
+# Return 1 if job finishes within timeout, otherwise return 0
+sub submit_and_wait{
+    my ( $self ) = shift;
+
+    my %args = validated_hash( \@_, $self->submit_pspec );
+
+    my $job_id = $self->submit(\%args);
+    my $start = time;
+    return $job_id if $self->dry_run;
+
+    $self->log->info("Waiting for job $job_id to complete");
+
+    my @job_status_cmd = $self->_wrap_bsub('bjobs', $job_id);
+
+    # Run job status command every <interval> seconds until <timeout> is exceeded
+    my $duration = 0;
+    while($duration < $args{timeout}){
+        $self->log->info("Checking job status after $duration seconds");
+        my $output = $self->_run_cmd( @job_status_cmd );
+        # Parse job info output like:
+        # JOBID   USER    STAT  QUEUE      FROM_HOST   EXEC_HOST   JOB_NAME   SUBMIT_TIME
+        # 7236539 af11    DONE  normal     farm3-head2 bc-26-1-15  *ches.json Feb 19 11:28
+        my @lines = split "\n", $output;
+        if(my $jobinfo = $lines[1]){
+            my @info = split /\s+/, $jobinfo;
+            if($info[2] eq 'DONE'){
+                return 1;
+            }
+            elsif($info[2] ne 'PEND' and $info[2] ne 'RUN'){
+                # Job has failed in some way
+                return 0;
+            }
+        }
+        sleep($args{interval});
+        $duration = time - $start;
+    }
+
+    # Must have timed out so return completion status of 0
+    return 0;
 }
 
 #take an array with bsub commands and produce the final command
