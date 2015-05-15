@@ -11,7 +11,11 @@
       setTimeout(function() {
         poller.call(this, startPoller);
       }, wait);
-      wait = wait * 1.5;
+      // max wait should be around 10 secounds
+      console.log(wait);
+      if ( wait < 10000 ) {
+          wait = wait * 1.5;
+      }
     })();
   };
 } )(jQuery);
