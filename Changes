@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.035     2015-05-15 11:29:06 Europe/London
+
+   Set max wait time for javascript smart poller to 10 seconds
+
 0.034     2015-02-24 15:37:11 Europe/London
 
    Added submit_and_wait method to farm job runner
