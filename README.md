@@ -5,10 +5,10 @@ Common code and files shared between LIMS2 and WGE
 
 ## Development
 
-When modifying code within WebAppCommon you must set the specific environment variables so that your LIMS2 / WGE development instances can see your modified code / files.
+When modifying code within WebAppCommon you must set specific environment variables so that your LIMS2 / WGE development instances can see your modified code / files.
 
 ### Template Toolkit Files
-* Default:  '/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_templates'
+* Default:  `/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_templates`
 * Custom: `SHARED_WEBAPP_TT_DIR`
 
 ```
@@ -22,7 +22,7 @@ export SHARED_WEBAPP_TT_DIR=~/workspace/WebApp-Common/shared_templates
 ```
 
 ### Static Files
-* Default:  '/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_static'
+* Default:  `/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_static`
 * Custom: `SHARED_WEBAPP_STATIC_DIR`
 
 ```
@@ -42,11 +42,11 @@ export SHARED_WEBAPP_STATIC_DIR=~/workspace/WebApp-Common/shared_static
 export PERL5LIB=~/workspace/WebApp-Common/lib:$PERL5LIB
 ```
 
-* The LIMS2 and WGE model both look in the WebAppCommon::Plugin namespace for plugins to load.
+* The LIMS2 and WGE model both look in the `WebAppCommon::Plugin` namespace for plugins to load.
 * The base classes for the FormValidator code is in WebAppCommon:
-    * [WebAppCommon::FormValidator](https://github.com/htgt/WebApp-Common/blob/devel/lib/WebAppCommon/FormValidator.pm) base class for FormValidator code. 
-    * [WebAppCommon::FormValidator::Constraint](https://github.com/htgt/WebApp-Common/blob/devel/lib/WebAppCommon/FormValidator/Constraint.pm) stored shared constraints, put any constraints you think might be useful in either site here.
-* The rest of the code in the WebAppCommon::Util, WebAppCommon::Crispr and WebAppCommon::Design namespaces are loaded like any other perl module.
+    * [WebAppCommon::FormValidator](https://github.com/htgt/WebApp-Common/blob/devel/lib/WebAppCommon/FormValidator.pm) is the base class for FormValidator code. 
+    * [WebAppCommon::FormValidator::Constraint](https://github.com/htgt/WebApp-Common/blob/devel/lib/WebAppCommon/FormValidator/Constraint.pm) stores shared constraints, put any constraints you think might be useful in either site here.
+* The rest of the code in the `WebAppCommon::Util,` `WebAppCommon::Crispr` and `WebAppCommon::Design` namespaces are loaded like any other perl module.
 
 ## Deployment
 
