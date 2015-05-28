@@ -5,38 +5,38 @@ Common code and files shared between LIMS2 and WGE
 
 ## Development
 
-When modifying code within WebAppCommon you must set the following env variables so that your LIMS2 / WGE development instances can see your modified code / files.
+When modifying code within WebAppCommon you must set the specific environment variables so that your LIMS2 / WGE development instances can see your modified code / files.
 
 ### Template Toolkit Files
-Default:  '/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_templates'
-Custom: `SHARED_WEBAPP_TT_DIR`
+* Default:  '/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_templates'
+* Custom: `SHARED_WEBAPP_TT_DIR`
 
 ```
 export SHARED_WEBAPP_TT_DIR=~/workspace/WebApp-Common/shared_templates
 ```
 
-To use any new files you place in this directory give it the path from the shared folder.
+* To use any new files you place in this directory give it the path from the shared folder.
 
 ```
 [% INCLUDE 'create_design/diagram_placeholder.tt' %]
 ```
 
 ### Static Files
-Default:  '/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_static'
-Custom: `SHARED_WEBAPP_STATIC_DIR`
+* Default:  '/opt/t87/global/software/perl/lib/perl5/WebAppCommon/shared_static'
+* Custom: `SHARED_WEBAPP_STATIC_DIR`
 
 ```
 export SHARED_WEBAPP_STATIC_DIR=~/workspace/WebApp-Common/shared_static
 ```
 
-To point to any of these static files give it the path from the above shared folder.
+* To point to any of these static files give it the path from the above shared folder.
 
 ```
 <script type="text/javascript" src="[% c.uri_for( '/js/diagram.builder.js' ) %]"></script>
 ```
 
 ### Perl Code
-Make sure your local WebAppCommon lib folder is in your PERL5LIB env value.
+* Make sure your local WebAppCommon lib folder is in your PERL5LIB env value.
 
 ```
 export PERL5LIB=~/workspace/WebApp-Common/lib:$PERL5LIB
