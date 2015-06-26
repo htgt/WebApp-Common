@@ -1,7 +1,0 @@
-.build
-WebAppCommon-*
-*~
-cover_db
-tmp
-.project
-.prove
