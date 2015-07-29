@@ -1,6 +1,7 @@
 // Genoverse tracks which can be used in both LIMS2 and WGE
 
 Genoverse.Track.Genes = Genoverse.Track.extend({
+    info   : 'Ensembl API genes & transcripts, see <a href="http://rest.ensembl.org/" target="_blank">rest.ensembl.org</a> for more details',
     // Different settings for different zoom level
     2000000: { // This one applies when > 2M base-pairs per screen
       labels : false
