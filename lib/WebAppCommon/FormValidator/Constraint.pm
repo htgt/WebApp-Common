@@ -271,8 +271,9 @@ sub validated_by_annotation {
 }
 
 sub dna_seq {
-    return shift->regexp_matches(qr/^[ATGCN]+$/);
+    return shift->regexp_matches(qr/^[ATGCNatgcn]+$/);
 }
+
 __PACKAGE__->meta->make_immutable;
 
 1;
