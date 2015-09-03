@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.037';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.038';
 }
 ## use critic
 
@@ -389,7 +389,7 @@ sub common_gibson_param_validation {
     $vp->{assembly_id} = $self->assembly_id;
     $vp->{user}        = $self->user;
     #create dir
-    $vp->{output_dir}->mkpath();
+    #$vp->{output_dir}->mkpath();
 
     return $vp;
 }

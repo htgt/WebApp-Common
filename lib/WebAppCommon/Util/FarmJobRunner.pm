@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FarmJobRunner;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.037';
+    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.038';
 }
 ## use critic
 

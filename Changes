@@ -1,3 +1,7 @@
+0.038     2015-09-03 12:39:00 Europe/London
+
+   Don't create the design directory (no lustre access)
+
 0.037     2015-07-29 14:25:18 Europe/London
 
    Moved common genoverse tracks into shared_static
