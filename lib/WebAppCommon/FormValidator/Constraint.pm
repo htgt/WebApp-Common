@@ -183,6 +183,10 @@ sub existing_user {
     return shift->in_resultset( 'User', 'name' );
 }
 
+sub existing_user_id {
+    return shift->in_resultset( 'User', 'id' );
+}
+
 sub existing_role {
     return shift->in_resultset( 'Role', 'name' );
 }
