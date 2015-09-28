@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.038';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.039';
 }
 ## use critic
 
@@ -187,6 +187,10 @@ sub existing_genotyping_primer_type {
 
 sub existing_user {
     return shift->in_resultset( 'User', 'name' );
+}
+
+sub existing_user_id {
+    return shift->in_resultset( 'User', 'id' );
 }
 
 sub existing_role {
