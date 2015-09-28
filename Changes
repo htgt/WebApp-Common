@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.039     2015-09-28 12:54:07 Europe/London
+
+  Added shared genoverse sequence track with copy to clipboard functionality
+
 0.039     2015-09-25 09:41:30 Europe/London
    Added existing_user_id to formvalidator
 0.038     2015-09-03 12:39:00 Europe/London
