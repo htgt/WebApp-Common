@@ -137,6 +137,7 @@ shared_templates/design_attempt/candidate_oligos.tt
 shared_templates/design_attempt/candidate_regions.tt
 shared_templates/design_attempt/design_params.tt
 shared_templates/design_attempt/fail_reason.tt
+shared_templates/genoverse_mods/selector_size_display.tt
 t/00-compile.t
 t/10-webapp-common-util-ensembl.t
 t/10-webapp-common-util-farmjobrunner.t
