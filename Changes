@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.042     2015-11-10 16:19:10 Europe/London
+
+  Bugfix: selected size element shown in wrong place if screen scrolled
+
 0.041     2015-11-05 16:29:49 Europe/London
 
   Added javascript to display selected region size in genoverse
