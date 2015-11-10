@@ -42,7 +42,38 @@
           console.log( "width: " + base_count );
           this.selectorSizeDisplay.css({
             left : e.pageX + 5,
-            top  : e.pageY - 20,
+            top  : e.pageY - document.body.scrollTop - 20,
             display : 'block',
+            position : 'fixed'
           }).text(base_count);
         };
+
+  window.genoverse.stopDragSelect = function (e) {
+    if (!e) {
+      return false;
+    }
+
+    this.dragging        = false;
+    this.selectorStalled = true;
+
+    if (this.selector.outerWidth(true) < 2) {
+      return this.cancelSelect();
+    }
+
+    // Calculate the position, so that selectorControls appear near the mouse cursor
+    var top = Math.min(e.pageY - this.wrapper.offset().top, this.wrapper.outerHeight(true) - 1.2 * this.selectorControls.outerHeight(true));
+
+    this.selectorControls.css({
+      top  : top,
+      left : this.selector.outerWidth(true) / 2 - this.selectorControls.outerWidth(true) / 2
+    }).show();
+
+    // Make the size selector display stay at its current position
+    var wrapper_pos = $(".gv_wrapper").offset();
+    var display_pos = this.selectorSizeDisplay.offset();
+    this.selectorSizeDisplay.css({
+      top  : display_pos.top - 35 - wrapper_pos.top,
+      left : display_pos.left + 15 - wrapper_pos.left,
+      position : 'absolute'
+    });
+  };
