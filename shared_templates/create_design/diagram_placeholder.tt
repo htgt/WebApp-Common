@@ -11,18 +11,22 @@
 <fieldset>
   <legend>Design Parameters</legend>
 
-  [% DEFAULT gibson_type = 'deletion' %]
+  [% DEFAULT design_type = 'gibson-deletion' %]
   <div class="form-horizontal">
     <div class="control-group" [% IF hide_type %]style="display:none"[% END %]>
-      <label class="control-label">Gibson Type</label>
+      <label class="control-label">Design Type</label>
       <div class="controls">
         <label class="radio inline">
-          <input type="radio" name="gibson_type" id="gibson_type_del" value="deletion" [% IF gibson_type == 'deletion' %] checked [% END %]>
-          Deletion
+          <input type="radio" name="design_type" id="design_type_del" value="gibson-deletion" [% IF design_type == 'gibson-deletion' %] checked [% END %]>
+          Gibson-Deletion
         </label>
         <label class="radio inline">
-          <input type="radio" name="gibson_type" id="gibson_type_cond" value="conditional" [% IF gibson_type == 'conditional' %] checked [% END %]>
-          Conditional
+          <input type="radio" name="design_type" id="design_type_cond" value="gibson-conditional" [% IF design_type == 'gibson-conditional' %] checked [% END %]>
+          Gibson-Conditional
+        </label>
+        <label class="radio inline">
+          <input type="radio" name="design_type" id="design_type_fus_del" value="fusion-deletion" [% IF design_type == 'fusion-deletion' %] checked [% END %]>
+          Fusion-Deletion
         </label>
       </div>
     </div>
