@@ -1,0 +1,79 @@
+
+        // Make modifications to show selected region size
+        window.genoverse.on('afterInit', function () {
+          console.log("adding selector size element");
+          window.genoverse.selectorSizeDisplay = $('<div class="selector_size_display">').appendTo(window.genoverse.wrapper);
+        });
+
+        window.genoverse.cancelSelect = function (keepDragging){
+          if (!keepDragging) {
+            this.dragging = false;
+          }
+
+          this.selectorStalled = false;
+
+          this.selector.addClass('crosshair').width(0);
+          this.selectorControls.hide();
+          this.selectorSizeDisplay.hide();
+
+          if (this.dragAction === 'scroll') {
+            this.selector.hide();
+          }
+        };
+
+        window.genoverse.dragSelect = function (e) {
+          var x = e.pageX - this.wrapper.offset().left;
+
+          var width;
+          if (x > this.selectorStart) {
+            width = Math.min(x - this.selectorStart, this.width - this.selectorStart - 1);
+            this.selector.css({
+            left  : this.selectorStart,
+            width : width
+            });
+          } else {
+            width = Math.min(this.selectorStart - x, this.selectorStart - 1);
+            this.selector.css({
+            left  : Math.max(x, 1),
+            width : width
+            });
+          }
+          var base_count = Math.round(width / this.scale);
+          console.log( "width: " + base_count );
+          this.selectorSizeDisplay.css({
+            left : e.pageX + 5,
+            top  : e.pageY - document.body.scrollTop - 20,
+            display : 'block',
+            position : 'fixed'
+          }).text(base_count);
+        };
+
+  window.genoverse.stopDragSelect = function (e) {
+    if (!e) {
+      return false;
+    }
+
+    this.dragging        = false;
+    this.selectorStalled = true;
+
+    if (this.selector.outerWidth(true) < 2) {
+      return this.cancelSelect();
+    }
+
+    // Calculate the position, so that selectorControls appear near the mouse cursor
+    var top = Math.min(e.pageY - this.wrapper.offset().top, this.wrapper.outerHeight(true) - 1.2 * this.selectorControls.outerHeight(true));
+
+    this.selectorControls.css({
+      top  : top,
+      left : this.selector.outerWidth(true) / 2 - this.selectorControls.outerWidth(true) / 2
+    }).show();
+
+    // Make the size selector display stay at its current position
+    var wrapper_pos = $(".gv_wrapper").offset();
+    var display_pos = this.selectorSizeDisplay.offset();
+    this.selectorSizeDisplay.css({
+      top  : display_pos.top - 35 - wrapper_pos.top,
+      left : display_pos.left + 15 - wrapper_pos.left,
+      position : 'absolute'
+    });
+  };

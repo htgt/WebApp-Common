@@ -10,12 +10,20 @@
   region_length_3R    = 500
   region_length_5R_EF = 200
   region_length_ER_3F = 200
+  region_length_f5F   = 500
+  region_length_U5    = 100
+  region_length_D3    = 100
+  region_length_f3R   = 500
   region_offset_5F    = 1000
   region_offset_3R    = 1000
   region_offset_5R    = 1
   region_offset_3F    = 1
   region_offset_5R_EF = 200
   region_offset_ER_3F = 100
+  region_offset_f5F   = 1000
+  region_offset_f3R   = 1000
+  region_offset_U5    = 1
+  region_offset_D3    = 1
 %]
 
 <script type="text/javascript">
@@ -80,6 +88,35 @@ function createCustomTargetGibsonDeletionDiagram(builder) {
   builder.addField(target, "target_end", '[% target_end %]', "End", "top right");
 }
 
+function createCustomTargetFusionDeletionDiagram(builder) {
+  var fiveF = builder.addBox("f5F");
+
+  var uFive = builder.addBox("U5");
+
+  var target = builder.addTarget();
+
+  var dThree = builder.addBox("D3");
+
+  var threeR = builder.addBox("f3R");
+
+  //add all the offset size fields to the fields we want them on
+  builder.addLabel(fiveF, uFive, "f5F offset", "end to start", "region_offset_f5F", '[% region_offset_f5F %]');
+  builder.addLabel(dThree, threeR, "f3R offset", "end to start", "region_offset_f3R", '[% region_offset_f3R %]');
+  builder.addLabel(uFive, target, "U5 offset", "end to start", "region_offset_U5", '[% region_offset_U5 %]');
+  builder.addLabel(target, dThree, "D3 offset", "end to start", "region_offset_D3", '[% region_offset_D3 %]');
+
+  //add all the block size fields to the fields we want them on
+  builder.addField(fiveF, "region_length_f5F", '[% region_length_f5F %]', "f5F block size");
+  builder.addField(uFive, "region_length_U5", '[% region_length_U5 %]', "U5 block size");
+  builder.addField(dThree, "region_length_D3", '[% region_length_D3 %]', "D3 block size");
+  builder.addField(threeR, "region_length_f3R", '[% region_length_f3R %]', "f3R block size");
+
+  //add target start and end
+  builder._attributes.textWidth = 80;
+  builder.addField(target, "target_start", '[% target_start %]', "Start", "top left");
+  builder.addField(target, "target_end", '[% target_end %]', "End", "top right");
+}
+
 var builder;
 
 $(document).ready(function() {
@@ -87,23 +124,30 @@ $(document).ready(function() {
   builder = new DiagramBuilder("holder", 1000, 150);
   builder._attributes.spacing = 150;
 
-  var gibson_type_field = $("input[name='gibson_type']:checked");
-  var gibson_type = gibson_type_field.val();
-  if (gibson_type == 'conditional') {
+  var design_type_field = $("input[name='design_type']:checked");
+  var design_type = design_type_field.val();
+  if (design_type == 'conditional') {
     createCustomTargetGibsonDiagram(builder);
   }
   else {
     createCustomTargetGibsonDeletionDiagram(builder);
   }
 
-  $("input[name='gibson_type']:radio").change(function(){
-      var gibson_type = $(this).val();
-      console.log('Gibson Type: ' + gibson_type);
-      if (gibson_type=='deletion') {
+  $("input[name='design_type']:radio").change(function(){
+      var design_type = $(this).val();
+      console.log('Gibson Type: ' + design_type);
+      if (design_type=='deletion') {
         builder.clearDiagram();
         builder._attributes.spacing = 150;
         createCustomTargetGibsonDeletionDiagram(builder);
       }
+      else if (design_type == 'fusion-deletion') {
+        builder.clearDiagram();
+        builder._attributes.spacing = 150;
+        createCustomTargetFusionDeletionDiagram(builder);
+
+      }
+
       else {
         builder.clearDiagram();
         builder._attributes.spacing = 150;
