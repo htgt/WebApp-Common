@@ -76,7 +76,6 @@ sub submit_pspec {
 #set all common options for bsub and run the user specified command.
 sub submit {
     my ( $self ) = shift;
-
     my %args = validated_hash( \@_, $self->submit_pspec );
 
     my @bsub = (
