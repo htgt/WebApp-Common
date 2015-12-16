@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.043';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.044';
 }
 ## use critic
 

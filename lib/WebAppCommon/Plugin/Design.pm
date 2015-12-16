@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.043';
+    $WebAppCommon::Plugin::Design::VERSION = '0.044';
 }
 ## use critic
 
@@ -58,7 +58,7 @@ sub pspec_create_design {
         oligos                    => { optional => 1 },
         comments                  => { optional => 1 },
         genotyping_primers        => { optional => 1 },
-        gene_ids                  => { validate => 'hashref', optional => 1 },
+        gene_ids                  => { optional => 1 },
         design_parameters         => { validate => 'json', optional => 1 },
         cassette_first            => { validate => 'boolean', default => 1 },
         global_arm_shortened      => { validate => 'integer', optional => 1 },
@@ -87,7 +87,6 @@ sub pspec_create_genotyping_primer {
 
 sub c_create_design {
     my ( $self, $params ) = @_;
-
     my $validated_params = $self->check_params( $params, $self->pspec_create_design );
 
     my $design = $self->schema->resultset( 'Design' )->create(
@@ -102,7 +101,6 @@ sub c_create_design {
         }
     );
     $self->log->debug( 'Create design ' . $design->id );
-
     for my $g ( @{ $validated_params->{gene_ids} || [] } ) {
         $self->trace( "Create gene_design " . $g->{gene_id} );
         $design->create_related(
@@ -145,7 +143,6 @@ sub pspec_create_design_oligo {
 
 sub c_create_design_oligo {
     my ( $self, $params, $design ) = @_;
-
     my $validated_params = $self->check_params( $params, $self->pspec_create_design_oligo );
     $self->trace( "Create design oligo", $validated_params );
     $design ||= $self->c_retrieve_design( { id => $validated_params->{design_id} } );
@@ -177,7 +174,6 @@ sub pspec_create_design_oligo_locus {
 
 sub c_create_design_oligo_locus {
     my ( $self, $params, $oligo ) = @_;
-
     my $validated_params = $self->check_params( $params, $self->pspec_create_design_oligo_locus );
     $self->trace( "Create oligo locus", $validated_params );
 
@@ -257,7 +253,6 @@ sub pspec_retrieve_design {
 
 sub c_retrieve_design {
     my ( $self, $params ) = @_;
-
     my $validated_params = $self->check_params( $params, $self->pspec_retrieve_design );
 
     my $design = $self->retrieve( Design => { slice_def $validated_params, qw( id species_id ) } );
@@ -281,7 +276,6 @@ sub pspec_retrieve_design_oligo {
 
 sub c_retrieve_design_oligo {
     my ( $self, $params ) = @_;
-
     my $validated_params = $self->check_params( $params, $self->pspec_retrieve_design_oligo );
 
     my $design_oligo = $self->retrieve(
