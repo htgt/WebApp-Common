@@ -21,6 +21,7 @@ meta-spec:
 name: WebAppCommon
 requires:
   Bio::EnsEMBL::Registry: 0
+  Bio::SeqIO: 0
   Const::Fast: 0
   Data::Dump: 0
   Data::Dumper: 0
@@ -56,4 +57,4 @@ requires:
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.044
+version: 0.045
