@@ -1,7 +1,7 @@
 package WebAppCommon::Design::FusionConversion;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::FusionConversion::VERSION = '0.045';
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.046';
 }
 ## use critic
 
@@ -20,7 +20,6 @@ use Bio::EnsEMBL::Registry;
 sub modify_fusion_oligos {
     my ($self, $oligos) = @_;
     my @oligos_arr = @{$oligos};
-
     my $slice;
     my $seq;
 
@@ -38,17 +37,9 @@ sub modify_fusion_oligos {
         '-1f3R' => sub { return 0, 15 },
     };
 
-    my $oligo_rename = {
-        'f5F'   => 'f5F',
-        'U5'    => 'D3',
-        'D3'    => 'f3R',
-        'f3R'   => 'U5',
-    };
-
     foreach my $oligo (@oligos_arr) {
         my @loci_array = @{$oligo->{loci}};
         foreach my $loci (@loci_array) {
-            $oligo->{type} = $oligo_rename->{$oligo->{type}};
             if ($oligo->{type} eq 'D3' || $oligo->{type} eq 'U5') {
                 my ($start_loc, $end_loc, $ident) = $oligo_slice->{$self->chr_strand . $oligo->{type}}->($loci->{chr_start}, $loci->{chr_end});
 
@@ -60,13 +51,7 @@ sub modify_fusion_oligos {
                     $self->chr_strand,
                 );
 
-                if ($self->chr_strand == -1) {
-                    $seq = Bio::Seq->new( -alphabet => 'dna', -seq => $oligo->{seq}, -verbose => -1 )->revcom;
-                    $seq = $seq->seq;
-                }
-                else {
-                    $seq = $oligo->{seq};
-                }
+                $seq = $oligo->{seq};
 
                 if ($ident == 0) {
                     $seq = $seq . $slice->seq;
@@ -98,10 +83,7 @@ sub modify_fusion_oligos {
                 else {
                     $loci->{chr_start} = $loci->{chr_end} - 14;
                 }
-                if ($self->chr_strand == -1) {
-                     $seq = Bio::Seq->new( -alphabet => 'dna', -seq => $seq, -verbose => -1 )->revcom;
-                     $seq = $seq->seq;
-                }
+
             }
 
             $oligo->{seq} = $seq;
