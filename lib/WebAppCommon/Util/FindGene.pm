@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FindGene;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FindGene::VERSION = '0.046';
+    $WebAppCommon::Util::FindGene::VERSION = '0.047';
 }
 ## use critic
 

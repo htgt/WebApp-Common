@@ -1,7 +1,7 @@
 package WebAppCommon::Design::FusionConversion;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::FusionConversion::VERSION = '0.046';
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.047';
 }
 ## use critic
 
@@ -42,32 +42,33 @@ sub modify_fusion_oligos {
         foreach my $loci (@loci_array) {
             if ($oligo->{type} eq 'D3' || $oligo->{type} eq 'U5') {
                 my ($start_loc, $end_loc, $ident) = $oligo_slice->{$self->chr_strand . $oligo->{type}}->($loci->{chr_start}, $loci->{chr_end});
-
                 $slice = $self->slice_adaptor->fetch_by_region(
                     'chromosome',
                     $self->chr_name,
                     $start_loc,
                     $end_loc,
-                    $self->chr_strand,
+                    1,
                 );
 
                 $seq = $oligo->{seq};
 
                 if ($ident == 0) {
-                    $seq = $seq . $slice->seq;
                     if ($self->chr_strand == -1) {
+                        $seq = $slice->seq . $seq;
                         $loci->{chr_start} = $start_loc;
                     }
                     else {
+                        $seq = $seq . $slice->seq;
                         $loci->{chr_end} = $end_loc;
                     }
                 }
                 else {
-                    $seq = $slice->seq . $seq;
                     if ($self->chr_strand == -1) {
+                        $seq = $seq . $slice->seq;
                         $loci->{chr_end} = $end_loc;
                     }
                     else {
+                        $seq = $slice->seq . $seq;
                         $loci->{chr_start} = $start_loc;
                     }
                 }
