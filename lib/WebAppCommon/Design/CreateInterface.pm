@@ -735,7 +735,7 @@ sub c_redo_design_attempt {
     else {
         die( "Can not work out design target type for cmd: $command_name" );
     }
-    if ( $command_name eq 'gibson-deletion-exon' || $command_name eq 'gibson-deletion-location' ) {
+    if ( $command_name eq 'gibson-deletion-design-exon' || $command_name eq 'gibson-deletion-design-location' ) {
         $self->_redo_gibson_deletion_params( \%redo_data, $params );
     }
     elsif ( $command_name eq 'gibson-design-exon' || $command_name eq 'gibson-design-location' ) {
