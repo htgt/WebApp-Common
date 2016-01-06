@@ -57,6 +57,7 @@ sub pspec_create_design {
         cassette_first            => { validate => 'boolean', default => 1 },
         global_arm_shortened      => { validate => 'integer', optional => 1 },
         nonsense_design_crispr_id => { validate => 'integer', optional => 1 },
+        parent_id                 => { optional => 1 },
     };
 }
 
@@ -89,7 +90,7 @@ sub c_create_design {
                        qw( id species_id name created_by created_at design_type_id
                            phase validated_by_annotation target_transcript
                            design_parameters cassette_first global_arm_shortened
-                           nonsense_design_crispr_id
+                           nonsense_design_crispr_id parent_id
                           )
                       )
         }
