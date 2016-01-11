@@ -1,7 +1,7 @@
 package WebAppCommon::Design::FusionConversion;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::FusionConversion::VERSION = '0.048';
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.049';
 }
 ## use critic
 
@@ -72,22 +72,8 @@ sub modify_fusion_oligos {
                         $loci->{chr_start} = $start_loc;
                     }
                 }
+                $oligo->{seq} = $seq;
             }
-
-            else {
-                my $length = length $oligo->{seq};
-                my ($start_loc, $end_loc) = $oligo_trim->{$self->chr_strand . $oligo->{type}}->($length);
-                $seq = substr($oligo->{seq}, $start_loc, $end_loc);
-                if ($start_loc == 0) {
-                    $loci->{chr_end} = $loci->{chr_start} + 14;
-                }
-                else {
-                    $loci->{chr_start} = $loci->{chr_end} - 14;
-                }
-
-            }
-
-            $oligo->{seq} = $seq;
         }
     }
     return @oligos_arr;
