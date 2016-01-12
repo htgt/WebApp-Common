@@ -1,7 +1,7 @@
 package WebAppCommon::Design::FusionConversion;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::FusionConversion::VERSION = '0.049';
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.050';
 }
 ## use critic
 
@@ -21,27 +21,20 @@ sub modify_fusion_oligos {
     my ($self, $oligos) = @_;
     my @oligos_arr = @{$oligos};
     my $slice;
-    my $seq;
 
     my $oligo_slice = {
-        '1U5'   => sub { return $_[0]-25, $_[0]-1, 1 },
-        '-1D3'  => sub { return $_[1]+1, $_[1]+25, 1 },
-        '1D3'   => sub { return $_[1]+1, $_[1]+25, 0 },
-        '-1U5'  => sub { return $_[0]-25, $_[0]-1, 0 },
-    };
-
-    my $oligo_trim = {
-        '1f5F'  => sub { return 0, 15 },
-        '-1f5F' => sub { return $_[0]-15, $_[0] },
-        '1f3R'  => sub { return $_[0]-15, $_[0] },
-        '-1f3R' => sub { return 0, 15 },
+        '1U5'   => sub { return $_[0] - (25 + $_[2]), $_[1] - 1 }, #0
+        '-1D3'  => sub { return $_[0] - (25 + $_[2]), $_[1] - 1 }, #0
+        '1D3'   => sub { return $_[0] + 1, $_[1] + (25 + $_[2]) }, #1
+        '-1U5'  => sub { return $_[0] + 1, $_[1] + (25 + $_[2]) }, #1
     };
 
     foreach my $oligo (@oligos_arr) {
         my @loci_array = @{$oligo->{loci}};
         foreach my $loci (@loci_array) {
             if ($oligo->{type} eq 'D3' || $oligo->{type} eq 'U5') {
-                my ($start_loc, $end_loc, $ident) = $oligo_slice->{$self->chr_strand . $oligo->{type}}->($loci->{chr_start}, $loci->{chr_end});
+                my $diff = 25 - ($loci->{chr_end} - $loci->{chr_start} + 1);
+                my ($start_loc, $end_loc) = $oligo_slice->{$self->chr_strand . $oligo->{type}}->($loci->{chr_start}, $loci->{chr_end}, $diff);
                 $slice = $self->slice_adaptor->fetch_by_region(
                     'chromosome',
                     $self->chr_name,
@@ -50,29 +43,9 @@ sub modify_fusion_oligos {
                     1,
                 );
 
-                $seq = $oligo->{seq};
-
-                if ($ident == 0) {
-                    if ($self->chr_strand == -1) {
-                        $seq = $slice->seq . $seq;
-                        $loci->{chr_start} = $start_loc;
-                    }
-                    else {
-                        $seq = $seq . $slice->seq;
-                        $loci->{chr_end} = $end_loc;
-                    }
-                }
-                else {
-                    if ($self->chr_strand == -1) {
-                        $seq = $seq . $slice->seq;
-                        $loci->{chr_end} = $end_loc;
-                    }
-                    else {
-                        $seq = $slice->seq . $seq;
-                        $loci->{chr_start} = $start_loc;
-                    }
-                }
-                $oligo->{seq} = $seq;
+                $loci->{chr_start} = $start_loc;
+                $loci->{chr_end} = $end_loc;
+                $oligo->{seq} = $slice->seq;
             }
         }
     }
