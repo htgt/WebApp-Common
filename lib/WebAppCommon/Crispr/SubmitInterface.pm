@@ -1,7 +1,7 @@
 package WebAppCommon::Crispr::SubmitInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Crispr::SubmitInterface::VERSION = '0.050';
+    $WebAppCommon::Crispr::SubmitInterface::VERSION = '0.051';
 }
 ## use critic
 

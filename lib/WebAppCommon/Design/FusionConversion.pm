@@ -1,7 +1,7 @@
 package WebAppCommon::Design::FusionConversion;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::FusionConversion::VERSION = '0.050';
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.051';
 }
 ## use critic
 
@@ -23,12 +23,11 @@ sub modify_fusion_oligos {
     my $slice;
 
     my $oligo_slice = {
-        '1U5'   => sub { return $_[0] - (25 + $_[2]), $_[1] - 1 }, #0
-        '-1D3'  => sub { return $_[0] - (25 + $_[2]), $_[1] - 1 }, #0
-        '1D3'   => sub { return $_[0] + 1, $_[1] + (25 + $_[2]) }, #1
-        '-1U5'  => sub { return $_[0] + 1, $_[1] + (25 + $_[2]) }, #1
+        '1U5'   => sub { return $_[0] - (25 + $_[2]), $_[1] }, #0
+        '-1D3'  => sub { return $_[0] - (25 + $_[2]), $_[1]}, #0
+        '1D3'   => sub { return $_[0], $_[1] + (25 + $_[2]) }, #1
+        '-1U5'  => sub { return $_[0], $_[1] + (25 + $_[2]) }, #1
     };
-
     foreach my $oligo (@oligos_arr) {
         my @loci_array = @{$oligo->{loci}};
         foreach my $loci (@loci_array) {
