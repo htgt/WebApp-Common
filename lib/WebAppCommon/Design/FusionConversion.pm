@@ -15,7 +15,6 @@ sub modify_fusion_oligos {
     my ($self, $oligos) = @_;
     my @oligos_arr = @{$oligos};
     my $slice;
-    my $seq;
 
     my $oligo_slice = {
         '1U5'   => sub { return $_[0] - (25 + $_[2]), $_[1] - 1 }, #0
@@ -40,7 +39,6 @@ sub modify_fusion_oligos {
 
                 $loci->{chr_start} = $start_loc;
                 $loci->{chr_end} = $end_loc;
-          
                 $oligo->{seq} = $slice->seq;
             }
         }
