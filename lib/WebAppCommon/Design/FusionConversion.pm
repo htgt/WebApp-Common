@@ -22,7 +22,6 @@ sub modify_fusion_oligos {
         '1D3'   => sub { return $_[0], $_[1] + (25 + $_[2]) }, #1
         '-1U5'  => sub { return $_[0], $_[1] + (25 + $_[2]) }, #1
     };
-$DB::single=1;
     foreach my $oligo (@oligos_arr) {
         my @loci_array = @{$oligo->{loci}};
         foreach my $loci (@loci_array) {
