@@ -1,0 +1,39 @@
+<div class="modal fade" id="announceModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"></span></button>
+                <h4 class="modal-title">Announcements</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+        </div>
+    </div>    
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#announceModal').modal({show: false});
+});
+
+var testData;
+$('#announceModal').on('shown', function() {
+    var sys = '[% sys %]';
+    $.getJSON( "[% c.uri_for('/api/announcements') %]" + "?sys=" + sys, function(data){
+        console.log(data);
+        testData = data;
+        var highPriority = data.high;
+        var normalPriority = data.normal;
+        addRows(highPriority, 'warning');
+        addRows(normalPriority, 'info');
+    });
+});
+
+function addRows(rows, type) {
+    for (var count = 0; count < rows.length; count++) {
+        if ($('.modal-body').text().indexOf(rows[count].message) == -1) {
+            $('.modal-body').append('<div class="alert alert-' + type + '"><h4><strong>' + rows[count].created + ':</strong> ' + rows[count].message + '</h4></div>');
+        }
+    }
+}
+</script>
