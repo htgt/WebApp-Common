@@ -16,18 +16,23 @@ $(document).ready(function() {
     $('#announceModal').modal({show: false});
 });
 
-var testData;
 $('#announceModal').on('shown', function() {
     var sys = '[% sys %]';
+
     $.getJSON( "[% c.uri_for('/api/announcements') %]" + "?sys=" + sys, function(data){
-        console.log(data);
-        testData = data;
-        var highPriority = data.high;
-        var normalPriority = data.normal;
-        addRows(highPriority, 'warning');
-        addRows(normalPriority, 'info');
+        splitData(data);
     });
+
 });
+
+function splitData(data) {
+    console.log(data);
+    testData = data;
+    var highPriority = data.high;
+    var normalPriority = data.normal;
+    addRows(highPriority, 'warning');
+    addRows(normalPriority, 'info');
+}
 
 function addRows(rows, type) {
     for (var count = 0; count < rows.length; count++) {
