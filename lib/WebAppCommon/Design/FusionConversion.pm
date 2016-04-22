@@ -1,7 +1,7 @@
 package WebAppCommon::Design::FusionConversion;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::FusionConversion::VERSION = '0.054';
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.055';
 }
 ## use critic
 

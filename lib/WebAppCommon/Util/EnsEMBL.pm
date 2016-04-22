@@ -1,7 +1,7 @@
 package WebAppCommon::Util::EnsEMBL;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::EnsEMBL::VERSION = '0.054';
+    $WebAppCommon::Util::EnsEMBL::VERSION = '0.055';
 }
 ## use critic
 
