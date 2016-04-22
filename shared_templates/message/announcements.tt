@@ -19,7 +19,7 @@ $(document).ready(function() {
 $('#announceModal').on('shown', function() {
     var sys = '[% sys %]';
 
-    $.getJSON( "[% c.uri_for('/api/announcements') %]" + "?sys=" + sys, function(data){
+    $.getJSON( "[% c.uri_for('/public_api/announcements') %]" + "?sys=" + sys, function(data){
         splitData(data);
     });
 
