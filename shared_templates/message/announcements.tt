@@ -18,10 +18,17 @@ $(document).ready(function() {
 
 $('#announceModal').on('shown', function() {
     var sys = '[% sys %]';
-
-    $.getJSON( "[% c.uri_for('/public_api/announcements') %]" + "?sys=" + sys, function(data){
-        splitData(data);
-    });
+    console.log(sys);   
+    if (sys == 'lims') {
+        $.getJSON( "[% c.uri_for('/public_api/announcements') %]" + "?sys=" + sys, function(data){
+            splitData(data);
+        });
+    } else {
+        $.getJSON( "[% c.uri_for('/api/announcements') %]" + "?sys=" + sys, function(data){
+            splitData(data);
+        });
+  
+    }
 
 });
 
