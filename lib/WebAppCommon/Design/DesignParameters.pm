@@ -4,51 +4,48 @@ use strict;
 use warnings FATAL => 'all';
 use WebAppCommon::Util::EnsEMBL;
 use DesignCreate::CmdRole::OligoPairRegionsGibsonDel;
+use Log::Log4perl qw( :easy );
+use Data::Dumper;
 
 use Sub::Exporter -setup => {
     exports => [
         qw(
-            c_get_default_design_params
+            c_get_design_region_coords
             c_get_target_coords
             c_get_target_coords_from_exons
          )
     ]
 };
 
-my $DEFAULTS = {
-  region_length_5F    => 500,
-  region_length_5R    => 100,
-  region_length_3F    => 100,
-  region_length_3R    => 500,
-  region_length_5R_EF => 200,
-  region_length_ER_3F => 200,
-  region_length_U5    => 100,
-  region_length_D3    => 100,
-  region_length_f5F   => 500,
-  region_length_f3R   => 500,
-  region_offset_5F    => 1000,
-  region_offset_3R    => 1000,
-  region_offset_5R    => 1,
-  region_offset_3F    => 1,
-  region_offset_5R_EF => 200,
-  region_offset_ER_3F => 100,
-  region_offset_U5    => 1,
-  region_offset_D3    => 1,
-  region_offset_f5F   => 1000,
-  region_offset_f3R   => 1000,
+# Specify the elements of any new design type here
+# as viewed on the positive strand
+# e.g. gibson-deletion : 5F----5R----target----3F----3R
+my $DESIGN_ELEMENTS = {
+    'gibson-deletion' => {
+        'before_target' => [ qw(5F 5R) ],
+        'after_target'  => [ qw(3F 3R) ],
+    },
+    'gibson-conditional' => {
+        'before_target' => [ qw(5F 5R_EF) ],
+        'after_target'  => [ qw(ER_3F 3R) ],
+    },
+    'fusion-deletion' => {
+        'before_target' => [ qw(f5F U5) ],
+        'after_target'  => [ qw(D3 f3R) ],
+    },
 };
 
-sub c_get_default_design_params{
+sub c_get_design_region_coords{
 	my ($params) = @_;
 
     my $design_params = {};
 
     my $target_coords = c_get_target_coords($params);
-    my $default_params = gibson_design_params($target_coords);
+    my $region_coords = get_design_param_coordinates($target_coords,$params);
 
-    $default_params->{strand} = $target_coords->{strand};
+    $region_coords->{strand} = $target_coords->{strand};
 
-    return $default_params;
+    return $region_coords;
 }
 
 sub c_get_target_coords{
@@ -103,39 +100,57 @@ sub c_get_target_coords_from_exons{
 
 # FIXME: should try to reuse code from DesignCreate::CmdRole::OligoPairRegionsGibsonDel rather than
 # reimplementing it here
-sub gibson_design_params{
-    my ($target_coords) = @_;
+sub get_design_param_coordinates{
+    my ($target_coords, $params) = @_;
+
+    my $design_type = $params->{design_type};
+
+    my $elements_before_target = $DESIGN_ELEMENTS->{$design_type}->{'before_target'}; #e.g. (5F 5R);
+    my $elements_after_target = $DESIGN_ELEMENTS->{$design_type}->{'after_target'}; #e.g. (3F 3R);
+
+    my @region_list = (@$elements_before_target, 'target', @$elements_after_target);
 
     my $design_params = {
+        region_list  => \@region_list,
         target_start => $target_coords->{target_start},
         target_end   => $target_coords->{target_end},
     };
 
     if($target_coords->{strand} == 1){
-        # 5F ----- 5R ----- target_start
-    	$design_params->{'5R_end'}   = $design_params->{'target_start'} - $DEFAULTS->{'region_offset_5R'};
-    	$design_params->{'5R_start'} = $design_params->{'5R_end'}       - $DEFAULTS->{'region_length_5R'};
-    	$design_params->{'5F_end'}   = $design_params->{'5R_start'}     - $DEFAULTS->{'region_offset_5F'};
-    	$design_params->{'5F_start'} = $design_params->{'5F_end'}       - $DEFAULTS->{'region_length_5F'};
+      my $previous_coord = 'target_start';
+      foreach my $element (reverse @$elements_before_target){
+          $design_params->{$element.'_end'}   = $design_params->{$previous_coord} - $params->{'region_offset_'.$element};
+          $design_params->{$element.'_start'} = $design_params->{$element.'_end'} - $params->{'region_length_'.$element};
 
-    	# target_end ----- 3F ----- 3R
-    	$design_params->{'3F_start'} = $design_params->{'target_end'}   + $DEFAULTS->{'region_offset_3F'};
-    	$design_params->{'3F_end'}   = $design_params->{'3F_start'}     + $DEFAULTS->{'region_length_3F'};
-    	$design_params->{'3R_start'} = $design_params->{'3F_end'}       + $DEFAULTS->{'region_offset_3R'};
-    	$design_params->{'3R_end'}   = $design_params->{'3R_start'}     + $DEFAULTS->{'region_length_3R'};
+          $previous_coord = $element.'_start';
+          $design_params->{'start'} = $design_params->{$element.'_start'};
+      }
+      $previous_coord = 'target_end';
+      foreach my $element (@$elements_after_target){
+          $design_params->{$element.'_start'} = $design_params->{$previous_coord}   + $params->{'region_offset_'.$element};
+          $design_params->{$element.'_end'}   = $design_params->{$element.'_start'} + $params->{'region_length_'.$element};
+
+          $previous_coord = $element.'_end';
+          $design_params->{'end'} = $design_params->{$element.'_end'};
+      }
     }
     else{
-    	# 3R ----- 3F ----- target_start
-        $design_params->{'3F_end'}   = $design_params->{'target_start'}   - $DEFAULTS->{'region_offset_3F'};
-        $design_params->{'3F_start'} = $design_params->{'3F_end'}       - $DEFAULTS->{'region_length_3F'};
-        $design_params->{'3R_end'}   = $design_params->{'3F_start'}     - $DEFAULTS->{'region_offset_3R'};
-        $design_params->{'3R_start'} = $design_params->{'3R_end'}       - $DEFAULTS->{'region_length_3R'};
+      my $previous_coord = 'target_start';
+      foreach my $element (@$elements_after_target){
+          $design_params->{$element.'_end'} = $design_params->{$previous_coord} - $params->{'region_offset_'.$element};
+          $design_params->{$element.'_start'} = $design_params->{$element.'_end'} - $params->{'region_length_'.$element};
 
-    	# target_end ----- 5R ----- 5F
-    	$design_params->{'5R_start'} = $design_params->{'target_end'} + $DEFAULTS->{'region_offset_5R'};
-    	$design_params->{'5R_end'}   = $design_params->{'5R_start'}     + $DEFAULTS->{'region_length_5R'};
-    	$design_params->{'5F_start'} = $design_params->{'5R_end'}       + $DEFAULTS->{'region_offset_5F'};
-    	$design_params->{'5F_end'}   = $design_params->{'5F_start'}     + $DEFAULTS->{'region_length_5F'};
+          $previous_coord = $element.'_start';
+          $design_params->{'start'} = $design_params->{$element.'_start'};
+      }
+      $previous_coord = 'target_end';
+      foreach my $element (reverse @$elements_before_target){
+          $design_params->{$element.'_start'} = $design_params->{$previous_coord} + $params->{'region_offset_'.$element};
+          $design_params->{$element.'_end'} = $design_params->{$element.'_start'} + $params->{'region_length_'.$element};
+
+          $previous_coord = $element.'_end';
+          $design_params->{'end'} = $design_params->{$element.'_end'};
+      }
     }
     return $design_params;
 }
