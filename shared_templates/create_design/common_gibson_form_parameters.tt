@@ -157,7 +157,7 @@
 
     <div class="control-group">
       <div class="controls">
-        <input type="submit" name="create_design" class="btn btn-primary" value="Create Gibson Design" />
+        <input type="submit" name="create_design" class="btn btn-primary" value="Create Design" />
       </div>
     </div>
   </div>

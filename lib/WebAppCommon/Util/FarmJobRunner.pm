@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FarmJobRunner;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.042';
+    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.056';
 }
 ## use critic
 
@@ -82,7 +82,6 @@ sub submit_pspec {
 #set all common options for bsub and run the user specified command.
 sub submit {
     my ( $self ) = shift;
-
     my %args = validated_hash( \@_, $self->submit_pspec );
 
     my @bsub = (

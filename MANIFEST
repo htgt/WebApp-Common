@@ -8,6 +8,8 @@ README.md
 lib/WebAppCommon.pm
 lib/WebAppCommon/Crispr/SubmitInterface.pm
 lib/WebAppCommon/Design/CreateInterface.pm
+lib/WebAppCommon/Design/DesignParameters.pm
+lib/WebAppCommon/Design/FusionConversion.pm
 lib/WebAppCommon/FormValidator.pm
 lib/WebAppCommon/FormValidator/Constraint.pm
 lib/WebAppCommon/Plugin/Design.pm
@@ -138,6 +140,9 @@ shared_templates/design_attempt/candidate_regions.tt
 shared_templates/design_attempt/design_params.tt
 shared_templates/design_attempt/fail_reason.tt
 shared_templates/genoverse_mods/selector_size_display.tt
+shared_templates/message/announcements
+shared_templates/message/announcements.tt
+shared_templates/message/warning_message.tt
 t/00-compile.t
 t/10-webapp-common-util-ensembl.t
 t/10-webapp-common-util-farmjobrunner.t
