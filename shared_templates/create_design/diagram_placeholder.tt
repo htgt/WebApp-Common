@@ -13,18 +13,18 @@
 
   [% DEFAULT design_type = 'gibson-deletion' %]
   <div class="form-horizontal">
-    <div class="control-group" [% IF hide_type %]style="display:none"[% END %]>
-      <label class="control-label">Design Type</label>
-      <div class="controls">
-        <label class="radio inline">
+    <div class="form-group" [% IF hide_type %]style="display:none"[% END %]>
+      <label for="design_type" class="col-md-3 control-label">Design Type</label>
+      <div class="col-md-5">
+        <label class="radio-inline">
           <input type="radio" name="design_type" id="design_type_del" value="gibson-deletion" [% IF design_type == 'gibson-deletion' %] checked [% END %]>
           Gibson-Deletion
         </label>
-        <label class="radio inline">
+        <label class="radio-inline">
           <input type="radio" name="design_type" id="design_type_cond" value="gibson-conditional" [% IF design_type == 'gibson-conditional' %] checked [% END %]>
           Gibson-Conditional
         </label>
-        <label class="radio inline">
+        <label class="radio-inline">
           <input type="radio" name="design_type" id="design_type_fus_del" value="fusion-deletion" [% IF design_type == 'fusion-deletion' %] checked [% END %]>
           Fusion-Deletion
         </label>
