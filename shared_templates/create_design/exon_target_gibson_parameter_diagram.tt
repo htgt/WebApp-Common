@@ -120,6 +120,7 @@ $(document).ready(function() {
   else {
     createGibsonDeletionDiagram(builder);
   }
+  console.log("created diagram");
 
   $("input[name='design_type']:radio").change(function(){
       var design_type = $(this).val();
@@ -140,6 +141,7 @@ $(document).ready(function() {
         builder._attributes.spacing = 150;
         createGibsonDiagram(builder);
       }
+      reload_design_params_track();
   });
 });
 
