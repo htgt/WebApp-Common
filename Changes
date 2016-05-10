@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.056     2016-05-10 10:11:40 Europe/London
+
+   New module to generate design oligo parameter coords for display in genoverse/ucsc
+
 0.055     2016-04-22 15:59:19 Europe/London
 
 0.054     2016-04-22 10:25:05 Europe/London
