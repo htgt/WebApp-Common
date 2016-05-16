@@ -1,3 +1,17 @@
+<style type="text/css">
+#def {
+    min-width:90px;// if you want width please write here //
+    text-align:left;
+}
+.form-control {
+    min-width: 0;
+    max-width: auto;
+    display: inline;
+}
+
+</style>
+
+
 [% DEFAULT
   primer_min_size       = default_p3_conf.primer_min_size
   primer_opt_size       = default_p3_conf.primer_opt_size
@@ -13,53 +27,53 @@
 <fieldset>
   <div class="form-horizontal">
 
-    <div class="control-group">
-      <label class="control-label" for="gene_id">Gene ID</label>
-      <div class="controls">
-        <input type="text" id="gene_id" name="gene_id" placeholder="Target Gene ID" value="[% gene_id %]" /><br/>
-        <span class="help-block">[% gene_id_label %]</span>
-      </div>
-    <input type="hidden" id="ensembl_gene_id" name="ensembl_gene_id" value="[% ensembl_gene_id %]" />
+    <div class="form-group">
+        <label class="col-md-3 control-label" for="gene_id">Gene ID</label>
+        <div class="col-md-3">
+            <input type="text" id="gene_id" name="gene_id" placeholder="Target Gene ID" value="[% gene_id %]" /><br/>
+            <span class="help-block">[% gene_id_label %]</span>
+        </div>
+        <input type="hidden" id="ensembl_gene_id" name="ensembl_gene_id" value="[% ensembl_gene_id %]" />
     </div>
+      
 
+  <div class="panel-group" id="accordian">
 
-  <div class="accordion" id="accordian">
+    <div class="panel">
 
-    <div class="accordion-group">
-
-      <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-          <i class="icon-wrench"></i> Advanced Options
+      <div class="panel-heading">
+        <a class="panel-toggle" data-toggle="collapse" data-parent="#accordian" href="#collapseOne">
+          <i class="glyphicon glyphicon-wrench"></i> Advanced Options
         </a>
       </div>
 
-      <div id="collapseOne" class="accordion-body collapse">
-        <div class="accordion-inner">
+      <div id="collapseOne" class="panel-body collapse">
+        <div class="panel-inner">
 
-          <div class="control-group">
-            <label class="control-label" for="alt_designs">Alternate Designs</label>
-            <div class="controls">
+          <div class="form-group">
+            <label class="col-md-3 control-label" for="alt_designs">Alternate Designs</label>
+            <div class="col-md-3">
               <input type="checkbox" id="alt_designs" name="alt_designs" value="1" [% IF alt_designs %]checked[% END %]>
               <span class="help-block">If checked mulitple designs may be created, each with a different set of valid oligos</span>
             </div>
           </div>
 
-          <div class="control-group">
-            <label class="control-label">Restrict Repeat Masking</label>
-            <div class="controls">
-              <label class="checkbox inline">
+          <div class="form-group">
+            <label class="col-md-3 control-label">Restrict Repeat Masking</label>
+            <div class="col-md-3">
+              <label class="checkbox-inline">
                 <input type="checkbox" name="repeat_mask_class" value="trf" [% IF repeat_mask_class && (matches = repeat_mask_class.join('').match('trf')) %]checked[% END %]> trf
               </label>
-              <label class="checkbox inline">
+              <label class="checkbox-inline">
                 <input type="checkbox" name="repeat_mask_class" value="dust" [% IF repeat_mask_class && (matches = repeat_mask_class.join('').match('dust')) %]checked[% END %]> dust
               </label>
               <span class="help-block">By default all repeat regions will be masked, ticking a checkbox makes sure only those classes of repeats are masked.</span>
             </div>
           </div>
 
-          <div class="control-group">
-            <label class="control-label">Max Number Primer Genomic Alignments</label>
-            <div class="controls">
+          <div class="form-group">
+            <label class="col-md-3 control-label">Max Number Primer Genomic Alignments</label>
+            <div class="col-md-3">
 
             <select name="max_primer_genomic_hits">
               <option [% IF max_primer_genomic_hits == 1 %]selected[% END %]>1</option>
@@ -73,79 +87,75 @@
             </div>
           </div>
 
-          <div class="control-group">
-            <label class="control-label">Primer Melting Temp</label>
-            <div class="controls">
-              <div class="input-prepend input-append">
-                <span class="add-on">Minimum</span>
-                <input class="span1" id="primer_min_tm" name="primer_min_tm" type="text" value="[% primer_min_tm %]">
-                <span class="add-on">&deg;C</span>
+          <div class="form-group">
+            <label class="col-md-3 control-label">Primer Melting Temp</label>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Minimum</span>
+                <input class="form-control" id="primer_min_tm" name="primer_min_tm" type="text" value="[% primer_min_tm %]">
+                <span class="input-group-addon">C</span>
               </div>
-              <div class="input-prepend input-append">
-                <span class="add-on">Optimum</span>
-                <input class="span1" id="primer_opt_tm" name="primer_opt_tm" type="text" value="[% primer_opt_tm %]">
-                <span class="add-on">&deg;C</span>
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Optimum</span>
+                <input class="form-control" id="primer_opt_tm" name="primer_opt_tm" type="text" value="[% primer_opt_tm %]">
+                <span class="input-group-addon">C</span>
               </div>
-              <div class="input-prepend input-append">
-                <span class="add-on">Maximum</span>
-                <input class="span1" id="primer_max_tm" name="primer_max_tm" type="text" value="[% primer_max_tm %]">
-                <span class="add-on">&deg;C</span>
-              </div>
-            </div>
-            <div class="controls">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Maximum</span>
+                <input class="form-control" id="primer_max_tm" name="primer_max_tm" type="text" value="[% primer_max_tm %]">
+                <span class="input-group-addon">C</span>
+              </div></br>
               <span class="help-block">The desired melting temperature of the primers, minimum, optimum and maximum values. ( in Celcius )</span>
             </div>
           </div>
 
-          <div class="control-group">
-            <label class="control-label">Primer GC Content</label>
-            <div class="controls">
-              <div class="input-prepend input-append">
-                <span class="add-on">Minimum</span>
-                <input class="span1" id="primer_min_gc" name="primer_min_gc" type="text" value="[% primer_min_gc %]">
-                <span class="add-on">%</span>
+          <div class="form-group">
+            <label class="col-md-3 control-label">Primer GC Content</label>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Minimum</span>
+                <input class="form-control" id="primer_min_gc" name="primer_min_gc" type="text" value="[% primer_min_gc %]">
+                <span class="input-group-addon">%</span>
               </div>
-              <div class="input-prepend input-append">
-                <span class="add-on">Optimum</span>
-                <input class="span1" id="primer_opt_gc_percent" name="primer_opt_gc_percent" type="text" value="[% primer_opt_gc_percent %]">
-                <span class="add-on">%</span>
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Optimum</span>
+                <input class="form-control" id="primer_opt_gc_percent" name="primer_opt_gc_percent" type="text" value="[% primer_opt_gc_percent %]">
+                <span class="input-group-addon">%</span>
               </div>
-              <div class="input-prepend input-append">
-                <span class="add-on">Maximum</span>
-                <input class="span1" id="primer_max_gc" name="primer_max_gc" type="text" value="[% primer_max_gc %]">
-                <span class="add-on">%</span>
-              </div>
-            </div>
-            <div class="controls">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Maximum</span>
+                <input class="form-control" id="primer_max_gc" name="primer_max_gc" type="text" value="[% primer_max_gc %]">
+                <span class="input-group-addon">%</span>
+              </div></br>
               <span class="help-block">The desired GC percentage content of the primers, minimum, optimum and maximum values.</span>
             </div>
           </div>
-
-          <div class="control-group">
-            <label class="control-label">Primer Size</label>
-            <div class="controls">
-              <div class="input-prepend">
-                <span class="add-on">Minimum</span>
-                <input class="span1" id="primer_min_size" name="primer_min_size" type="text" value="[% primer_min_size %]">
+          
+          <div class="form-group">
+            <form class="primer-size primer-size-form" role="form">
+            <label class="col-md-3 control-label">Primer Size</label>
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Minimum</span>
+                <input class="form-control" id="primer_min_size" name="primer_min_size" type="text" value="[% primer_min_size %]">
               </div>
-              <div class="input-prepend">
-                <span class="add-on">Optimum</span>
-                <input class="span1" id="primer_opt_size" name="primer_opt_size" type="text" value="[% primer_opt_size %]">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Optimum</span>
+                <input class="form-control" id="primer_opt_size" name="primer_opt_size" type="text" value="[% primer_opt_size %]">
               </div>
-              <div class="input-prepend">
-                <span class="add-on">Maximum</span>
-                <input class="span1" id="primer_max_size" name="primer_max_size" type="text" value="[% primer_max_size %]">
-              </div>
-            </div>
-            <div class="controls">
+              <div class="input-group">
+                <span class="input-group-addon" id="def">Maximum</span>
+                <input class="form-control" id="primer_max_size" name="primer_max_size" type="text" value="[% primer_max_size %]">
+              </div></br>
               <span class="help-block">The desired size of the primers, minimum, optimum and maximum values.</span>
             </div>
+            </form>
           </div>
 
-          <div class="control-group">
-            <div class="controls">
-              <button class="btn" id="reset_params" type="button" onclick="resetPrimer3Params();">
-                <i class="icon-refresh"></i> Reset Primer3 Parameters</button>
+          <div class="form-group">
+            <div class="col-md-9">
+              <button class="btn btn-default" id="reset_params" type="button" onclick="resetPrimer3Params();">
+                <i class="glyphicon glyphicon-refresh"></i> Reset Primer3 Parameters</button>
             </div>
           </div>
 
@@ -155,8 +165,10 @@
 
   </div>
 
-    <div class="control-group">
-      <div class="controls">
+
+
+    <div class="form-group">
+      <div class="col-md-3">
         <input type="submit" name="create_design" class="btn btn-primary" value="Create Design" />
       </div>
     </div>

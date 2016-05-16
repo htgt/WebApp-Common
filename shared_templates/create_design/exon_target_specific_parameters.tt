@@ -1,16 +1,16 @@
 <fieldset>
   <div class="form-horizontal">
 
-    <div class="control-group">
-      <label class="control-label" for="five_prime_exon">Five Prime Exon ID</label>
-      <div class="controls">
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="five_prime_exon">Five Prime Exon ID</label>
+      <div class="col-md-3">
         <input type="text" id="five_prime_exon" name="five_prime_exon" placeholder="Ensembl Exon ID" value="[% five_prime_exon %]" /><br/>
         [% IF three_prime_exon %]
       </div>
     </div>
-    <div class="control-group">
-      <label class="control-label" for="three_prime_exon">Three Prime Exon ID</label>
-      <div class="controls">
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="three_prime_exon">Three Prime Exon ID</label>
+      <div class="col-md-3">
         <input type="text" id="three_prime_exon" name="three_prime_exon" placeholder="Ensembl Exon ID" value="[% three_prime_exon %]" /><br/>
         [% END %]
           <span class="help-block">Must be a Ensembl Exon ID</span>
@@ -25,9 +25,9 @@
       check_length='100';
     END
   %]
-    <div class="control-group">
-      <label class="control-label" for="exon_check_flank_length">Exon Check Flank Length</label>
-      <div class="controls">
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="exon_check_flank_length">Exon Check Flank Length</label>
+      <div class="col-md-3">
         <input type="text" id="exon_check_flank_length" name="exon_check_flank_length" value="[% check_length %]" /><br/>
         <span class="help-block">Minimum distance the 5R/EF/ER/3F oligos can be from another exon.</span>
         <span class="help-block">If no value picked then no check will be done.</span>

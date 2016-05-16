@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="span4">
+  <div class="col-md-4">
     <div class="well">
       <dl>
         <dt>Ensembl Gene ID</dt>
@@ -9,7 +9,7 @@
       </dl>
     </div>
   </div>
-  <div class="span4">
+  <div class="col-md-4">
     <div class="well">
       <dl>
         <dt>Gene ID</dt>
@@ -19,7 +19,7 @@
       </dl>
     </div>
   </div>
-  <div class="span4">
+  <div class="col-md-4">
     <div class="well">
       <dl>
         <dt>Chromosome</dt>

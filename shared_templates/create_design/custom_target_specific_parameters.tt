@@ -1,17 +1,17 @@
 <fieldset>
   <div class="form-horizontal">
 
-    <div class="control-group">
-      <label class="control-label" for="chromosome">Chromosome</label>
-      <div class="controls">
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="chromosome">Chromosome</label>
+      <div class="col-md-3">
         <input type="text" id="chr_name" name="chr_name" placeholder="chromosome name" value="[% chr_name %]" /><br/>
           <span class="help-block">Must be valid chromosome name</span>
       </div>
     </div>
 
-    <div class="control-group">
-      <label class="control-label" for="strand">Strand</label>
-      <div class="controls">
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="strand">Strand</label>
+      <div class="col-md-3">
         <input type="text" id="chr_strand" name="chr_strand" placeholder="strand" value="[% chr_strand %]" /><br/>
           <span class="help-block">Must be 1 or -1</span>
       </div>
