@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.055';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.056';
 }
 ## use critic
 
@@ -17,6 +17,7 @@ use WebAppCommon::Util::FarmJobRunner;
 use DesignCreate::Constants qw( $PRIMER3_CONFIG_FILE );
 use YAML::Any qw( LoadFile );
 use String::ShellQuote;
+use WebAppCommon::Design::DesignParameters qw( c_get_target_coords_from_exons );
 
 requires qw(
 species
@@ -125,38 +126,13 @@ sub c_target_params_from_exons {
     my $validated_params = $self->check_params(
         $self->catalyst->request->params, $self->pspec_target_params_from_exons );
 
-    my %target_data;
-    $target_data{gene_id} = $validated_params->{gene_id};
-    $target_data{ensembl_gene_id} = $validated_params->{ensembl_gene_id};
-
     $self->log->info( 'Calculating target coordinates for exon(s)' );
-    my $exon_adaptor = $self->ensembl_util->exon_adaptor;
-    my $five_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{five_prime_exon} );
-    $target_data{chr_name} = $five_prime_exon->seq_region_name;
-    $target_data{chr_strand} = $five_prime_exon->strand;
+    my $target_data = c_get_target_coords_from_exons($validated_params,$self->ensembl_util);
 
-    my $three_prime_exon;
-    if ( $validated_params->{three_prime_exon} ) {
-        $three_prime_exon = $exon_adaptor->fetch_by_stable_id( $validated_params->{three_prime_exon} );
-    }
-    # if there is no three prime exon then just specify target start and end
-    # as the start and end of the five prime exon
-    unless ( $three_prime_exon ) {
-        $target_data{target_start} = $five_prime_exon->seq_region_start;
-        $target_data{target_end} = $five_prime_exon->seq_region_end;
-        return \%target_data;
-    }
+    $target_data->{gene_id} = $validated_params->{gene_id};
+    $target_data->{ensembl_gene_id} = $validated_params->{ensembl_gene_id};
 
-    if ( $target_data{strand} == 1 ) {
-        $target_data{target_start} = $five_prime_exon->seq_region_start;
-        $target_data{target_end}   = $three_prime_exon->seq_region_end;
-    }
-    else {
-        $target_data{target_start} = $three_prime_exon->seq_region_start;
-        $target_data{target_end}   = $five_prime_exon->seq_region_end;
-    }
-
-    return \%target_data;
+    return $target_data;
 }
 
 =head2 c_primer3_default_config
@@ -622,7 +598,7 @@ sub calculate_design_cmd {
     elsif ( $params->{design_type} eq 'fusion-deletion' ) {
         $design_cmd = 'fusion-deletion-design';
     }
-    #End of 
+    #End of
     else {
         die( 'Unknown gibson design type: ' . $params->{design_type} );
     }

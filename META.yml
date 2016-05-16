@@ -28,6 +28,7 @@ requires:
   Data::FormValidator: 0
   Data::UUID: 0
   DateTime::Format::ISO8601: 0
+  DesignCreate::CmdRole::OligoPairRegionsGibsonDel: 0
   DesignCreate::Constants: 0
   File::Which: 0
   Hash::MoreUtils: 0
@@ -57,4 +58,4 @@ requires:
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.055
+version: 0.056
