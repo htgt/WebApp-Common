@@ -18,7 +18,7 @@
 %]
 
 <div class="row">
-  <div class="span12" >
+  <div class="col-md-12" >
     <table class="table table-bordered table-condensed">
 
       <tbody>
@@ -93,18 +93,18 @@
   [% INCLUDE 'design_attempt/candidate_oligos.tt' %]
 [% END %]
 
-<div class="accordion" id="accordian">
-  <div class="accordion-group">
+<div class="panel-group" id="accordian">
+  <div class="panel panel-default">
 
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-        <i class="icon-info-sign"></i> Design Parameters
+    <div class="panel-heading">
+      <a class="panel-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+        <i class="glyphicon glyphicon-info-sign"></i> Design Parameters
       </a>
     </div>
 
-    <div id="collapseOne" class="accordion-body collapse">
+    <div id="collapseOne" class="panel-body collapse">
 
-      <div class="accordion-inner">
+      <div class="panel-body">
         [% INCLUDE 'design_attempt/design_params.tt' %]
       </div>
 
@@ -112,17 +112,17 @@
 
   </div>
   [% IF da.candidate_regions %]
-  <div class="accordion-group">
+  <div class="panel panel-default">
 
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-        <i class="icon-info-sign"></i> Oligo Search Regions
+    <div class="panel-heading">
+      <a class="panel-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <i class="glyphicon glyphicon-info-sign"></i> Oligo Search Regions
       </a>
     </div>
 
-    <div id="collapseTwo" class="accordion-body collapse">
+    <div id="collapseTwo" class="panel-body collapse">
 
-      <div class="accordion-inner">
+      <div class="panel-body">
         [% INCLUDE 'design_attempt/candidate_regions.tt' %]
       </div>
 
