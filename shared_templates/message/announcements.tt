@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-<div class="modal fade" id="announceModal">
-=======
 <div class="modal fade" role="dialog" id="announceModal" aria-labelledby="basicModal" aria-hidden="true">
->>>>>>> peter
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
