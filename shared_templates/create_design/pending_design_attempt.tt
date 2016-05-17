@@ -1,13 +1,13 @@
 <div id="design_pending">
-  <p>
+  <div class="row">
     <h5 id="progress_status">pending</h5>
-  </p>
-  <div class="progress progress-striped active">
-    <div id="progress_bar" class="bar" style="width: 1%;"></div>
+  </div>
+  <div class="progress progress-striped">
+    <div id="progress_bar" class="progress_bar" style="width: 1%;"></div>
   </div>
 </div>
 
-<div id="design_success" class="alert alert-success hide">
+<div id="design_success" class="alert alert-success">
   <p>Design Successful: </p>
   <div id="design_links"></div>
   [% IF design_target_report_url %]
@@ -19,19 +19,25 @@
   [% END %]
 </div>
 
-<div id="design_fail" class="alert alert-error hide">
+<div id="design_fail" class="alert alert-danger">
   <p>Failed to create design:
       <a href="[% c.uri_for( design_attempt_url, id, 'view' ) %]"> details </a>
   </p>
 </div>
 
 <script type="text/javascript">
+
+$(document).ready(function() {
+    $('#design_success').hide();
+    $('#design_fail').hide();
+});
+
   $.smartPoller( 250, function(retry){
     $.getJSON( "[% c.uri_for( design_attempt_status_url, id ) %]", function(response){
       if( response.status == "success" ) {
+         $('#design_success').show();
+         $('#design_pending').hide();
          $('#design_links').html( response.designs );
-         $("#design_success").show();
-         $("#design_pending").hide();
       }
       else if ( response.status == "fail" ) {
          $("#design_fail").show();
