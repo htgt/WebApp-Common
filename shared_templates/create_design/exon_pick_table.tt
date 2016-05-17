@@ -45,7 +45,7 @@
             <td width=72>
             [% IF get_crisprs_url %]
               [% IF !exon.crispr_count %]
-                <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-mini" type="submit">
+                <a href="[% c.uri_for( get_crisprs_url, { 'exon_id' => exon.id, 'gene_id' => gene.gene_id, 'ensembl_gene_id' => gene.ensembl_id } ) %]" class="btn btn-info btn-xs" type="submit">
                 Get Crisprs</a>
               [% ELSE %]
                 [% exon.crispr_count %] crisprs
