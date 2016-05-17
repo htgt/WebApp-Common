@@ -1,9 +1,9 @@
 <div id="design_pending">
   <div class="row">
-    <h5 id="progress_status">pending</h5>
+    <h5 class="col-md-12" id="progress_status">pending</h5>
   </div>
-  <div class="progress progress-striped">
-    <div id="progress_bar" class="progress_bar" style="width: 1%;"></div>
+  <div class="progress">
+    <div id="progress_bar" class="progress-bar progress-bar-striped active" style="width: 1%;"></div>
   </div>
 </div>
 
