@@ -83,6 +83,10 @@ sub date_time {
     };
 }
 
+sub psql_date {
+    return shift->regexp_matches(qr/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/);
+}
+
 sub strand {
     return shift->in_set( 1, -1 );
 }
