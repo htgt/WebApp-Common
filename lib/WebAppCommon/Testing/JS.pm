@@ -1,5 +1,8 @@
 package WebAppCommon::Testing::JS;
 
+use strict;
+use warnings FATAL => 'all';
+
 use Selenium::Firefox;
 use feature qw(say);
 use Path::Class;
@@ -8,7 +11,7 @@ use Log::Log4perl qw( :easy );
 use Sub::Exporter -setup => {
     exports => [
         qw(
-             _setup
+             setup
              find_by
              cycle_windows
              close_additional_windows
@@ -17,7 +20,7 @@ use Sub::Exporter -setup => {
     ],
 };
 
-sub _setup {
+sub setup {
     my $driver = Selenium::Firefox->new(marionette_enabled => 0);
 
     unless ($driver) {
