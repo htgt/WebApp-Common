@@ -49,13 +49,15 @@ requires:
   MooseX::Types::URI: 0
   Path::Class: 0
   Scalar::Util: 0
+  Selenium::Firefox: 0
   String::ShellQuote: 0
   Sub::Exporter: 0
   Text::CSV: 0
   Try::Tiny: 0
   URI: 0
   YAML::Any: 0
+  feature: 0
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.060
+version: 0.061

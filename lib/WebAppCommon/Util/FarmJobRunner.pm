@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FarmJobRunner;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.060';
+    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.061';
 }
 ## use critic
 
@@ -19,6 +19,7 @@ use Try::Tiny;
 use Path::Class;
 use File::Which qw( which );
 use IPC::Run;
+use Data::Dumper;
 
 #both of these can be overriden per job.
 has default_queue => (
@@ -165,6 +166,22 @@ sub submit_and_wait{
     return 0;
 }
 
+sub kill_job{
+    my ($self, $job_id) = @_;
+
+    if($job_id){
+        my @cmd = $self->_wrap_bsub("bkill $job_id");
+
+        return \@cmd if $self->dry_run;
+
+        $self->_run_cmd( @cmd );
+    }
+    else{
+        $self->log->info("No job ID provided to kill_job. No jobs will be killed");
+    }
+    return;
+}
+
 #take an array with bsub commands and produce the final command
 #to give to _run_cmd
 sub _wrap_bsub {
@@ -173,12 +190,17 @@ sub _wrap_bsub {
     #which returns undef if it cant find the file
     #which( $self->bsub_wrapper )
         #or confess "Couldn't locate " . $self->bsub_wrapper;
-
     my $env = $self->_work_out_env;
     my $cmd
         = 'source /etc/profile;'
         . 'source ' . $self->bsub_wrapper->stringify . " $env;"
         . join( " ", @bsub );
+
+    return $self->_wrap_with_ssh($cmd);
+}
+
+sub _wrap_with_ssh{
+    my ($self, $cmd) = @_;
 
     # temp wrap in ssh to farm3-login, until vms can submit to farm3 directly
     my @wrapped_cmd = ( 'ssh', '-o CheckHostIP=no', '-o BatchMode=yes', 'farm3-login');
@@ -206,13 +228,14 @@ sub _run_cmd {
 
     my $output;
 
+    $self->log->info("IPC Run version: ".$IPC::Run::VERSION);
     $self->log->info( "CMD: " . join(' ', @cmd) );
     try {
         IPC::Run::run( \@cmd, '<', \undef, '>&', \$output )
                 or die "$output";
     }
     catch {
-        confess "Command failed: $_";
+        confess "Output: $output \n Command failed: $_";
     };
     $self->log->info( "CMD Output: $output" );
 

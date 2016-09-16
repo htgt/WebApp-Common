@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.060';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.061';
 }
 ## use critic
 
@@ -87,6 +87,10 @@ sub date_time {
             DateTime::Format::ISO8601->parse_datetime($str);
         };
     };
+}
+
+sub psql_date {
+    return shift->regexp_matches(qr/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/);
 }
 
 sub strand {
