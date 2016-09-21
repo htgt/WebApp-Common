@@ -1,4 +1,10 @@
 package WebAppCommon::Util::Solr;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $WebAppCommon::Util::Solr::VERSION = '0.061';
+}
+## use critic
+
 
 use Moose;
 use MooseX::Types::URI qw( Uri );
