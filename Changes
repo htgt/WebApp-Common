@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.061     2016-09-21 14:40:54 Europe/London 
+
+	Added utils module
+
 0.061     2016-09-16 14:01:24 Europe/London
     Moved JS testing core to common
 0.060     2016-05-17 15:30:58 Europe/London
