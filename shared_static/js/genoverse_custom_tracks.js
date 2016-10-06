@@ -8,6 +8,42 @@ function copyToClipboard(text) {
   $temp.remove();
 }
 
+function addExonArrows(transcript, featureContext, labelContext, scale){
+      //get correct arrow character
+      var s = transcript.strand == -1 ? String.fromCharCode(9668) : String.fromCharCode(9658);
+      var textWidth = Math.ceil(featureContext.measureText(s).width) + 1;
+      if(transcript.logic_name){
+        var havana = transcript.logic_name.indexOf('ensembl_havana') === 0;
+        featureContext.fillStyle = havana ? '#666666' : '#CCCCCC';
+      }
+      //loop through all coding regions
+      if (transcript.cds && transcript.cds.length) {
+        for (i = 0; i < transcript.cds.length; i++) {
+          cds = transcript.cds[i];
+
+          var cds_start = transcript.x + (cds.start - transcript.start) * scale;
+          var cds_end   = cds_start + ( (cds.end - cds.start) * scale );
+          var cds_width = Math.max(1, (cds.end - cds.start) * scale);
+
+          //don't show arrows if the box is too small
+          if ( cds_width < (textWidth+1)*3 )
+            continue;
+          featureContext.fillText(
+            s,
+            cds_start + 1,
+            transcript.y - 2 //no idea why but -2 is what works
+          );
+
+          featureContext.fillText(
+            s,
+            (cds_end - textWidth) + 1,
+            transcript.y - 2
+          );
+        }
+      }
+}
+
+
 Genoverse.Track.Controller.SequenceSelect = Genoverse.Track.Controller.Sequence.extend({
   init: function() {
     this.base();
@@ -118,38 +154,7 @@ Genoverse.Track.Genes = Genoverse.Track.extend({
     },
     drawFeature: function(transcript, featureContext, labelContext, scale) {
       this.base(transcript, featureContext, labelContext, scale);
-
-      //get correct arrow character
-      var s = transcript.strand == -1 ? String.fromCharCode(9668) : String.fromCharCode(9658);
-      var textWidth = Math.ceil(featureContext.measureText(s).width) + 1;
-      var havana = transcript.logic_name.indexOf('ensembl_havana') === 0;
-      featureContext.fillStyle = havana ? '#666666' : '#CCCCCC';
-      //loop through all coding regions
-      if (transcript.cds && transcript.cds.length) {
-        for (i = 0; i < transcript.cds.length; i++) {
-          cds = transcript.cds[i];
-
-          var cds_start = transcript.x + (cds.start - transcript.start) * scale;
-          var cds_end   = cds_start + ( (cds.end - cds.start) * scale );
-          var cds_width = Math.max(1, (cds.end - cds.start) * scale);
-
-          //don't show arrows if the box is too small
-          if ( cds_width < (textWidth+1)*3 )
-            continue;
-
-          featureContext.fillText(
-            s,
-            cds_start + 1,
-            transcript.y - 2 //no idea why but -2 is what works
-          );
-
-          featureContext.fillText(
-            s,
-            (cds_end - textWidth) + 1,
-            transcript.y - 2
-          );
-        }
-      }
+      addExonArrows(transcript, featureContext, labelContext, scale);
     }
 });
 
