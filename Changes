@@ -1,3 +1,25 @@
+0.063     2016-10-06 13:55:23 Europe/London
+
+    Created js method to add arrows to features on genoverse tracks
+
+0.062     2016-09-21 14:42:07 Europe/London
+
+0.061     2016-09-21 14:40:54 Europe/London 
+
+	Added utils module
+
+0.061     2016-09-16 14:01:24 Europe/London
+    Moved JS testing core to common
+0.060     2016-05-17 15:30:58 Europe/London
+    Bootstrap V3 fix - progress bar
+0.059     2016-05-17 13:58:05 Europe/London
+    Bootstrap V3 fix - Design Pending
+0.058     2016-05-16 14:26:48 Europe/London
+
+0.057     2016-05-16 14:12:10 Europe/London
+
+0.056     2016-05-16 14:07:24 Europe/London
+    Bootstrap v3
 0.056     2016-05-10 10:11:40 Europe/London
 
    New module to generate design oligo parameter coords for display in genoverse/ucsc

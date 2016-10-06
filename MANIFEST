@@ -13,9 +13,11 @@ lib/WebAppCommon/Design/FusionConversion.pm
 lib/WebAppCommon/FormValidator.pm
 lib/WebAppCommon/FormValidator/Constraint.pm
 lib/WebAppCommon/Plugin/Design.pm
+lib/WebAppCommon/Testing/JS.pm
 lib/WebAppCommon/Util/EnsEMBL.pm
 lib/WebAppCommon/Util/FarmJobRunner.pm
 lib/WebAppCommon/Util/FindGene.pm
+lib/WebAppCommon/Util/Sanitize.pm
 lib/WebAppCommon/Util/Solr.pm
 shared_static/Genoverse/LICENSE.TXT
 shared_static/Genoverse/README

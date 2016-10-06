@@ -34,7 +34,6 @@ requires:
   Hash::MoreUtils: 0
   IPC::Run: 0
   JSON: 0
-  LIMS2::Model::Util: 0
   LWP::UserAgent: 0
   List::MoreUtils: 0
   List::Util: 0
@@ -49,13 +48,15 @@ requires:
   MooseX::Types::URI: 0
   Path::Class: 0
   Scalar::Util: 0
+  Selenium::Firefox: 0
   String::ShellQuote: 0
   Sub::Exporter: 0
   Text::CSV: 0
   Try::Tiny: 0
   URI: 0
   YAML::Any: 0
+  feature: 0
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.056
+version: 0.063

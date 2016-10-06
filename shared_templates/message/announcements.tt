@@ -1,4 +1,4 @@
-<div class="modal fade" id="announceModal">
+<div class="modal fade" role="dialog" id="announceModal" aria-labelledby="basicModal" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -16,7 +16,7 @@ $(document).ready(function() {
     $('#announceModal').modal({show: false});
 });
 
-$('#announceModal').on('shown', function() {
+$('#announceModal').on('shown.bs.modal', function(e) {
     var sys = '[% sys %]';
     console.log(sys);   
     if (sys == 'lims') {
@@ -42,9 +42,10 @@ function splitData(data) {
 }
 
 function addRows(rows, type) {
+
     for (var count = 0; count < rows.length; count++) {
         if ($('.modal-body').text().indexOf(rows[count].message) == -1) {
-            $('.modal-body').append('<div class="alert alert-' + type + '"><h4><strong>' + rows[count].created + ':</strong> ' + rows[count].message + '</h4></div>');
+            $('.modal-body').append('<div class="alert alert-' + type + ' alertModal"><h4><strong>' + rows[count].created + ':</strong> ' + rows[count].message + '</h4></div>');
         }
     }
 }
