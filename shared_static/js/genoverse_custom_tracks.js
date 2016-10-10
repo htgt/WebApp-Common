@@ -74,7 +74,9 @@ Genoverse.Track.Controller.SequenceSelect = Genoverse.Track.Controller.Sequence.
       // feature search identifies the chunks spanned by the selected region
       // then we loop through them to construct the slice of sequence
       var seq = '';
-      $( features ).each(function(){
+
+      $( features ).sort(function(a, b) { return a.start-b.start; }).each(function(){
+          //console.log('sequence chunk start: ' + this.start);
           var section_start;
           var section_end;
 
