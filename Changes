@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.064     2016-10-10 11:20:20 Europe/London
+
+   Bugfix in copy sequence to clipboard javascript
+
 0.063     2016-10-06 13:55:23 Europe/London
 
     Created js method to add arrows to features on genoverse tracks
