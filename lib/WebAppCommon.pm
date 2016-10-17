@@ -1,7 +1,7 @@
 package WebAppCommon;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::VERSION = '0.064';
+    $WebAppCommon::VERSION = '0.065';
 }
 ## use critic
 

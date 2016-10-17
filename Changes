@@ -1,3 +1,7 @@
+0.065     2016-10-17 15:08:40 Europe/London
+
+   Farm group user can be specified using FarmJobRunner
+
 0.064     2016-10-10 11:20:20 Europe/London
 
    Bugfix in copy sequence to clipboard javascript

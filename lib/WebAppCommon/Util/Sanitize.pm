@@ -1,7 +1,7 @@
 package WebAppCommon::Util::Sanitize;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::Sanitize::VERSION = '0.064';
+    $WebAppCommon::Util::Sanitize::VERSION = '0.065';
 }
 ## use critic
 
