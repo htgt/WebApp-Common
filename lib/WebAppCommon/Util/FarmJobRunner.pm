@@ -15,7 +15,13 @@ use File::Which qw( which );
 use IPC::Run;
 use Data::Dumper;
 
-#both of these can be overriden per job.
+#all of these can be overriden per job.
+has default_group => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'team87-grp',
+);
+
 has default_queue => (
     is      => 'rw',
     isa     => 'Str',
@@ -63,6 +69,7 @@ sub submit_pspec {
         out_file        => { isa => File, coerce => 1 },
         cmd             => { isa => 'ArrayRef' },
         # the rest are optional
+        group           => { isa => 'Str', optional => 1, default => $self->default_group },
         queue           => { isa => 'Str', optional => 1, default => $self->default_queue },
         memory_required => { isa => 'Int', optional => 1, default => $self->default_memory },
         processors      => { isa => 'Int', optional => 1, default => $self->default_processors },
@@ -89,7 +96,7 @@ sub submit {
               '"select[mem>' . $args{memory_required}
             . '] rusage[mem=' . $args{memory_required}
             . '] span[hosts=1]"',
-        '-G', 'team87-grp',
+        '-G', $args{ group },
     );
 
     #add the optional parameters if they're set
