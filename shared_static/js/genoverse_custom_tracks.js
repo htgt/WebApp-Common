@@ -119,6 +119,7 @@ Genoverse.Track.Controller.SequenceSelect = Genoverse.Track.Controller.Sequence.
 Genoverse.Track.SequenceSelect = Genoverse.Track.extend({
     model     : Genoverse.Track.Model.Sequence.Ensembl,
     view      : Genoverse.Track.View.Sequence,
+    height    : 25,
     controller : Genoverse.Track.Controller.SequenceSelect
 });
 

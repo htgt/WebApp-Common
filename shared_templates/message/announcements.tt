@@ -9,7 +9,7 @@
 
             </div>
         </div>
-    </div>    
+    </div>
 </div>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -18,7 +18,7 @@ $(document).ready(function() {
 
 $('#announceModal').on('shown.bs.modal', function(e) {
     var sys = '[% sys %]';
-    console.log(sys);   
+    console.log(sys);
     if (sys == 'lims') {
         $.getJSON( "[% c.uri_for('/public_api/announcements') %]" + "?sys=" + sys, function(data){
             splitData(data);
@@ -27,7 +27,7 @@ $('#announceModal').on('shown.bs.modal', function(e) {
         $.getJSON( "[% c.uri_for('/api/announcements') %]" + "?sys=" + sys, function(data){
             splitData(data);
         });
-  
+
     }
 
 });
