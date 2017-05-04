@@ -23,7 +23,7 @@ Genoverse.Track.HighlightRegion = Genoverse.Track.extend({
 
   addHighlights: function (highlights) {
     for (var i = 0; i < highlights.length; i++) {
-      this.model.insertFeature($.extend({ label: (highlights[i].start + '-' + highlights[i].end) }, highlights[i]));
+      //this.model.insertFeature($.extend({ label: (highlights[i].start + '-' + highlights[i].end) }, highlights[i]));
     }
 
     this.reset();

@@ -69,7 +69,7 @@
     }).show();
 
     // Make the size selector display stay at its current position
-    var wrapper_pos = $(".gv_wrapper").offset();
+    var wrapper_pos = $(".gv-wrapper").offset();
     var display_pos = this.selectorSizeDisplay.offset();
     this.selectorSizeDisplay.css({
       top  : display_pos.top - 35 - wrapper_pos.top,

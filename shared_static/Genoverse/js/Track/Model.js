@@ -178,6 +178,7 @@ Genoverse.Track.Model = Base.extend({
   },
 
   updateData: function (data) {
+    console.log(this.data)
     this.data = data;
     this.track.reset();
   },
