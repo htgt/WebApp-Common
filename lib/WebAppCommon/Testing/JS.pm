@@ -1,7 +1,7 @@
 package WebAppCommon::Testing::JS;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Testing::JS::VERSION = '0.062';
+    $WebAppCommon::Testing::JS::VERSION = '0.066';
 }
 ## use critic
 
