@@ -34,7 +34,6 @@ requires:
   Hash::MoreUtils: 0
   IPC::Run: 0
   JSON: 0
-  LIMS2::Model::Util: 0
   LWP::UserAgent: 0
   List::MoreUtils: 0
   List::Util: 0
@@ -60,4 +59,4 @@ requires:
   namespace::autoclean: 0
   strict: 0
   warnings: 0
-version: 0.061
+version: 0.062

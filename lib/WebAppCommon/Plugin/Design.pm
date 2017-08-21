@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.061';
+    $WebAppCommon::Plugin::Design::VERSION = '0.062';
 }
 ## use critic
 
@@ -14,7 +14,7 @@ use Hash::MoreUtils qw( slice slice_def );
 use List::Util qw( max min );
 use List::MoreUtils qw( uniq );
 use namespace::autoclean;
-use LIMS2::Model::Util qw( sanitize_like_expr );
+use WebAppCommon::Util::Sanitize qw( sanitize_like_expr );
 
 requires qw( schema check_params throw retrieve log trace );
 
