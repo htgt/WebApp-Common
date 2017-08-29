@@ -39,7 +39,6 @@ function splitData(data) {
 }
 
 function addRows(rows, type) {
-
     for (var count = 0; count < rows.length; count++) {
         if ($('.modal-body').text().indexOf(rows[count].message) == -1) {
             $('.modal-body').append('<div class="alert alert-' + type + ' alertModal"><h4><strong>' + rows[count].created + ':</strong> ' + rows[count].message + '</h4></div>');
