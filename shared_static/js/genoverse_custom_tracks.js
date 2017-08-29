@@ -271,7 +271,6 @@ Genoverse.Track.Crisprs = Genoverse.Track.extend({
                                  + "' target='_blank'><font color='#00FFFF'>Crispr Report</font></a>";
        var sequence = "<a id='" + feature.name
            + "' ondblclick='copySequenceToClipboard(\"" + feature.copysequence + "\")'>" + feature.sequence + "</a>";
-           console.log(feature);
 
        var atts = {
            Start     : feature.start,
