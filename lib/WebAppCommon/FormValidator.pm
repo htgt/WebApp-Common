@@ -63,8 +63,12 @@ sub init_constraint_method {
 }
 
 sub constraint_method {
-    my ( $self, $constraint_name ) = @_;
+    my ( $self, $constraint_name, $reload ) = @_;
 
+    if ( $reload ) {
+        DEBUG "Reloading cache";
+        $self->set_cached_constraint_method( $constraint_name => $self->init_constraint_method($constraint_name) );
+    }
     unless ( $self->has_cached_constraint_method($constraint_name) ) {
         $self->set_cached_constraint_method( $constraint_name => $self->init_constraint_method($constraint_name) );
     }
@@ -95,9 +99,16 @@ sub check_params {
     my $results = Data::FormValidator->check( $params, $self->dfv_profile($spec) );
 
     if ( !$results->success ) {
+        DEBUG "Retrying with updated cache";
+        my $reload = 1;
+        $results = Data::FormValidator->check( $params, $self->dfv_profile($spec, $reload) );
+    }
+
+    if ( !$results->success ) {
     	DEBUG "Invalid parameters seen in ".( caller(2) )[3];
         $self->throw( $params, $results );
     }
+
 
     if ( $results->has_unknown && !$opts{ignore_unknown} ) {
     	DEBUG "Invalid parameters seen in ".( caller(2) )[3];
@@ -121,8 +132,7 @@ sub check_params {
 }
 
 sub dfv_profile {
-    my ( $self, $spec ) = @_;
-
+    my ( $self, $spec, $reload ) = @_;
     my ( @required, @optional, %constraint_methods, %field_filters, %defaults );
 
     my $dependencies           = delete $spec->{DEPENDENCIES};
@@ -138,7 +148,13 @@ sub dfv_profile {
             push @required, $field;
         }
         if ( $f_spec->{validate} ) {
-            $constraint_methods{$field} = $self->constraint_method( $f_spec->{validate} );
+            if ( $reload ) {
+                $constraint_methods{$field} = $self->constraint_method( $f_spec->{validate}, $reload );
+            }
+            else {
+                $constraint_methods{$field} = $self->constraint_method( $f_spec->{validate} );
+            }
+
         }
         if ( $f_spec->{filter} ) {
             $field_filters{$field} = $f_spec->{filter} || [];

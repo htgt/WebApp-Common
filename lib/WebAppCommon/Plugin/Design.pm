@@ -75,8 +75,16 @@ sub pspec_create_design_comment {
 
 sub pspec_create_genotyping_primer {
     return {
-        type => { validate => 'existing_genotyping_primer_type', rename => 'genotyping_primer_type_id' },
-        seq  => { validate => 'dna_seq' }
+        type          => { validate => 'existing_genotyping_primer_type', rename => 'genotyping_primer_type_id' },
+        seq           => { validate => 'dna_seq' },
+        primer_name   => { validate => 'existing_genotyping_primer_type', rename => 'genotyping_primer_type_id' },
+        primer_seq    => { validate => 'dna_seq', rename => 'seq' },
+        id            => { validate => 'integer', optional => 1 },
+        design_id     => { validate => 'integer', optional => 1 },
+        tm            => { optional => 1 },
+        gc_content    => { optional => 1 },
+        is_validated  => { validate => 'boolean', optional => 1 },
+        is_rejected   => { validate => 'boolean', optional => 1 },
     }
 }
 

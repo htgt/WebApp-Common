@@ -1,7 +1,7 @@
 <fieldset>
   <legend>Oligo Parameters</legend>
 
-  <div id="diagram" style="position: relative;">
+  <div id="diagram" style="position: relative; font-size: 10px">
     <div id="holder" style="padding-top:20px; padding-botton:20px;">
     </div>
   </div>
