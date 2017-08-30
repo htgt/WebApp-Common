@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.062';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.067';
 }
 ## use critic
 
@@ -27,6 +27,7 @@ use Const::Fast;
 use JSON qw( decode_json );
 use Scalar::Util qw( openhandle );
 use namespace::autoclean;
+    use Data::Dumper;
 
 has model => (
     is       => 'ro',
@@ -188,6 +189,14 @@ sub existing_design_oligo_type {
 sub existing_genotyping_primer_type {
     return shift->in_resultset( 'GenotypingPrimerType', 'id' );
 }
+
+# sub existing_cell_line {
+#     return shift->in_resultset( 'CellLine', 'name' );
+# }
+
+# sub existing_nuclease {
+#     return shift->in_resultset( 'Nuclease', 'name' );
+# }
 
 sub existing_user {
     return shift->in_resultset( 'User', 'name' );

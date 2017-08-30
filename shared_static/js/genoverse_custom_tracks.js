@@ -1,5 +1,96 @@
 // Genoverse tracks which can be used in both LIMS2 and WGE
 
+function detectIE() {
+        var ua = window.navigator.userAgent;
+
+        var msie = ua.indexOf('MSIE ');
+        if (msie > 0) {
+            // IE 10 or older => return version number
+            return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+        }
+
+        var trident = ua.indexOf('Trident/');
+        if (trident > 0) {
+            // IE 11 => return version number
+            var rv = ua.indexOf('rv:');
+            return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+        }
+
+        // other browser or edge
+        return false;
+    }
+
+// source: http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+// enhancement with special case for IEs, otherwise the temp textarea will be visible
+function copySequenceToClipboard(text) {
+    if (detectIE()) {
+        try {
+            window.clipboardData.setData('Text', text);
+            console.log('Copying text command via IE-setData');
+        } catch (err) {
+            console.log('Oops, unable to copy via IE-setData');
+        }
+    }
+    else {
+
+        var textArea = document.createElement("textarea");
+
+        //
+        //  This styling is an extra step which is likely not required.
+        //
+        // Why is it here? To ensure:
+        // 1. the element is able to have focus and selection.
+        // 2. if element was to flash render it has minimal visual impact.
+        // 3. less flakyness with selection and copying which might occur if
+        //    the textarea element is not visible.
+        //
+        // The likelihood is the element won't even render, not even a flash,
+        // so some of these are just precautions.
+        //
+        // However in IE the element
+        // is visible whilst the popup box asking the user for permission for
+        // the web page to copy to the clipboard. To prevent this, we are using
+        // the detectIE workaround.
+
+        // Place in top-left corner of screen regardless of scroll position.
+        textArea.style.position = 'fixed';
+        textArea.style.top = 0;
+        textArea.style.left = 0;
+
+        // Ensure it has a small width and height. Setting to 1px / 1em
+        // doesn't work as this gives a negative w/h on some browsers.
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+
+        // We don't need padding, reducing the size if it does flash render.
+        textArea.style.padding = 0;
+
+        // Clean up any borders.
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+
+        // Avoid flash of white box if rendered for any reason.
+        textArea.style.background = 'transparent';
+
+        textArea.value = text;
+
+        document.body.appendChild(textArea);
+
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Copying text command was ' + msg);
+        } catch (err) {
+            console.log('Oops, unable to copy');
+        }
+
+        document.body.removeChild(textArea);
+    }
+}
+
 function copyToClipboard(text) {
   var $temp = $("<input>");
   $("body").append($temp);
@@ -7,6 +98,42 @@ function copyToClipboard(text) {
   document.execCommand("copy");
   $temp.remove();
 }
+
+function addExonArrows(transcript, featureContext, labelContext, scale){
+      //get correct arrow character
+      var s = transcript.strand == -1 ? String.fromCharCode(9668) : String.fromCharCode(9658);
+      var textWidth = Math.ceil(featureContext.measureText(s).width) + 1;
+      if(transcript.logic_name){
+        var havana = transcript.logic_name.indexOf('ensembl_havana') === 0;
+        featureContext.fillStyle = havana ? '#666666' : '#CCCCCC';
+      }
+      //loop through all coding regions
+      if (transcript.cds && transcript.cds.length) {
+        for (i = 0; i < transcript.cds.length; i++) {
+          cds = transcript.cds[i];
+
+          var cds_start = transcript.x + (cds.start - transcript.start) * scale;
+          var cds_end   = cds_start + ( (cds.end - cds.start) * scale );
+          var cds_width = Math.max(1, (cds.end - cds.start) * scale);
+
+          //don't show arrows if the box is too small
+          if ( cds_width < (textWidth+1)*3 )
+            continue;
+          featureContext.fillText(
+            s,
+            cds_start + 1,
+            transcript.y - 2 //no idea why but -2 is what works
+          );
+
+          featureContext.fillText(
+            s,
+            (cds_end - textWidth) + 1,
+            transcript.y - 2
+          );
+        }
+      }
+}
+
 
 Genoverse.Track.Controller.SequenceSelect = Genoverse.Track.Controller.Sequence.extend({
   init: function() {
@@ -38,7 +165,9 @@ Genoverse.Track.Controller.SequenceSelect = Genoverse.Track.Controller.Sequence.
       // feature search identifies the chunks spanned by the selected region
       // then we loop through them to construct the slice of sequence
       var seq = '';
-      $( features ).each(function(){
+
+      $( features ).sort(function(a, b) { return a.start-b.start; }).each(function(){
+          //console.log('sequence chunk start: ' + this.start);
           var section_start;
           var section_end;
 
@@ -81,6 +210,7 @@ Genoverse.Track.Controller.SequenceSelect = Genoverse.Track.Controller.Sequence.
 Genoverse.Track.SequenceSelect = Genoverse.Track.extend({
     model     : Genoverse.Track.Model.Sequence.Ensembl,
     view      : Genoverse.Track.View.Sequence,
+    height    : 25,
     controller : Genoverse.Track.Controller.SequenceSelect
 });
 
@@ -118,38 +248,7 @@ Genoverse.Track.Genes = Genoverse.Track.extend({
     },
     drawFeature: function(transcript, featureContext, labelContext, scale) {
       this.base(transcript, featureContext, labelContext, scale);
-
-      //get correct arrow character
-      var s = transcript.strand == -1 ? String.fromCharCode(9668) : String.fromCharCode(9658);
-      var textWidth = Math.ceil(featureContext.measureText(s).width) + 1;
-      var havana = transcript.logic_name.indexOf('ensembl_havana') === 0;
-      featureContext.fillStyle = havana ? '#666666' : '#CCCCCC';
-      //loop through all coding regions
-      if (transcript.cds && transcript.cds.length) {
-        for (i = 0; i < transcript.cds.length; i++) {
-          cds = transcript.cds[i];
-
-          var cds_start = transcript.x + (cds.start - transcript.start) * scale;
-          var cds_end   = cds_start + ( (cds.end - cds.start) * scale );
-          var cds_width = Math.max(1, (cds.end - cds.start) * scale);
-
-          //don't show arrows if the box is too small
-          if ( cds_width < (textWidth+1)*3 )
-            continue;
-
-          featureContext.fillText(
-            s,
-            cds_start + 1,
-            transcript.y - 2 //no idea why but -2 is what works
-          );
-
-          featureContext.fillText(
-            s,
-            (cds_end - textWidth) + 1,
-            transcript.y - 2
-          );
-        }
-      }
+      addExonArrows(transcript, featureContext, labelContext, scale);
     }
 });
 
@@ -164,26 +263,67 @@ Genoverse.Track.Crisprs = Genoverse.Track.extend({
     threshold : 3000,
     messages  : { threshold : 'Crisprs not displayed for regions larger than ' },
 
-    populateMenu : function (f) {
-      // get up to date feature object
-      var feature = this.track.model.featuresById[f.id];
+     populateMenu : function (f) {
+       // get up to date feature object
+       var feature = this.track.model.featuresById[f.id];
 
-      var report_link = "<a href='" + this.track.crispr_report_uri + "/" + feature.name
-                                + "' target='_blank'><font color='#00FFFF'>Crispr Report</font></a>";
-      var atts = {
-          Start  : feature.start,
-          End    : feature.end,
-          Strand : feature.strand,
-          Name   : feature.name,
-          URL : report_link
-      };
-      if (feature.ot_summary){
-        atts['Off-Targets'] = feature.ot_summary;
-      }
-      else {
-        atts['Off-Targets'] = 'not computed';
-      }
-      return atts;
+       var report_link = "<a href='" + this.track.crispr_report_uri + "/" + feature.name
+                                 + "' target='_blank'><font color='#00FFFF'>Crispr Report</font></a>";
+       var sequence = "<a id='" + feature.name
+           + "' ondblclick='copySequenceToClipboard(\"" + feature.copysequence + "\")'>" + feature.sequence + "</a>";
+
+       var atts = {
+           Start     : feature.start,
+           End       : feature.end,
+           Strand    : feature.strand,
+           Sequence  : sequence,
+           Name      : feature.name,
+           URL       : report_link,
+           'Off-Targets' : feature.ot_summary || 'not computed',
+       };
+
+       var baseURL = window.location.protocol + "//" + window.location.host;
+
+       var spinner = baseURL + "/static/images/spinner-circle.gif";
+       var settings;
+
+        console.log('this is a crispr - adding bookmark button');
+        settings = {
+           'id'           : feature.name,
+           'type'         : 'Crispr',
+           'status_uri'   : baseURL + "/crispr_bookmark_status/" + feature.name,
+           'bookmark_uri' : baseURL + "/bookmark_crispr",
+           'spinner'      : spinner,
+           'bookmark_track' : get_track('Bookmarked Crisprs')
+        };
+        var style = "class='btn btn-info' style='font-size: 12px; padding-top: 3px; padding-bottom: 3px;'";
+        var bookmark_button = "<button" + style + " name='" + settings.id
+        + "' onClick='toggle_bookmark(this, settings.bookmark_uri, settings.id, settings.type, settings.spinner, settings.bookmark_track)'"
+          + ">Bookmark Crispr</a>";
+        $.get(settings.status_uri,
+          function (data){
+           console.log(data);
+            if(data.error){
+              console.log("Could not add bookmark button: " + data.error);
+              return;
+            }
+            else{
+              close_alerts();
+              var button_text;
+              if(data.is_bookmarked){
+                button_text = 'Remove Bookmark';
+              }
+              else{
+                button_text = 'Bookmark ' + settings.type;
+              }
+              // remove existing button (bookmark state may have changed)
+              $('[name=' + settings.id + ']').remove();
+              // add the new button
+              atts[' '] = bookmark_button;
+            }
+          }
+        );
+       return atts;
     },
 
     reload : function (){
@@ -218,17 +358,72 @@ Genoverse.Track.CrisprPairs = Genoverse.Track.extend({
                                 + feature.name
                                 + "?spacer=" + feature.spacer
                                 + "' target='_blank'><font color='#00FFFF'>Crispr Pair Report</font></a>";
+        var left_sequence = "<a id='" + feature.name
+            + "' ondblclick='copySequenceToClipboard(\"" + feature.copy_sequence_left + "\")'>" + feature.left_sequence + "</a>";
+        var right_sequence = "<a id'" + feature.name
+            + "' ondblclick='copySequenceToClipboard(\"" + feature.copy_sequence_right + "\")'>" + feature.right_sequence + "</a>";
         var atts = {
-            Start  : feature.start,
-            End    : feature.end,
-            Strand : feature.strand,
-            Spacer : feature.spacer,
-            Name   : feature.name,
-            URL    : report_link,
+            Start     : feature.start,
+            End       : feature.end,
+            Strand    : feature.strand,
+            Spacer    : feature.spacer,
+            'Left Sequence'  : left_sequence,
+            'Right Sequence' : right_sequence,
+            Name      : feature.name,
+            URL       : report_link,
             'Off-Targets: Pairs' : feature.ot_summary || 'not computed',
-            Left   : feature.left_ot_summary,
-            Right  : feature.right_ot_summary
+            Left      : feature.left_ot_summary,
+            Right     : feature.right_ot_summary
         };
+
+        var baseURL = window.location.protocol + "//" + window.location.host;
+
+        var spinner = baseURL + "/static/images/spinner-circle.gif";
+        var settings;
+
+        if(feature.type == 'crispr_pair'){
+          console.log('this is a crispr pair - adding bookmark button');
+          settings = {
+             'id'           : feature.name,
+             'type'         : 'Crispr Pair',
+             'status_uri'   : baseURL + "/crispr_pair_bookmark_status/" + feature.name,
+             'bookmark_uri' : baseURL + "/bookmark_crispr_pair",
+             'spinner'      : spinner,
+             'bookmark_track' : get_track('Bookmarked Crispr Pairs')
+          };
+          var style = "class='btn btn-info' style='font-size: 12px; padding-top: 3px; padding-bottom: 3px;'";
+
+          var bookmark_button = "<button" + style + " name='" + settings.id
+          + "' onClick='toggle_bookmark(this, settings.bookmark_uri, settings.id, settings.type, settings.spinner, settings.bookmark_track)'"
+            + ">Bookmark Crispr</a>";
+
+          $.get(settings.status_uri,
+            function (data){
+              if(data.error){
+                console.log("Could not add bookmark button: " + data.error);
+                return;
+              }
+              else{
+                close_alerts();
+                var button_text;
+                if(data.is_bookmarked){
+                  button_text = 'Remove Bookmark';
+                }
+                else{
+                  button_text = 'Bookmark ' + settings.type;
+                }
+
+                // remove existing button (bookmark state may have changed)
+                $('[name=' + settings.id + ']').remove();
+
+                // add the new button
+                atts[' '] = bookmark_button;
+              }
+            }
+          );
+
+        }
+
         return atts;
     },
 
@@ -238,14 +433,13 @@ Genoverse.Track.CrisprPairs = Genoverse.Track.extend({
 });
 
 Genoverse.Track.Model.Protein = Genoverse.Track.Model.extend({
-  threshold : 10000,
-  messages  : { threshold : 'Protein not displayed for regions larger than 10000' },
   buffer    : 0,
   //url       : 'http://t87-dev.internal.sanger.ac.uk:3001/api/translation_for_region?species=human&chr_name=__CHR__&chr_start=__START__&chr_end=__END__',
 
   parseData: function (data, start, end) {
     var index = 1;
     for ( var i = 0; i < data.length; i++ ) {
+      data[i].chr = data[i].chr_name;
       this.insertFeature( data[i] );
     }
   },
@@ -294,13 +488,13 @@ Genoverse.Track.View.Protein = Genoverse.Track.View.Sequence.extend({
 
   //$("<style type='text/css'> .redbold{ color:#f00; font-weight:bold;} </style>").appendTo("head");
 
-  draw: function (features, featureContext, labelContext, scale) {
+  /*draw: function (features, featureContext, labelContext, scale) {
     this.base(features, featureContext, labelContext, scale);
 
     //draw arrows
     //String.fromCharCode(9658); >
     //String.fromCharCode(9668); <
-  },
+  },*/
 
   _drawBase: function(data) {
     data.context.fillStyle = data.boxColour;
@@ -425,22 +619,34 @@ Genoverse.Track.View.Protein = Genoverse.Track.View.Sequence.extend({
 
 });
 
-function reload_track(track){
+function reload_track(track, base, species, genome){
 
     // update URL with latest params
-    track.model.setURL(track.urlParams, true);
+    //track.url += (track.url.indexOf('?') === -1 ? '?' : '&') + decodeURIComponent($.param(track.urlParams, true));
+    //track.url = track.url.replace(/[&?]$/, '');
+    //track.updateURL();
+    var chr     = track.browser.chr;
+    var start   = track.browser.start + 200;
+    var end     = track.browser.end - 200;
+    //var genoverse = track.browser;
+    //track.controller.resetImages();
+    //track.controller.resetImages();
+    console.log(species);
+    var url = base
+      + "/?chromosome=" + chr + "&browse_start=" + start + "&browse_end=" + end
+      + "&genome=" + genome + "&species=" + species + "&view_single=1&view_paired=1";
 
-    var genoverse = track.browser;
-    track.controller.resetImages();
+    window.location.href = url;
 
     // clear out all existing data and features so they are regenerated
-    track.model.dataRanges = new track.model.dataRanges.constructor;
-    track.model.features = new track.model.features.constructor;
-    track.model.featuresById = {};
+    //track.model.dataRangesByChr = new track.model.dataRangesByChr.constructor;
+    //track.model.featuresByChr = new track.model.featuresByChr.constructor;
+    //track.model.setChrProps();
+    //track.model.featuresById = {};
 
     // clear out the image_container divs
-    track.controller.imgContainers.empty();
+    //track.controller.imgContainers.empty();
 
     // redraw the track
-    track.controller.makeFirstImage();
+    //track.controller.makeFirstImage();
 }
