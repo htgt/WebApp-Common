@@ -5,3 +5,4 @@ cover_db
 tmp
 .project
 .prove
+combine.pl
