@@ -2,16 +2,16 @@
 <div class="alert alert-[% prior %] alertModal" id=[% sid %]>
     <a href="#" class="close" data-dismiss="alert" id=[% sid %]>&times; </a>
 
-    <h4><strong>Announcement [% date %]: </strong> <small>[% warning %]</small></h4> 
+    <h4><strong>Announcement [% date %]: </strong> <small>[% warning %]</small></h4>
 </div>
 
 <script type="text/javascript">
-$(document).ready(function() {
+$(function () {
     if ($.cookie('[% sid %]') != null) {
         //$('#modal').appendTo("body");
         $('#[% sid %]').alert('close');
         console.log('[% sid %]' + "Q");
     }
- 
+
 });
 </script>

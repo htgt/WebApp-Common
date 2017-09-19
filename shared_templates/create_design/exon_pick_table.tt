@@ -65,6 +65,7 @@
       <input type="hidden" name="search_gene" value="[% search_gene %]" />
       <input type="hidden" name="show_exons" value="[% show_exons %]" />
     </div>
+    <br>
   </div>
   </form>
 </div>
