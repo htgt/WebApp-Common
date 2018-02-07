@@ -252,6 +252,12 @@ Genoverse.Track.Genes = Genoverse.Track.extend({
     }
 });
 
+Genoverse.off_target_display = function (feature) {
+    //display the off target summary, or a default
+    //specifically, permits client projects to extend how this is done.
+    return feature.ot_summary || 'Not computed';
+};
+
 Genoverse.Track.Crisprs = Genoverse.Track.extend({
     model     : Genoverse.Track.Model.Transcript.GFF3,
     view      : Genoverse.Track.View.Transcript.extend({
@@ -279,7 +285,7 @@ Genoverse.Track.Crisprs = Genoverse.Track.extend({
            Sequence  : sequence,
            Name      : feature.name,
            URL       : report_link,
-           'Off-Targets' : feature.ot_summary || 'not computed',
+           'Off-Targets' : Genoverse.off_target_display(feature),
        };
 
        var baseURL = window.location.protocol + "//" + window.location.host;
@@ -360,8 +366,9 @@ Genoverse.Track.CrisprPairs = Genoverse.Track.extend({
                                 + "' target='_blank'><font color='#00FFFF'>Crispr Pair Report</font></a>";
         var left_sequence = "<a id='" + feature.name
             + "' ondblclick='copySequenceToClipboard(\"" + feature.copy_sequence_left + "\")'>" + feature.left_sequence + "</a>";
-        var right_sequence = "<a id'" + feature.name
+        var right_sequence = "<a id='" + feature.name
             + "' ondblclick='copySequenceToClipboard(\"" + feature.copy_sequence_right + "\")'>" + feature.right_sequence + "</a>";
+
         var atts = {
             Start     : feature.start,
             End       : feature.end,
@@ -371,7 +378,7 @@ Genoverse.Track.CrisprPairs = Genoverse.Track.extend({
             'Right Sequence' : right_sequence,
             Name      : feature.name,
             URL       : report_link,
-            'Off-Targets: Pairs' : feature.ot_summary || 'not computed',
+            'Off-Targets: Pairs' : Genoverse.off_target_display(feature),
             Left      : feature.left_ot_summary,
             Right     : feature.right_ot_summary
         };
@@ -650,3 +657,4 @@ function reload_track(track, base, species, genome){
     // redraw the track
     //track.controller.makeFirstImage();
 }
+
