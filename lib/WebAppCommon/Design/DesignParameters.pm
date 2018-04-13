@@ -1,4 +1,10 @@
 package WebAppCommon::Design::DesignParameters;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $WebAppCommon::Design::DesignParameters::VERSION = '0.070';
+}
+## use critic
+
 
 use strict;
 use warnings FATAL => 'all';

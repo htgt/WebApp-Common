@@ -1,4 +1,10 @@
 package WebAppCommon::Util::Sanitize;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $WebAppCommon::Util::Sanitize::VERSION = '0.070';
+}
+## use critic
+
 
 use strict;
 use warnings FATAL => 'all';

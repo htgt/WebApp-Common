@@ -1,4 +1,10 @@
 package WebAppCommon::Design::FusionConversion;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $WebAppCommon::Design::FusionConversion::VERSION = '0.070';
+}
+## use critic
+
 
 use strict;
 use warnings FATAL => 'all';
