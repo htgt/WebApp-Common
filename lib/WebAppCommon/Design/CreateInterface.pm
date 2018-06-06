@@ -36,17 +36,17 @@ sub c_build_gene_data {
     my $canonical_transcript = $gene->canonical_transcript;
     $data{ensembl_id} = $gene->stable_id;
     if ( $self->species eq 'Human' ) {
-        $data{gene_link} = 'http://www.ensembl.org/Homo_sapiens/Gene/Summary?g='
+        $data{gene_link} = 'https://www.ensembl.org/Homo_sapiens/Gene/Summary?g='
             . $gene->stable_id;
-        $data{transcript_link} = 'http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t='
+        $data{transcript_link} = 'https://www.ensembl.org/Homo_sapiens/Transcript/Summary?t='
             . $canonical_transcript->stable_id;
 
         $data{gene_id} = $self->ensembl_util->external_gene_id( $gene, 'HGNC' );
     }
     elsif ( $self->species eq 'Mouse' ) {
-        $data{gene_link} = 'http://www.ensembl.org/Mus_musculus/Gene/Summary?g='
+        $data{gene_link} = 'https://www.ensembl.org/Mus_musculus/Gene/Summary?g='
             . $gene->stable_id;
-        $data{transcript_link} = 'http://www.ensembl.org/Mus_musculus/Transcript/Summary?t='
+        $data{transcript_link} = 'https://www.ensembl.org/Mus_musculus/Transcript/Summary?t='
             . $canonical_transcript->stable_id;
 
         $data{gene_id} = $self->ensembl_util->external_gene_id( $gene, 'MGI' );
