@@ -20,10 +20,17 @@ class_has registry => (
 
 sub _build_registry {
 
-    Bio::EnsEMBL::Registry->load_registry_from_db(
+    my $public = 'ensembldb.ensembl.org';
+    my $loaded = Bio::EnsEMBL::Registry->load_registry_from_db(
         -host => $ENV{LIMS2_ENSEMBL_HOST} || 'ensembldb.internal.sanger.ac.uk',
         -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous',
     );
+    if ( not $loaded and not ($ENV{LIMS2_ENSEMBL_HOST} eq $public) ) { 
+        Bio::EnsEMBL::Registry->load_registry_from_db(
+            -host => $public,
+            -user => 'anonymous'
+        );
+    }
 
     # make sure database connection is not lost before use
     Bio::EnsEMBL::Registry->set_reconnect_when_lost();
