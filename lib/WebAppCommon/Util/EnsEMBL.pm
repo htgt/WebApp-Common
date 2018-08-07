@@ -30,7 +30,7 @@ sub _build_registry {
             -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous',
         );
     };
-    if ( not $loaded and $host ) { 
+    if ( not $loaded and $host ) {
         Bio::EnsEMBL::Registry->load_registry_from_db(
             -host => $public,
             -user => 'anonymous'
