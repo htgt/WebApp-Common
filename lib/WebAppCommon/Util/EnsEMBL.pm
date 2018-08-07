@@ -7,6 +7,7 @@ use Moose;
 use MooseX::ClassAttribute;
 use Bio::EnsEMBL::Registry;
 use List::MoreUtils qw( uniq );
+use Try::Tiny;
 use namespace::autoclean;
 
 # registry is a class variable to ensure that load_registry_from_db() is
@@ -20,10 +21,21 @@ class_has registry => (
 
 sub _build_registry {
 
-    Bio::EnsEMBL::Registry->load_registry_from_db(
-        -host => $ENV{LIMS2_ENSEMBL_HOST} || 'ensembldb.internal.sanger.ac.uk',
-        -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous',
-    );
+    my $public = 'ensembldb.ensembl.org';
+    my $host   = $ENV{LIMS2_ENSEMBL_HOST};
+    my $loaded;
+    try {
+        $loaded = Bio::EnsEMBL::Registry->load_registry_from_db(
+            -host => $host || $public,
+            -user => $ENV{LIMS2_ENSEMBL_USER} || 'anonymous',
+        );
+    };
+    if ( not $loaded and $host ) {
+        Bio::EnsEMBL::Registry->load_registry_from_db(
+            -host => $public,
+            -user => 'anonymous'
+        );
+    }
 
     # make sure database connection is not lost before use
     Bio::EnsEMBL::Registry->set_reconnect_when_lost();
@@ -70,6 +82,12 @@ sub repeat_feature_adaptor {
 sub exon_adaptor {
     my ( $self, $species ) = @_;
     return $self->registry->get_adaptor( $species || $self->species, 'core', 'exon' );
+}
+
+sub variation_feature_adaptor {
+    my ( $self, $species ) = @_;
+    return $self->registry->get_adaptor( $species || $self->species, 'variation',
+        'variationfeature');
 }
 
 sub get_best_transcript {
