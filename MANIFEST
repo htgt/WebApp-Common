@@ -116,6 +116,7 @@ shared_static/Genoverse/utils/minify.jar
 shared_static/css/jquery.qtip.min.css
 shared_static/js/diagram.builder.js
 shared_static/js/genoverse_custom_tracks.js
+shared_static/js/genoverse_custom_tracks.js~
 shared_static/js/jquery.qtip.min.js
 shared_static/js/poller.js
 shared_static/js/raphael-min.js
