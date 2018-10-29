@@ -75,6 +75,8 @@ sub submit_pspec {
         processors      => { isa => 'Int', optional => 1, default => $self->default_processors },
         err_file        => { isa => File,  optional => 1, coerce => 1 },
         dependencies    => { isa => 'ArrayRefOfInts', optional => 1, coerce => 1 },
+        name            => { isa => 'Str', optional => 1 },
+        cwd             => { isa => 'Str', optional => 1 },
         # these are only relevant to submit_and_wait. times are in seconds
         timeout         => { isa => 'Int', optional => 1, default => 600 },
         interval        => { isa => 'Int', optional => 1, default => 10 },
@@ -102,6 +104,14 @@ sub submit {
     #add the optional parameters if they're set
     if ( exists $args{ err_file } ) {
         push @bsub, ( '-e', $args{ err_file } );
+    }
+
+    if ( $args{ name } ) {
+        push @bsub, ( '-J', $args{ name } );
+    }
+
+    if ( $args{ cwd } ) {
+        push @bsub, ( '-cwd', $args{ cwd } );
     }
 
     if ( exists $args{ dependencies } ) {
