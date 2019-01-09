@@ -75,6 +75,7 @@ sub submit_pspec {
         processors      => { isa => 'Int', optional => 1, default => $self->default_processors },
         err_file        => { isa => File,  optional => 1, coerce => 1 },
         dependencies    => { isa => 'ArrayRefOfInts', optional => 1, coerce => 1 },
+        dep_type        => { isa => 'Str', optional => 1, default => 'done' },
         name            => { isa => 'Str', optional => 1 },
         cwd             => { isa => 'Str', optional => 1 },
         # these are only relevant to submit_and_wait. times are in seconds
@@ -115,7 +116,8 @@ sub submit {
     }
 
     if ( exists $args{ dependencies } ) {
-        push @bsub, $self->_build_job_dependency( $args{ dependencies } );
+        push @bsub, $self->_build_job_dependency( $args{ dependencies },
+            $args{ dep_type } );
     }
 
     #
@@ -220,8 +222,13 @@ sub _wrap_with_ssh{
     return @wrapped_cmd;
 }
 
+sub _enquote {
+    my $text = shift;
+    return "\"$text\"";
+}
+
 sub _build_job_dependency {
-    my ( $self, $dependencies ) = @_;
+    my ( $self, $dependencies, $dep_type ) = @_;
 
     #make sure we got an array
     confess "_build_job_dependency expects an ArrayRef"
@@ -231,7 +238,7 @@ sub _build_job_dependency {
     return () unless @{ $dependencies };
 
     #this creates a list of dependencies, for example 'done(12) && done(13) && done(14)'
-    return ( '-w', '"' . join( " && ", map { 'done(' . $_ . ')' } @{ $dependencies } ) . '"' );
+    return '-w', _enquote(join(q/ && /, map { "$dep_type($_)" } @{$dependencies}));
 }
 
 sub _run_cmd {
