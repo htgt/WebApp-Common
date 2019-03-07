@@ -131,7 +131,7 @@ sub c_create_design {
         $design->create_related( genotyping_primers => $validated );
     }
 
-    if ( $validated_params->{hdr_template} ) {
+    if ( $validated_params->{hdr_template} && $design->type->id eq 'miseq-hdr' ) {
         $self->trace("Creating HDR template for Design: " . $design->id);
         $design->create_related( hdr_templates => { template => $validated_params->{hdr_template} } );
     }
