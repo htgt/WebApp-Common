@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.068';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.070';
 }
 ## use critic
 
@@ -197,6 +197,18 @@ sub existing_genotyping_primer_type {
 # sub existing_nuclease {
 #     return shift->in_resultset( 'Nuclease', 'name' );
 # }
+
+sub existing_cell_line_id {
+    return shift->in_resultset( 'CellLine', 'id' );
+}
+
+sub existing_nuclease_name {
+    return shift->in_resultset( 'Nuclease', 'name' );
+}
+
+sub existing_guided_type_name {
+    return shift->in_resultset( 'GuidedType', 'name' );
+}
 
 sub existing_user {
     return shift->in_resultset( 'User', 'name' );

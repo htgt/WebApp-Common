@@ -1,7 +1,7 @@
 package WebAppCommon::Util::FarmJobRunner;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.068';
+    $WebAppCommon::Util::FarmJobRunner::VERSION = '0.070';
 }
 ## use critic
 
@@ -81,6 +81,9 @@ sub submit_pspec {
         processors      => { isa => 'Int', optional => 1, default => $self->default_processors },
         err_file        => { isa => File,  optional => 1, coerce => 1 },
         dependencies    => { isa => 'ArrayRefOfInts', optional => 1, coerce => 1 },
+        dep_type        => { isa => 'Str', optional => 1 },
+        name            => { isa => 'Str', optional => 1 },
+        cwd             => { isa => 'Str', optional => 1 },
         # these are only relevant to submit_and_wait. times are in seconds
         timeout         => { isa => 'Int', optional => 1, default => 600 },
         interval        => { isa => 'Int', optional => 1, default => 10 },
@@ -110,8 +113,17 @@ sub submit {
         push @bsub, ( '-e', $args{ err_file } );
     }
 
+    if ( $args{ name } ) {
+        push @bsub, ( '-J', $args{ name } );
+    }
+
+    if ( $args{ cwd } ) {
+        push @bsub, ( '-cwd', $args{ cwd } );
+    }
+
     if ( exists $args{ dependencies } ) {
-        push @bsub, $self->_build_job_dependency( $args{ dependencies } );
+        push @bsub, $self->_build_job_dependency( $args{ dependencies },
+            $args{ dep_type } );
     }
 
     #
@@ -216,8 +228,15 @@ sub _wrap_with_ssh{
     return @wrapped_cmd;
 }
 
+sub _enquote {
+    my $text = shift;
+    return "\"$text\"";
+}
+
 sub _build_job_dependency {
-    my ( $self, $dependencies ) = @_;
+    my ( $self, $dependencies, $dep_type ) = @_;
+
+    $dep_type = $dep_type // 'done';
 
     #make sure we got an array
     confess "_build_job_dependency expects an ArrayRef"
@@ -227,7 +246,7 @@ sub _build_job_dependency {
     return () unless @{ $dependencies };
 
     #this creates a list of dependencies, for example 'done(12) && done(13) && done(14)'
-    return ( '-w', '"' . join( " && ", map { 'done(' . $_ . ')' } @{ $dependencies } ) . '"' );
+    return '-w', _enquote(join(q/ && /, map { "$dep_type($_)" } @{$dependencies}));
 }
 
 sub _run_cmd {

@@ -1,7 +1,7 @@
 package WebAppCommon::Plugin::Design;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Plugin::Design::VERSION = '0.068';
+    $WebAppCommon::Plugin::Design::VERSION = '0.070';
 }
 ## use critic
 
@@ -64,6 +64,7 @@ sub pspec_create_design {
         global_arm_shortened      => { validate => 'integer', optional => 1 },
         nonsense_design_crispr_id => { validate => 'integer', optional => 1 },
         parent_id                 => { optional => 1 },
+        hdr_template              => { validate => 'dna_seq', optional => 1 },
     };
 }
 
@@ -134,6 +135,11 @@ sub c_create_design {
         $self->trace( "Create genotyping primer", $p );
         my $validated = $self->check_params( $p, $self->pspec_create_genotyping_primer );
         $design->create_related( genotyping_primers => $validated );
+    }
+
+    if ( $validated_params->{hdr_template} && $design->type->id eq 'miseq-hdr' ) {
+        $self->trace("Creating HDR template for Design: " . $design->id);
+        $design->create_related( hdr_templates => { template => $validated_params->{hdr_template} } );
     }
 
     return $design;
