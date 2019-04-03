@@ -91,6 +91,17 @@ sub c_create_design {
     my ( $self, $params ) = @_;
     my $validated_params = $self->check_params( $params, $self->pspec_create_design );
 
+    my $unique_match = design_uniqueness_check($self, $validated_params);
+    if ($unique_match) {
+        my $existing_design = $self->schema->resultset('Design')->find({ id => $unique_match });
+
+        my $response = $existing_design->type->id . " design with those oligos already exists: $unique_match";
+        $self->log->debug( $response );
+        $existing_design->{user_response} = $response;
+
+        return $existing_design;
+    }
+
     my $design = $self->schema->resultset( 'Design' )->create(
         {
             slice_def( $validated_params,
@@ -204,6 +215,41 @@ sub c_create_design_oligo_locus {
     );
 
     return $oligo_locus;
+}
+
+sub design_uniqueness_check {
+    my ($self, $params ) = @_;
+
+    my @starts = map { $_->{loci}[0]->{chr_start} } @{$params->{oligos}};
+    my @ends = map { $_->{loci}[0]->{chr_end} } @{$params->{oligos}};
+
+    my $oligos = $self->schema->resultset('DesignOligoLocus')->search({
+        chr_start => \@starts,
+        chr_end => \@ends,
+    }, {
+        join => 'design_oligo',
+    });
+
+    my $existing_design_loci;
+    while ( my $oligo = $oligos->next ) {
+        my $oligo_design_id = $oligo->design_oligo->design_id;
+        my $design_hash = $oligo->design_oligo->as_hash;
+        $design_hash->{type} = $oligo->design_oligo->design->type->id;
+        push ( @{ $existing_design_loci->{$oligo_design_id} }, $design_hash );
+    }
+
+    my $match;
+    foreach my $existing_design (keys %{ $existing_design_loci }) {
+        my $oligo_count = int scalar @{ $existing_design_loci->{$existing_design} };
+        my $existing_design_type = $existing_design_loci->{$existing_design}[0]->{type};
+        my $intended_design_type = $params->{design_type_id};
+
+        if ( $intended_design_type eq $existing_design_type && $oligo_count == 4 ) {
+            $match = $existing_design;
+        }
+    }
+
+    return $match;
 }
 
 sub pspec_delete_design {
