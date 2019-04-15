@@ -1,7 +1,7 @@
 package WebAppCommon::Design::CreateInterface;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::Design::CreateInterface::VERSION = '0.073';
+    $WebAppCommon::Design::CreateInterface::VERSION = '0.074';
 }
 ## use critic
 
