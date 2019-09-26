@@ -648,6 +648,60 @@ sub c_delete_design_attempt {
     return 1;
 }
 
+sub pspec_update_design_oligo_loci {
+    return {
+        design_oligo_id => { validate => 'existing_design_oligo_locus' },
+        assembly_id     => { validate => 'existing_assembly', optional => 1 },
+        chr_strand      => { validate => 'strand', optional => 1 },
+        chr_start       => { validate => 'integer', optional => 1 },
+        chr_end         => { validate => 'integer', optional => 1 },
+        chr_id          => { validate => 'existing_chromosome_id', optional => 1 },
+    };
+}
+
+sub update_design_oligo_loci {
+    my ( $self, $params ) = @_;
+
+    my $validated_params = $self->check_params( $params, $self->pspec_update_design_oligo_loci );
+    my %search = (
+        'me.design_oligo_id' => $validated_params->{design_oligo_id}
+    );
+
+    my $locus = $self->retrieve( 'DesignOligoLocus' => \%search );
+    my $db_record = $locus->as_hash;
+
+    my @keys = qw(
+        design_oligo_id
+        assembly_id
+        chr_strand
+        chr_start
+        chr_end
+        chr_id
+    );
+
+    my $edited_row;
+    foreach my $key (@keys) {
+        $edited_row->{$key} = _check_undef($validated_params->{$key}, $db_record->{$key} );
+    }
+
+    $locus->update($edited_row);
+
+    return;
+}
+
+sub _check_undef {
+    my ($updated, $existing) = @_;
+    if (defined $updated) {
+            return $updated;
+    }
+    else{
+        if(defined $existing) {
+            return $existing;
+        }
+    }
+    return "0";
+}
+
 1;
 
 __END__
