@@ -1,7 +1,7 @@
 package WebAppCommon::FormValidator::Constraint;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $WebAppCommon::FormValidator::Constraint::VERSION = '0.074';
+    $WebAppCommon::FormValidator::Constraint::VERSION = '0.075';
 }
 ## use critic
 
@@ -170,6 +170,10 @@ sub existing_chromosome {
     return shift->in_resultset( 'Chromosome', 'name' );
 }
 
+sub existing_chromosome_id {
+    return shift->in_resultset( 'Chromosome', 'id' );
+}
+
 sub existing_design_type {
     return shift->in_resultset( 'DesignType', 'id' );
 }
@@ -307,6 +311,10 @@ sub validated_by_annotation {
 
 sub dna_seq {
     return shift->regexp_matches(qr/^[ATGCNatgcn]+$/);
+}
+
+sub existing_design_oligo_locus {
+    return shift->in_resultset( 'DesignOligoLocus', 'design_oligo_id' );
 }
 
 __PACKAGE__->meta->make_immutable;
