@@ -61,6 +61,12 @@ has server => (
     required => 1,
 );
 
+has check_return => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1,
+);
+
 #allow an array of job refs or just a single one.
 subtype 'ArrayRefOfInts',
     as 'ArrayRef[Int]';
@@ -258,7 +264,8 @@ sub _run_cmd {
     $self->log->info("IPC Run version: ".$IPC::Run::VERSION);
     $self->log->info( "CMD: " . join(' ', @cmd) );
     try {
-        IPC::Run::run( \@cmd, '<', \undef, '>&', \$output )
+        IPC::Run::run( \@cmd, '>', \$output )
+                or !$self->check_return
                 or die "$output";
     }
     catch {
