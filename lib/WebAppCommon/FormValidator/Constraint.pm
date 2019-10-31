@@ -311,6 +311,10 @@ sub existing_design_oligo_locus {
     return shift->in_resultset( 'DesignOligoLocus', 'design_oligo_id' );
 }
 
+sub existing_amplicon_type {
+    return shift->in_resultset( 'AmpliconType', 'id' );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
