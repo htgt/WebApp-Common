@@ -15,33 +15,48 @@ with 'MooseX::Log::Log4perl';
 has default_queue => (
     is      => 'rw',
     isa     => 'Str',
-    default => 'normal',
+    default => $ENV{BROOCE_DEFAULT_QUEUE} // 'normal',
 );
 
 has sub_wrapper => (
     is      => 'rw',
     isa     => File,
     coerce  => 1,
-    default => sub { file('/home/ubuntu/.brooce/wrapper.sh') },
+    default => sub { file($ENV{BROOCE_WRAPPER_SCRIPT}) },
 );
+
+has redis => (
+    is         => 'ro',
+    isa        => 'Redis',
+    lazy_build => 1,
+);
+
+sub _build_redis {
+    my %args = ();
+    my $host = exists $ENV{REDIS_HOST} ? $ENV{REDIS_HOST} : 'localhost';
+    my $port = exists $ENV{REDIS_PORT} ? $ENV{REDIS_PORT} : 6379;
+    $args{server}   = "$host:$port";
+    $args{password} = $ENV{REDIS_AUTH} if exists $ENV{REDIS_AUTH};
+    return Redis->new(%args);
+}
 
 sub submit_pspec {
     my $self = shift;
     return (
-        out_file => { isa => File, coerce => 1, },
-        err_file => { isa => File, coerce => 1, },
-        cmd      => { isa => 'ArrayRef', },
-        group    => { isa => 'Str', optional => 1, },
+        out_file        => { isa => File,  coerce   => 1, },
+        err_file        => { isa => File,  coerce   => 1, },
+        cmd             => { isa => 'ArrayRef', },
+        group           => { isa => 'Str', optional => 1, },
         memory_required => { isa => 'Int', optional => 1, },
-        queue    => {
-            isa => 'Str', 
+        queue           => {
+            isa      => 'Str',
             optional => 1,
-            default => $self->default_queue,
+            default  => $self->default_queue,
         },
-        wrapper  => {
-            isa => 'Str',
+        wrapper => {
+            isa      => 'Str',
             optional => 1,
-            default => $self->sub_wrapper,
+            default  => $self->sub_wrapper,
         },
 
     );
@@ -50,17 +65,17 @@ sub submit_pspec {
 sub submit {
     my $self = shift;
     my %args = validated_hash( \@_, $self->submit_pspec );
-    my $redis = Redis->new;
 
-    my $id = $redis->incr("jobid");
+    my $id      = $self->redis->incr("jobid");
     my $outfile = $args{out_file}->stringify;
     my $errfile = $args{err_file}->stringify;
     $outfile =~ s/%J/$id/g;
     $errfile =~ s/%J/$id/g;
+    my @cmd = map { s/%J/$id/g; $_; } @{ $args{cmd} };
 
     # push job info into redis
-    $redis->mset(
-        "cmd:$id" => shell_quote(@{$args{cmd}}),
+    $self->redis->mset(
+        "cmd:$id" => shell_quote(@cmd),
         "out:$id" => $outfile,
         "err:$id" => $errfile,
     );
@@ -69,15 +84,14 @@ sub submit {
     my $wrapper = $args{wrapper}->stringify;
     my $queue   = "brooce:queue:$args{queue}:pending";
     $self->log->info("Adding $id to $queue");
-    $redis->lpush($queue, "$wrapper $id");
+    $self->redis->lpush( $queue, "$wrapper $id" );
     return $id;
 }
 
 sub kill_job {
     my ( $self, $id ) = @_;
-    my $redis = Redis->new;
     $self->log->info("Deleting job:'$id'");
-    $redis->del("cmd:$id", "out:$id", "err:$id");
+    $self->redis->del( "cmd:$id", "out:$id", "err:$id" );
     return;
 }
 
