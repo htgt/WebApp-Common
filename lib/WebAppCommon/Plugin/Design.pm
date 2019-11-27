@@ -142,12 +142,56 @@ sub c_create_design {
         $design->create_related( genotyping_primers => $validated );
     }
 
-    if ( $validated_params->{hdr_template} && $design->type->id eq 'miseq-hdr' ) {
-        $self->trace("Creating HDR template for Design: " . $design->id);
-        $design->create_related( hdr_templates => { template => $validated_params->{hdr_template} } );
+    #Match design types in the Miseq family
+    if ( $design->type->id =~ /^miseq\-\S+$/ ) {
+        $self->trace("Creating WT Amplicon for Design: " . $design->id);
+        _design_amplicons($self, $design, $validated_params);
+
+        if ( $design->type->id eq 'miseq-hdr' && $params->{hdr_template} ) {
+            $self->trace("Creating HDR Amplicon for Design: " . $design->id);
+            _design_amplicons($self, $design, $validated_params, $params->{hdr_template});
+        }
     }
 
     return $design;
+}
+
+sub _design_amplicons {
+    my ($self, $design, $params, $hdr) = @_;
+
+    my $locus;
+    my $seq = $design->amplicon;
+    my $type = 'WT';
+
+    if ($hdr) {
+        $seq = $hdr;
+        $type = 'HDR';
+
+        my @oligos = @{$design->oligos_sorted};
+        #[Left external, Left internal, Right Internal, Right External] 
+
+        my $chr_id = $self->schema->resultset('Chromosome')->find({
+            species_id => $oligos[1]->{locus}->{species},
+            name => $oligos[1]->{locus}->{chr_name}
+        })->id;
+
+        $locus = {
+            assembly_id => $oligos[1]->{locus}->{assembly},
+            chr_id      => $chr_id,
+            chr_start   => $oligos[1]->{locus}->{chr_start},
+            chr_end     => $oligos[2]->{locus}->{chr_end} + 1,
+            chr_strand  => $oligos[1]->{locus}->{chr_strand},
+        };
+    };
+
+    $self->create_amplicon({
+        design_id => $design->id,
+        seq => $seq,
+        amplicon_type => $type,
+        locus => $locus,
+    });
+
+    return;
 }
 
 sub pspec_create_design_oligo {
