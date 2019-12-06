@@ -8,6 +8,7 @@ use MooseX::Types::Path::Class::MoreCoercions qw( File );
 use MooseX::Params::Validate;
 
 with 'MooseX::Log::Log4perl';
+extends 'WebAppCommon::Util::JobRunner';
 
 use Try::Tiny;
 use Path::Class;
@@ -52,6 +53,18 @@ has dry_run => (
     is      => 'rw',
     isa     => 'Bool',
     default => 0
+);
+
+has server => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
+);
+
+has check_return => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 1,
 );
 
 #allow an array of job refs or just a single one.
@@ -216,7 +229,7 @@ sub _wrap_with_ssh{
     my ($self, $cmd) = @_;
 
     # temp wrap in ssh to farm3-login, until vms can submit to farm3 directly
-    my @wrapped_cmd = ( 'ssh', '-o CheckHostIP=no', '-o BatchMode=yes', 'farm3-login');
+    my @wrapped_cmd = ( 'ssh', '-o CheckHostIP=no', '-o BatchMode=yes', $self->server);
     push @wrapped_cmd, $cmd;
 
     return @wrapped_cmd;
@@ -251,7 +264,8 @@ sub _run_cmd {
     $self->log->info("IPC Run version: ".$IPC::Run::VERSION);
     $self->log->info( "CMD: " . join(' ', @cmd) );
     try {
-        IPC::Run::run( \@cmd, '<', \undef, '>&', \$output )
+        IPC::Run::run( \@cmd, '>', \$output )
+                or !$self->check_return
                 or die "$output";
     }
     catch {
