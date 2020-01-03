@@ -43,6 +43,7 @@ sub delete_dir {
 sub check_file_existence {
     my ( $self, $path ) = @_;
     return -e $path;
+}
 
 sub construct {
     my ( $class, $args ) = @_;
