@@ -40,6 +40,11 @@ sub delete_dir {
     return $dir->rmtree;
 }
 
+sub check_file_existence {
+    my ( $self, $path ) = @_;
+    return -e $path;
+}
+
 sub construct {
     my ( $class, $args ) = @_;
     return $args->{server}

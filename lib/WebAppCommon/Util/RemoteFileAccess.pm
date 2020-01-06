@@ -79,6 +79,11 @@ sub delete_dir {
     return 0;
 }
 
+sub check_file_existence {
+    my ( $self, $path ) = @_;
+    return $self->scp->size($path);
+}
+
 1;
 
 
