@@ -91,11 +91,11 @@ sub c_create_design {
     my ( $self, $params ) = @_;
     my $validated_params = $self->check_params( $params, $self->pspec_create_design );
 
-    my $unique_match = design_uniqueness_check($self, $validated_params);
-    if ($unique_match) {
-        my $existing_design = $self->schema->resultset('Design')->find({ id => $unique_match });
+    my $design_match = existing_design_check($self, $validated_params);
+    if ($design_match) {
+        my $existing_design = $self->schema->resultset('Design')->find({ id => $design_match });
 
-        my $response = $existing_design->type->id . " design with those oligos already exists: $unique_match";
+        my $response = $existing_design->type->id . " design with those oligos already exists: $design_match";
         $self->log->debug( $response );
         $existing_design->{user_response} = $response;
 
@@ -261,7 +261,7 @@ sub c_create_design_oligo_locus {
     return $oligo_locus;
 }
 
-sub design_uniqueness_check {
+sub existing_design_check {
     my ($self, $params ) = @_;
 
     my @starts = map { $_->{loci}[0]->{chr_start} } @{$params->{oligos}};
@@ -279,6 +279,7 @@ sub design_uniqueness_check {
         my $oligo_design_id = $oligo->design_oligo->design_id;
         my $design_hash = $oligo->design_oligo->as_hash;
         $design_hash->{type} = $oligo->design_oligo->design->type->id;
+        $design_hash->{hdr} = $oligo->design_oligo->design->hdr_amplicon // '';
         push ( @{ $existing_design_loci->{$oligo_design_id} }, $design_hash );
     }
 
@@ -287,9 +288,13 @@ sub design_uniqueness_check {
         my $oligo_count = int scalar @{ $existing_design_loci->{$existing_design} };
         my $existing_design_type = $existing_design_loci->{$existing_design}[0]->{type};
         my $intended_design_type = $params->{design_type_id};
+        my $existing_hdr = $existing_design_loci->{$existing_design}[0]->{hdr};
+        my $intended_hdr = $params->{hdr_template};
 
         if ( $intended_design_type eq $existing_design_type && $oligo_count == 4 ) {
-            $match = $existing_design;
+            if ( ! $intended_hdr || $intended_hdr eq $existing_hdr ) {
+                $match = $existing_design;
+            }
         }
     }
 
